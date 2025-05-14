@@ -1,9 +1,12 @@
 {
   "name": "clock_website",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "cdk": "cdk",
+    "deploy": "cdk deploy",
+    "synth": "cdk synth"
   },
   "keywords": [],
   "author": "",
@@ -11,6 +14,9 @@
   "type": "commonjs",
   "description": "",
   "devDependencies": {
+    "@aws-cdk/aws-s3": "^1.203.0",
+    "aws-cdk-lib": "^2.195.0",
+    "constructs": "^10.4.2",
     "typescript": "^5.8.3"
   }
 }
