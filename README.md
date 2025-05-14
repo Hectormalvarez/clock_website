@@ -52,7 +52,25 @@ The website displays a simple clock. The logic for fetching and displaying the c
 
 ## Deployment
 
-Deploy the stack using `npm run deploy`.
+To deploy the clock website to your AWS account using CDK, follow these steps:
+
+1.  **Bootstrap your AWS environment:** If you haven't already, you need to bootstrap your AWS account and region for CDK deployment. This is a one-time setup step per environment.
+    ```bash
+    cdk bootstrap
+    ```
+    You will be prompted to approve the creation of necessary resources (like an S3 bucket and IAM roles) in your AWS account.
+
+2.  **Build the website:** Ensure your static website content is built and ready for deployment.
+    ```bash
+    npm run build
+    ```
+    This command uses Vite to build the website and places the output in the `./dist` directory.
+
+3.  **Deploy the CDK stack:** Deploy the infrastructure and website content to AWS.
+    ```bash
+    npm run deploy
+    ```
+    This command will compile the CDK code and deploy the `ClockWebsiteStack`, creating the S3 bucket and uploading the contents of the `./dist` directory. You will be prompted to review and approve the changes before deployment.
 
 **⚠️ WARNING: Data Loss Risk ⚠️**
 
