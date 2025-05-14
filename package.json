@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "build": "tsc",
+    "start": "vite dev",
+    "build": "vite build",
     "cdk": "cdk",
     "deploy": "cdk deploy",
     "synth": "cdk synth"
@@ -17,6 +18,7 @@
     "@aws-cdk/aws-s3": "^1.203.0",
     "aws-cdk-lib": "^2.195.0",
     "constructs": "^10.4.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }
