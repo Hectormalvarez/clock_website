@@ -53,6 +53,9 @@
     "aws-cdk:enableDiffNoFail": "true",
     "aws-cdk:bundling-stacks": [
       "*"
-    ]
+    ],
+    "domainName": "clock.taylormadetech.net",
+    "hostedZoneId": "Z08476952AAJG5D55EAB6",
+    "baseDomainName": "taylormadetech.net"
   }
 }
