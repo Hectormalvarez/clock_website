@@ -1,0 +1,24 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #222;
+    color: #0f0;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+#clock {
+    font-size: 8em; /* Large font size */
+    text-align: center;
+    text-shadow: 0 0 10px #0f0; /* Optional glow effect */
+}
+
+/* Basic responsiveness for smaller screens */
+@media (max-width: 600px) {
+    #clock {
+        font-size: 4em;
+    }
+}
