@@ -12,6 +12,12 @@ export class ClockWebsiteStack extends cdk.Stack {
       bucketName: `simple-clock-website-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`, // Unique bucket name
       websiteIndexDocument: 'index.html',
       publicReadAccess: true, // WARNING: This makes the bucket content publicly readable
+      blockPublicAccess: new s3.BlockPublicAccess({ // Attempting to disable block public access in v1
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        blockPublicPolicy: false,
+        restrictPublicBuckets: false,
+      }),
       removalPolicy: cdk.RemovalPolicy.DESTROY, // WARNING: This will delete the bucket and its contents when the stack is destroyed
       autoDeleteObjects: true, // WARNING: This will delete all objects in the bucket when the stack is destroyed
     });

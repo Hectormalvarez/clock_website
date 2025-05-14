@@ -6,14 +6,14 @@
     "start": "vite dev",
     "build": "vite build",
     "cdk": "cdk",
-    "deploy": "cdk deploy",
-    "synth": "cdk synth",
+    "deploy": "npx tsc && cdk deploy",
+    "synth": "npx tsc && cdk synth",
     "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "description": "",
   "devDependencies": {
     "@aws-cdk/aws-s3": "^1.203.0",

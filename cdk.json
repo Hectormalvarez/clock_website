@@ -1,0 +1,58 @@
+{
+  "app": "node dist/app.js",
+  "watch": {
+    "include": [
+      "**"
+    ],
+    "exclude": [
+      "README.md",
+      "cdk*.json",
+      "**/*.d.ts",
+      "**/*.js",
+      "tsconfig.json",
+      "package*.json",
+      "yarn.lock",
+      "node_modules",
+      "test"
+    ]
+  },
+  "context": {
+    "@aws-cdk/aws-apigateway/stage-name-default": false,
+    "@aws-cdk/aws-iam/minimize-policies": true,
+    "@aws-cdk/aws-ecs/arn-format-includes-cluster-name": true,
+    "@aws-cdk/aws-ec2/instance-profile-with-name": true,
+    "@aws-cdk/aws-rds/prevent-cluster-pg-version-upgrade": true,
+    "@aws-cdk/aws-redshift/column-interpolation": true,
+    "@aws-cdk/aws-secretsmanager/parse-secret-arn": true,
+    "@aws-cdk/aws-s3/grant-read-write": true,
+    "@aws-cdk/aws-lambda/recognize-layer-version": true,
+    "@aws-cdk/aws-lambda/handle-layer-versions": true,
+    "@aws-cdk/aws-dynamodb/table-name-reserved-words": true,
+    "@aws-cdk/aws-cfn-resource-signals:no-signals-bind-failure": true,
+    "@aws-cdk/core:check-secret-arn-format": true,
+    "@aws-cdk/core:target-partitions": [
+      "aws",
+      "aws-cn"
+    ],
+    "@aws-cdk/core:stack-trace-removal": true,
+    "@aws-cdk/core:version-reporting": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/aws-apigateway:stageAndDeploymentLogicalIds": true,
+    "@aws-cdk/aws-cognito:userPoolModernTokens": true,
+    "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
+    "@aws-cdk/aws-ec2:instanceProfileWithName": true,
+    "@aws-cdk/aws-rds:preventClusterParameterGroupVersionUpgrade": true,
+    "@aws-cdk/aws-redshift:columnInterpolation": true,
+    "@aws-cdk/aws-secretsmanager:parseSecretArn": true,
+    "@aws-cdk/aws-s3:grantReadWrite": true,
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/aws-lambda:handleLayerVersions": true,
+    "@aws-cdk/aws-dynamodb:tableWithReservedWords": true,
+    "@aws-cdk/aws-cfn-resource-signals:noSignalsBindFailure": true,
+    "@aws-cdk/core:newStyleStackSynthesis": true,
+    "aws-cdk:enableDiffNoFail": "true",
+    "aws-cdk:bundling-stacks": [
+      "*"
+    ]
+  }
+}
