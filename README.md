@@ -1,89 +1,51 @@
-# Simple Clock Website Project Context
+# Simple Clock Website
 
-This project's primary goal is to deploy a simple static website that displays a real-time clock. The infrastructure is managed using AWS Cloud Development Kit (CDK), deploying the website content to an Amazon S3 bucket configured for static hosting.
+A real-time clock web application deployed on AWS using CDK.
 
-## Key Components and Architecture
+## Project Context
 
-The project consists of two main parts:
+- **Frontend**: TypeScript clock display (HTML/CSS/TypeScript)
+- **Infrastructure**: AWS CDK deploying to S3, CloudFront, Route53, ACM
+- **Purpose**: Portfolio project demonstrating web development and AWS skills
 
-1.  **Frontend:** The static website content (HTML, CSS, JavaScript) located in the `src/` directory. This code runs in the user's browser to display and update the clock.
-2.  **Infrastructure:** The AWS resources required to host the website, defined using AWS CDK in TypeScript. Currently, this is primarily an S3 bucket configured for static website hosting.
+## Current State
 
 ```mermaid
 graph LR
-    User["Browser"] --> S3["Amazon S3 (Static Website Hosting)"]
-    S3 --> index_html["src/index.html"]
-    S3 --> style_css["src/style.css"]
-    S3 --> script_js["src/script.ts (compiled to .js)"]
-    CDK["AWS CDK App (app.ts)"] --> Stack["ClockWebsiteStack (lib/clock-website-stack.ts)"]
-    Stack --> S3
+    Browser --> CloudFront --> S3["S3 (Private)"]
+    DNS["Route53"] --> CloudFront
+    Certificate["ACM"] --- CloudFront
 ```
-*(Note: The `script.ts` file is compiled to JavaScript before deployment)*
 
-## Important Files and Directories
+The site currently displays a digital clock that updates every second using JavaScript.
 
-*   `app.ts`: The entry point for the AWS CDK application. It loads the stack definition.
-*   `lib/`: Contains the infrastructure stack definitions.
-    *   `lib/clock-website-stack.ts`: **Crucial file** defining the AWS resources (S3 bucket) and their configuration for the website.
-*   `src/`: Contains all the frontend source code.
-    *   `src/index.html`: The main HTML structure of the website.
-    *   `src/script.ts`: Contains the TypeScript/JavaScript logic for the clock functionality.
-    *   `src/style.css`: Contains the CSS for styling the clock and website layout.
-*   `package.json`: Manages project dependencies (Node.js packages, CDK libraries) and defines build/deployment scripts (`npm run build`, `npm run deploy`, etc.).
-*   `tsconfig.json`: TypeScript compiler configuration.
-*   `.gitignore`: Specifies intentionally untracked files that Git should ignore (e.g., `node_modules`, `cdk.out`).
+## Improvement Roadmap
 
-## Core Functionality
+### Frontend
+1. **Time Zone Support**: Add dropdown to select different time zones
+2. **Analog Clock**: Create SVG-based analog display with toggle option
+3. **Theme Toggle**: Implement dark/light theme with system preference detection
+4. **Accessibility**: Add ARIA attributes and keyboard navigation
+5. **Date Display**: Show current date below clock
 
-The website displays a simple clock. The logic for fetching and displaying the current time is intended to be implemented within `src/script.ts`. The styling is handled by `src/style.css`.
+### Infrastructure
+1. **CI/CD Pipeline**: GitHub Actions for automated testing and deployment
+2. **Monitoring**: CloudWatch metrics and basic alerts
+3. **Performance**: Optimize caching and asset delivery
 
-## Prerequisites
+### Developer Experience
+1. **Tests**: Add frontend unit tests and infrastructure tests
+2. **Documentation**: Improve JSDoc comments and setup instructions
 
-*   Node.js (LTS recommended)
-*   npm
-*   AWS CLI (configured)
-*   AWS CDK CLI (`npm install -g aws-cdk`)
+## Quick Start
 
-## Setup
+```bash
+npm install     # Install dependencies
+npm run dev     # Local development
+npm run deploy  # Deploy to AWS
+```
 
-1.  Clone the repository.
-2.  Run `npm install` to install dependencies.
-3.  Run `npm run build` to compile TypeScript.
-
-## Deployment
-
-To deploy the clock website to your AWS account using CDK, follow these steps:
-
-1.  **Bootstrap your AWS environment:** If you haven't already, you need to bootstrap your AWS account and region for CDK deployment. This is a one-time setup step per environment.
-    ```bash
-    cdk bootstrap
-    ```
-    You will be prompted to approve the creation of necessary resources (like an S3 bucket and IAM roles) in your AWS account.
-
-2.  **Build the website:** Ensure your static website content is built and ready for deployment.
-    ```bash
-    npm run build
-    ```
-    This command uses Vite to build the website and places the output in the `./dist` directory.
-
-3.  **Deploy the CDK stack:** Deploy the infrastructure and website content to AWS.
-    ```bash
-    npm run deploy
-    ```
-    This command will compile the CDK code and deploy the `ClockWebsiteStack`, creating the S3 bucket and uploading the contents of the `./dist` directory. You will be prompted to review and approve the changes before deployment.
-
-**⚠️ WARNING: Data Loss Risk ⚠️**
-
-The S3 bucket is configured with `removalPolicy: cdk.RemovalPolicy.DESTROY` and `autoDeleteObjects: true`. Deleting the CDK stack (`cdk destroy`) will permanently delete the S3 bucket and all its contents.
-
-## Accessing the Website
-
-The S3 static website endpoint URL will be shown in the output of the `npm run deploy` command.
-
-## Known Issues / TODOs
-
-*   Implement the actual clock logic in `src/script.ts`.
-*   Add styling in `src/style.css`.
-*   Consider more secure S3 hosting (e.g., OAC/OAI with CloudFront) instead of public access.
-*   Add features like time zone selection or alarms.
-*   Implement unit/integration tests.
+### Deployment Requirements
+- Node.js
+- AWS CLI configured
+- AWS CDK CLI installed
