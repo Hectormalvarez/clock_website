@@ -3,20 +3,32 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "build": "tsc",
+    "start": "vite dev",
+    "build": "vite build",
     "cdk": "cdk",
-    "deploy": "cdk deploy",
-    "synth": "cdk synth"
+    "deploy": "npx tsc && cdk deploy",
+    "deploy:dev": "NODE_ENV=development npx tsc && cdk deploy",
+    "deploy:prod": "NODE_ENV=production npx tsc && cdk deploy",
+    "synth": "npx tsc && cdk synth",
+    "synth:dev": "NODE_ENV=development npx tsc && cdk synth",
+    "synth:prod": "NODE_ENV=production npx tsc && cdk synth",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "description": "",
   "devDependencies": {
+    "@aws-cdk/aws-cloudfront-origins": "^1.203.0",
     "@aws-cdk/aws-s3": "^1.203.0",
+    "@aws-cdk/aws-s3-deployment": "^1.203.0",
+    "@types/jest": "^29.5.14",
     "aws-cdk-lib": "^2.195.0",
     "constructs": "^10.4.2",
-    "typescript": "^5.8.3"
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }

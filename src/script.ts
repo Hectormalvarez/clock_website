@@ -1,3 +1,5 @@
+import './style.css'; // Import the CSS file
+
 const clockElement = document.getElementById('clock');
 
 function updateClock(): void {

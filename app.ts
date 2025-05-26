@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
+import 'source-map-support/register.js';
 import * as cdk from 'aws-cdk-lib';
-import { ClockWebsiteStack } from './lib/clock-website-stack';
+import { ClockWebsiteStack } from './lib/clock-website-stack.js';
 
 const app = new cdk.App();
 new ClockWebsiteStack(app, 'ClockWebsiteStack', {
