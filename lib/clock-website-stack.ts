@@ -7,19 +7,19 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import { getConfig } from '../config';
 
 export class ClockWebsiteStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Retrieve context parameters for domain, zone ID, and base domain
-    const domainName = this.node.tryGetContext('domainName'); // Full subdomain, e.g., clock.taylormadetech.net
-    const baseDomainName = this.node.tryGetContext('baseDomainName'); // Base domain, e.g., taylormadetech.net
-    const hostedZoneId = this.node.tryGetContext('hostedZoneId'); // ID for the base domain's hosted zone
-
-    if (!domainName || !hostedZoneId || !baseDomainName) {
-      throw new Error('Context parameters "domainName", "baseDomainName", and "hostedZoneId" must be provided.');
-    }
+    // Get configuration based on environment
+    const config = getConfig(process.env.NODE_ENV);
+    
+    // Replace hardcoded values with config values
+    const domainName = config.aws.domainName;
+    const baseDomainName = config.aws.baseDomainName;
+    const hostedZoneId = config.aws.hostedZoneId;
 
     // Define the S3 bucket for static website hosting
     const websiteBucket = new s3.Bucket(this, 'ClockWebsiteBucket', {
