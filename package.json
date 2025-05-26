@@ -7,7 +7,11 @@
     "build": "vite build",
     "cdk": "cdk",
     "deploy": "npx tsc && cdk deploy",
+    "deploy:dev": "NODE_ENV=development npx tsc && cdk deploy",
+    "deploy:prod": "NODE_ENV=production npx tsc && cdk deploy",
     "synth": "npx tsc && cdk synth",
+    "synth:dev": "NODE_ENV=development npx tsc && cdk synth",
+    "synth:prod": "NODE_ENV=production npx tsc && cdk synth",
     "test": "jest"
   },
   "keywords": [],
