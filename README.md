@@ -19,6 +19,25 @@ graph LR
 
 The site currently displays a digital clock that updates every second using JavaScript.
 
+## Environment Configuration
+
+This project uses environment-based configuration for different deployment environments:
+
+1. **Setup Environment**:
+   - Copy `.env.example` to `.env`
+   - Update domain values in `.env` with your own AWS resources
+
+2. **Configuration Structure**:
+   - Environment configuration defined in `config/index.ts`
+   - Supports development and production environments
+   - Configurable domain names and AWS resources
+
+3. **Deployment Commands**:
+   ```bash
+   npm run deploy:dev   # Deploy to development environment
+   npm run deploy:prod  # Deploy to production environment
+   ```
+
 ## Improvement Roadmap
 
 ### Frontend
