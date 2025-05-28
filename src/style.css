@@ -13,7 +13,8 @@ body {
 #clock {
     font-size: 8em; /* Large font size */
     text-align: center;
-    text-shadow: 0 0 10px #0f0; /* Optional glow effect */
+    font-weight: bold; /* Added for better readability */
+    /* text-shadow: 0 0 10px #0f0; */ /* Removed for crispness */
 }
 
 /* Basic responsiveness for smaller screens */
