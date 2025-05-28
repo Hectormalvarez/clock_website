@@ -1,9 +1,7 @@
 import './style.css'; // Import the CSS file
-import { getConfig } from '../config';
 
 const clockElement = document.getElementById('clock');
 const environmentMarker = document.getElementById('environment-marker');
-const config = getConfig(import.meta.env.VITE_ENVIRONMENT, import.meta.env);
 
 function updateClock(): void {
     const now = new Date();
@@ -15,10 +13,10 @@ function updateClock(): void {
         clockElement.textContent = `${hours}:${minutes}:${seconds}`;
     }
 
-    if (environmentMarker && config.environment === 'development') {
-        environmentMarker.textContent = 'dev';
+    if (environmentMarker && import.meta.env.MODE === 'development') {
+        environmentMarker.textContent = 'DEV';
     } else if (environmentMarker) {
-        environmentMarker.textContent = ''; // Clear for production
+        environmentMarker.textContent = ''; // Clear for other modes
     }
 }
 
