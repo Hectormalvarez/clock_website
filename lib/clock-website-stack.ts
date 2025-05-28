@@ -9,12 +9,17 @@ import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { getConfig } from '../config/index.js';
 
+interface ClockWebsiteStackProps extends cdk.StackProps {
+  environment: string;
+  envVars: Record<string, string | undefined>;
+}
+
 export class ClockWebsiteStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: ClockWebsiteStackProps) {
     super(scope, id, props);
 
     // Get configuration based on environment context parameter
-    const config = getConfig(this.node.tryGetContext('environment'));
+    const config = getConfig(props.environment, props.envVars);
     
     // Replace hardcoded values with config values
     const domainName = config.aws.domainName;

@@ -23,4 +23,14 @@ body {
     }
 }
 
+#environment-marker {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 2em; /* Semi-large lettering */
+    color: #0f0; /* Similar to clock color */
+    text-shadow: 0 0 10px #0f0; /* Similar glow effect */
+    z-index: 1000;
+}
+
 /* Added comment to trigger potential Vite update */
