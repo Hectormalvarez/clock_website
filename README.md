@@ -21,21 +21,18 @@ The site currently displays a digital clock that updates every second using Java
 
 ## Environment Configuration
 
-This project uses environment-based configuration for different deployment environments:
+This project uses environment-based configuration for different deployment environments. The deployment environment is now determined by a CDK context parameter passed during the `cdk deploy` or `cdk synth` commands.
 
-1. **Setup Environment**:
-   - Copy `.env.example` to `.env`
-   - Update domain values in `.env` with your own AWS resources
-
-2. **Configuration Structure**:
+1. **Configuration Structure**:
    - Environment configuration defined in `config/index.ts`
    - Supports development and production environments
    - Configurable domain names and AWS resources
 
-3. **Deployment Commands**:
+2. **Deployment Commands**:
    ```bash
-   npm run deploy:dev   # Deploy to development environment
-   npm run deploy:prod  # Deploy to production environment
+   npm run deploy:dev   # Deploy to development environment (uses -c environment=development)
+   npm run deploy:prod  # Deploy to production environment (uses -c environment=production)
+   npm run deploy       # Defaults to development environment
    ```
 
 ## Improvement Roadmap
