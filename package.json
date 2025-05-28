@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "start": "vite dev",
+    "dev": "vite dev",
     "build": "vite build",
     "cdk": "cdk",
     "deploy": "npm run build && npx tsc && cdk deploy",

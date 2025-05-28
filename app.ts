@@ -8,6 +8,8 @@ const environment = app.node.tryGetContext('environment') || 'development'; // R
 const stackId = `ClockWebsiteStack-${environment}`; // Create a unique stack ID based on environment
 
 new ClockWebsiteStack(app, stackId, {
+  environment: environment,
+  envVars: process.env, // Pass process.env to the stack
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but you can deploy to any account and region. */
