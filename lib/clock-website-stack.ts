@@ -7,14 +7,14 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import { getConfig } from '../config';
+import { getConfig } from '../config/index.js';
 
 export class ClockWebsiteStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Get configuration based on environment
-    const config = getConfig(process.env.NODE_ENV);
+    // Get configuration based on environment context parameter
+    const config = getConfig(this.node.tryGetContext('environment'));
     
     // Replace hardcoded values with config values
     const domainName = config.aws.domainName;
@@ -22,8 +22,8 @@ export class ClockWebsiteStack extends cdk.Stack {
     const hostedZoneId = config.aws.hostedZoneId;
 
     // Define the S3 bucket for static website hosting
-    const websiteBucket = new s3.Bucket(this, 'ClockWebsiteBucket', {
-      bucketName: `simple-clock-website-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`, // Unique bucket name
+    const websiteBucket = new s3.Bucket(this, `ClockWebsiteBucket-${config.environment}`, {
+      bucketName: `simple-clock-website-${config.environment}-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`, // Unique bucket name per environment
       websiteIndexDocument: 'index.html',
       // Removed publicReadAccess: true
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL, // Block all public access
@@ -32,26 +32,26 @@ export class ClockWebsiteStack extends cdk.Stack {
     });
 
     // Create an Origin Access Control (OAC) for CloudFront to access the S3 bucket
-    const originAccessControl = new cloudfront.S3OriginAccessControl(this, 'OriginAccessControl', {
-      originAccessControlName: 'ClockWebsiteBucketOAC',
+    const originAccessControl = new cloudfront.S3OriginAccessControl(this, `OriginAccessControl-${config.environment}`, {
+      originAccessControlName: `ClockWebsiteBucketOAC-${config.environment}`,
       signing: cloudfront.Signing.SIGV4_ALWAYS,
-      description: 'OAC for Clock Website S3 Bucket',
+      description: `OAC for Clock Website S3 Bucket (${config.environment})`,
     });
 
     // Create an ACM certificate in us-east-1 for CloudFront
     // NOTE: ACM certificates used with CloudFront must be in the us-east-1 region.
     // For production applications, it is recommended to create this certificate
     // in a separate stack deployed specifically to us-east-1.
-    const certificate = new acm.Certificate(this, 'WebsiteCertificate', {
+    const certificate = new acm.Certificate(this, `WebsiteCertificate-${config.environment}`, {
       domainName: domainName,
-      validation: acm.CertificateValidation.fromDns(route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+      validation: acm.CertificateValidation.fromDns(route53.HostedZone.fromHostedZoneAttributes(this, `HostedZone-${config.environment}`, {
         hostedZoneId: hostedZoneId,
         zoneName: baseDomainName,
       })),
     });
 
     // Create a CloudFront distribution with S3 origin using Origin Access Control
-    const distribution = new cloudfront.Distribution(this, 'WebsiteDistribution', {
+    const distribution = new cloudfront.Distribution(this, `WebsiteDistribution-${config.environment}`, {
       defaultRootObject: 'index.html',
       domainNames: [domainName], // Associate the domain name
       certificate: certificate, // Associate the ACM certificate
@@ -80,20 +80,20 @@ export class ClockWebsiteStack extends cdk.Stack {
 
 
     // Look up the Hosted Zone
-    const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZoneLookup', {
+    const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, `HostedZoneLookup-${config.environment}`, {
       hostedZoneId: hostedZoneId,
       zoneName: baseDomainName,
     });
 
     // Create an A alias record in Route 53 pointing to the CloudFront distribution
-    new route53.ARecord(this, 'WebsiteAliasRecord', {
+    new route53.ARecord(this, `WebsiteAliasRecord-${config.environment}`, {
       zone: hostedZone,
       target: route53.RecordTarget.fromAlias(new route53Targets.CloudFrontTarget(distribution)),
       recordName: domainName.split('.')[0], // Use the subdomain part only (e.g., "clock")
     });
 
     // Deploy the Vite build output to the S3 bucket
-    new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+    new s3deploy.BucketDeployment(this, `DeployWebsite-${config.environment}`, {
       sources: [s3deploy.Source.asset('./dist')], // Point to Vite's output directory
       destinationBucket: websiteBucket,
       distribution: distribution, // Invalidate CloudFront cache
@@ -101,9 +101,9 @@ export class ClockWebsiteStack extends cdk.Stack {
     });
 
     // Output the CloudFront distribution domain name
-    new cdk.CfnOutput(this, 'CloudFrontDistributionDomain', {
+    new cdk.CfnOutput(this, `CloudFrontDistributionDomain-${config.environment}`, {
       value: distribution.distributionDomainName,
-      description: 'CloudFront Distribution Domain Name',
+      description: `CloudFront Distribution Domain Name (${config.environment})`,
     });
   }
 }

@@ -4,7 +4,10 @@ import * as cdk from 'aws-cdk-lib';
 import { ClockWebsiteStack } from './lib/clock-website-stack.js';
 
 const app = new cdk.App();
-new ClockWebsiteStack(app, 'ClockWebsiteStack', {
+const environment = app.node.tryGetContext('environment') || 'development'; // Read environment context, default to 'development'
+const stackId = `ClockWebsiteStack-${environment}`; // Create a unique stack ID based on environment
+
+new ClockWebsiteStack(app, stackId, {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but you can deploy to any account and region. */
