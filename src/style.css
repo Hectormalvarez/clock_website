@@ -10,10 +10,25 @@ body {
     overflow: hidden; /* Prevent scrollbars */
 }
 
+#clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 #clock {
     font-size: 8em; /* Large font size */
     text-align: center;
-    text-shadow: 0 0 10px #0f0; /* Optional glow effect */
+    font-weight: bold; /* Added for better readability */
+    /* text-shadow: 0 0 10px #0f0; */ /* Removed for crispness */
+}
+
+#timezone {
+    font-size: 2em; /* Smaller than the clock */
+    text-align: center;
+    margin-top: 10px; /* Space below the clock */
+    color: #0f0; /* Consistent with clock color */
 }
 
 /* Basic responsiveness for smaller screens */
@@ -21,6 +36,19 @@ body {
     #clock {
         font-size: 4em;
     }
+    #timezone {
+        font-size: 1em; /* Adjust for smaller screens */
+    }
+}
+
+#environment-marker {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 2em; /* Semi-large lettering */
+    color: #0f0; /* Similar to clock color */
+    text-shadow: 0 0 10px #0f0; /* Similar glow effect */
+    z-index: 1000;
 }
 
 /* Added comment to trigger potential Vite update */

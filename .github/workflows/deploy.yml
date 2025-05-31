@@ -1,0 +1,109 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - dev # Triggers the workflow on push events to the dev branch
+  pull_request:
+    types: [closed]
+    branches:
+      - main # Triggers on PR close to main
+
+jobs:
+  deploy_dev:
+    name: Deploy to Development
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev' # Ensure this job only runs for pushes to dev
+    runs-on: ubuntu-latest
+    # environment: development # Optional: configure a GitHub environment named "development"
+    permissions:
+      id-token: write # Required for OIDC if you choose to use it
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify your Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Vite application
+        run: npm run build
+
+      - name: Compile CDK TypeScript
+        run: npx tsc
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }} # e.g., us-east-1
+
+      - name: Deploy CDK Stack (Development)
+        run: npm run cdk -- deploy --all -c environment=development --require-approval never
+        env:
+          # DEV_DOMAIN_NAME: ${{ secrets.DEV_DOMAIN_NAME }}
+          # DEV_BASE_DOMAIN_NAME: ${{ secrets.DEV_BASE_DOMAIN_NAME }}
+          # DEV_HOSTED_ZONE_ID: ${{ secrets.DEV_HOSTED_ZONE_ID }}
+          CI: true
+
+  deploy_prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    # environment: production # Optional: configure a GitHub environment named "production"
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+    # The condition above ensures this job only runs when a PR is merged into the main branch.
+    # Note: github.ref in the context of a pull_request event for 'closed' points to the base branch (e.g., refs/heads/main).
+
+    permissions:
+      id-token: write # Required for OIDC if you choose to use it
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main # Ensure we check out the main branch after merge
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify your Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test # It's good practice to run tests before deploying to production
+
+      - name: Build Vite application
+        run: npm run build
+
+      - name: Compile CDK TypeScript
+        run: npx tsc
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }} # Ensure this is your production region or use a specific secret like secrets.PROD_AWS_REGION
+
+      - name: Deploy CDK Stack (Production)
+        run: npm run cdk -- deploy --all -c environment=production --require-approval never
+        env:
+          # Ensure your config/index.ts can resolve values for 'production'
+          # or pass them via -c context or environment variables if needed, e.g.,
+          # PROD_DOMAIN_NAME: ${{ secrets.PROD_DOMAIN_NAME }}
+          # PROD_BASE_DOMAIN_NAME: ${{ secrets.PROD_BASE_DOMAIN_NAME }}
+          # PROD_HOSTED_ZONE_ID: ${{ secrets.PROD_HOSTED_ZONE_ID }}
+          # Ensure these secrets are configured in your GitHub repository settings if they are required by your CDK stack for production.
+          CI: true
