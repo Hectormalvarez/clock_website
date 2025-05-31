@@ -1,6 +1,7 @@
 import './style.css'; // Import the CSS file
 
 const clockElement = document.getElementById('clock');
+const timezoneElement = document.getElementById('timezone');
 const environmentMarker = document.getElementById('environment-marker');
 
 function updateClock(): void {
@@ -14,9 +15,14 @@ function updateClock(): void {
     hours12 = hours12 ? hours12 : 12; // Convert hour '0' (midnight) to '12'
 
     const hoursStr = String(hours12); // Hour without leading zero
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     if (clockElement) {
         clockElement.textContent = `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+    }
+
+    if (timezoneElement) {
+        timezoneElement.textContent = timeZone.replace('_', ' ');
     }
 
     if (environmentMarker && import.meta.env.MODE === 'development') {
