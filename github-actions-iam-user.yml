@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Creates an IAM User, Policy, and Access Key for GitHub Actions to deploy AWS CDK stacks.
+  WARNING: Outputs AccessKeyId and SecretAccessKey. Secure these credentials immediately
+  and consider more secure authentication methods like OIDC.
+
+Parameters:
+  GitHubDeployUserName:
+    Type: String
+    Default: GitHubActionsDeployUser
+    Description: Name for the IAM user.
+
+Resources:
+  GitHubActionsUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref GitHubDeployUserName
+      Policies:
+        - PolicyName: GitHubActionsDeployPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow # Permissions for CDK Toolkit and CloudFormation
+                Action:
+                  - cloudformation:*
+                  - s3:GetBucketLocation # Required by CDK for S3 assets
+                  - s3:ListAllMyBuckets # Required by CDK for some operations
+                  - ssm:GetParameter # For CDK context lookups from SSM
+                  - iam:GetUser # To check current user identity
+                  - iam:ListAccountAliases # For display purposes in CDK
+                  - sts:GetCallerIdentity # For display purposes in CDK
+                  - ecr:DescribeRepositories # If using ECR assets with CDK
+                Resource: "*"
+              - Effect: Allow # Permissions for CDK Bootstrap resources
+                Action:
+                  - s3:*
+                Resource:
+                  - !Sub "arn:aws:s3:::cdk-*-assets-${AWS::AccountId}-${AWS::Region}"
+                  - !Sub "arn:aws:s3:::cdk-*-assets-${AWS::AccountId}-${AWS::Region}/*"
+              - Effect: Allow # Permissions for IAM roles created/managed by CDK
+                Action:
+                  - iam:GetRole
+                  - iam:GetInstanceProfile
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:PutRolePolicy
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:PassRole
+                  - iam:TagRole
+                  - iam:ListAttachedRolePolicies
+                  - iam:ListRolePolicies
+                  - iam:ListRoleTags
+                Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/cdk-*"
+              - Effect: Allow # Permissions for application-specific resources (ClockWebsiteStack)
+                Action:
+                  - s3:*
+                Resource:
+                  - !Sub "arn:aws:s3:::simple-clock-website-*-${AWS::AccountId}-${AWS::Region}"
+                  - !Sub "arn:aws:s3:::simple-clock-website-*-${AWS::AccountId}-${AWS::Region}/*"
+              - Effect: Allow
+                Action:
+                  - cloudfront:*
+                  - route53:*
+                  - acm:*
+                  - logs:CreateLogGroup # For Lambda@Edge if used by CloudFront
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - iam:CreateServiceLinkedRole # For services like CloudFront, Route53, ACM, etc.
+                Resource: "*" # These services often require broad permissions or create resources with unpredictable names.
+                              # For stricter security, scope these down if possible after initial deployment.
+
+  GitHubActionsUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref GitHubActionsUser
+    # WARNING: The SecretAccessKey will be visible in the AWS CloudFormation console
+    # and in API calls like DescribeStacks. Secure it immediately after creation.
+
+Outputs:
+  AccessKeyId:
+    Description: Access Key ID for the GitHub Actions IAM user.
+    Value: !Ref GitHubActionsUserAccessKey
+  SecretAccessKey:
+    Description: >-
+      Secret Access Key for the GitHub Actions IAM user.
+      IMPORTANT: Store this securely in GitHub Secrets and then consider removing this output
+      or the AccessKey resource from the template for enhanced security.
+    Value: !GetAtt GitHubActionsUserAccessKey.SecretAccessKey
+  IAMUserArn:
+    Description: ARN of the created IAM user.
+    Value: !GetAtt GitHubActionsUser.Arn

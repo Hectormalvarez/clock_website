@@ -1,0 +1,63 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - dev # Triggers the workflow on push events to the dev branch
+
+jobs:
+  deploy:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    # environment: development # Optional: configure a GitHub environment named "development" in repo settings for protection rules and secrets.
+    # See: https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+    # If you uncomment this, ensure the "development" environment exists in your GitHub repository settings.
+
+    permissions:
+      id-token: write # Required for OIDC if you choose to use it
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify your Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Vite application
+        run: npm run build
+
+      - name: Compile CDK TypeScript
+        run: npx tsc
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }} # e.g., us-east-1
+
+      - name: Deploy CDK Stack (Development)
+        run: npm run cdk -- deploy --all -c environment=development --require-approval never
+        env:
+          # You might need to pass environment variables required by your CDK stack or config
+          # For example, if your config/index.ts reads from process.env for the 'development' environment:
+          # DEV_DOMAIN_NAME: ${{ secrets.DEV_DOMAIN_NAME }}
+          # DEV_BASE_DOMAIN_NAME: ${{ secrets.DEV_BASE_DOMAIN_NAME }}
+          # DEV_HOSTED_ZONE_ID: ${{ secrets.DEV_HOSTED_ZONE_ID }}
+          # Ensure these secrets are also configured in your GitHub repository settings if needed.
+          # The CDK stack gets config from getConfig(props.environment, props.envVars).
+          # Ensure your config/index.ts can resolve values for 'development'
+          # or pass them via -c context if needed, e.g.,
+          # cdk deploy -c environment=development -c domainName=${{ secrets.DEV_DOMAIN_NAME }} ...
+          # This example assumes your config/index.ts handles 'development'
+          # without needing extra env vars here, or they are passed via CDK context from app.ts.
+          CI: true # Standard environment variable indicating a CI environment
