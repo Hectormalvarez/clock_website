@@ -43,9 +43,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }} # e.g., us-east-1
+          role-to-assume: arn:aws:iam::180025060303:role/github-actions-role
+          aws-region: ${{ secrets.AWS_REGION }} # Ensure this secret (e.g., us-east-1) is set in your GitHub repository settings
 
       - name: Deploy CDK Stack (Development)
         run: npm run cdk -- deploy --all -c environment=development --require-approval never
@@ -93,9 +92,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }} # Ensure this is your production region or use a specific secret like secrets.PROD_AWS_REGION
+          role-to-assume: arn:aws:iam::180025060303:role/github-actions-role
+          aws-region: ${{ secrets.AWS_REGION }} # Ensure this secret (e.g., us-east-1) is set in your GitHub repository settings
 
       - name: Deploy CDK Stack (Production)
         run: npm run cdk -- deploy --all -c environment=production --require-approval never
