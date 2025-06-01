@@ -43,16 +43,13 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }} # e.g., us-east-1
+            role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+            role-session-name: ${{ secrets.ROLE_SESSION_NAME }}
+            aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy CDK Stack (Development)
         run: npm run cdk -- deploy --all -c environment=development --require-approval never
         env:
-          # DEV_DOMAIN_NAME: ${{ secrets.DEV_DOMAIN_NAME }}
-          # DEV_BASE_DOMAIN_NAME: ${{ secrets.DEV_BASE_DOMAIN_NAME }}
-          # DEV_HOSTED_ZONE_ID: ${{ secrets.DEV_HOSTED_ZONE_ID }}
           CI: true
 
   deploy_prod:
@@ -93,9 +90,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }} # Ensure this is your production region or use a specific secret like secrets.PROD_AWS_REGION
+            role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+            role-session-name: ${{ secrets.ROLE_SESSION_NAME }}
+            aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy CDK Stack (Production)
         run: npm run cdk -- deploy --all -c environment=production --require-approval never
