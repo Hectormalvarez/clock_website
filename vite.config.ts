@@ -1,9 +1,6 @@
-import { defineConfig, loadEnv } from 'vite';
-import { getConfig } from './config';
+import { defineConfig } from 'vite';
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), 'VITE_') as ImportMetaEnv;
-  const config = getConfig(env.VITE_ENVIRONMENT || 'development', env);
+export default defineConfig(() => {
 
   return {
     root: 'src', // Set the source directory as the root
@@ -15,10 +12,6 @@ export default defineConfig(({ mode }) => {
       open: true, // Automatically open the browser on server start
     },
     define: {
-      'import.meta.env.VITE_ENVIRONMENT': JSON.stringify(config.environment),
-      'import.meta.env.VITE_AWS_DOMAIN_NAME': JSON.stringify(config.aws.domainName),
-      'import.meta.env.VITE_AWS_BASE_DOMAIN': JSON.stringify(config.aws.baseDomainName),
-      'import.meta.env.VITE_AWS_HOSTED_ZONE_ID': JSON.stringify(config.aws.hostedZoneId),
     }
   };
 });
