@@ -1,4 +1,4 @@
-import { formatTime } from "./utils/time";
+import { formatTime } from './utils/time';
 
 interface ClockElements {
   clock: HTMLElement;
@@ -8,26 +8,32 @@ interface ClockElements {
 
 export function createClock(elements: ClockElements) {
   const { clock, timezone, environmentMarker } = elements;
+  let lastSecond: number | null = null;
 
-  function update() {
+  const formatter = new Intl.DateTimeFormat();
+  const timeZone = formatter.resolvedOptions().timeZone.replace('_', ' ');
+
+  function tick() {
     const now = new Date();
-    const timeZone = Intl.DateTimeFormat()
-      .resolvedOptions()
-      .timeZone.replace("_", " ");
+    const currentSecond = now.getSeconds();
 
-    clock.textContent = formatTime(now);
-    timezone.textContent = timeZone;
+    if (currentSecond !== lastSecond) {
+      lastSecond = currentSecond;
 
-    if (import.meta.env.MODE === "development") {
-      environmentMarker.textContent = "DEV";
-    } else {
-      environmentMarker.textContent = "";
+      clock.textContent = formatTime(now);
+      timezone.textContent = timeZone;
+
+      if (import.meta.env.MODE === 'development') {
+        environmentMarker.textContent = 'DEV';
+      } else {
+        environmentMarker.textContent = '';
+      }
     }
+
+    requestAnimationFrame(tick);
   }
+
   return {
-    start: () => {
-      update();
-      setInterval(update, 1000);
-    },
+    start: () => requestAnimationFrame(tick),
   };
 }
