@@ -19,8 +19,10 @@ export function createClock(elements: ClockElements) {
 
     if (currentSecond !== lastSecond) {
       lastSecond = currentSecond;
+      const formattedTime = formatTime(now);
 
-      clock.textContent = formatTime(now);
+      clock.textContent = formattedTime;
+      document.title = `${formattedTime} | Simple Clock` 
       timezone.textContent = timeZone;
 
       if (import.meta.env.MODE === 'development') {
