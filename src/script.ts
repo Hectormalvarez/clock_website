@@ -1,4 +1,4 @@
-import "./style.css"; // Import the CSS file
+import './styles/main.css'
 import { formatTime } from "./utils/time";
 
 const clockElement = document.getElementById("clock");
