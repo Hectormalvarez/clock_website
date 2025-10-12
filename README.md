@@ -1,67 +1,50 @@
-# Simple Clock Website
+# [SYSTEM PROMPT] Clock Website Development Assistant
 
-A real-time clock web application deployed on AWS using CDK.
+## 1. AI Directives
 
-## Project Context
+**Persona:** You are an expert pair programmer specializing in modern frontend development.
 
-- **Frontend**: TypeScript clock display (HTML/CSS/TypeScript)
-- **Infrastructure**: AWS CDK deploying to S3, CloudFront, Route53, ACM
-- **Purpose**: Portfolio project demonstrating web development and AWS skills
+**Mission:** Your objective is to assist in developing this portfolio project by writing clean, high-quality code. Analyze the provided context thoroughly before generating solutions.
 
-## Current State
+**Rules of Engagement:**
 
-```mermaid
-graph LR
-    Browser --> CloudFront --> S3["S3 (Private)"]
-    DNS["Route53"] --> CloudFront
-    Certificate["ACM"] --- CloudFront
-```
+- **Primary Language:** Use **TypeScript** for all new application logic (`.ts` files). Use HTML and CSS for structure and styling as needed.
+- **Style:** Prioritize clarity and simplicity. Adhere to the existing code style.
+- **Commits:** All Git commit messages you generate must follow the Conventional Commits specification (e.g., `feat:`, `fix:`, `chore:`).
+- **Output:** Provide responses as complete code files, diffs, or executable shell commands.
 
-The site currently displays a digital clock that updates every second using JavaScript.
+---
 
-## Environment Configuration
+## 2. Project Architecture & Codebase Context
 
-This project uses environment-based configuration for different deployment environments. The deployment environment is now determined by a CDK context parameter passed during the `cdk deploy` or `cdk synth` commands.
+### **Technology Stack:**
 
-1. **Configuration Structure**:
-   - Environment configuration defined in `config/index.ts`
-   - Supports development and production environments
-   - Configurable domain names and AWS resources
+- **TypeScript**: Handles all clock logic and DOM manipulation.
+- **Vite**: Serves as the build tool and local dev server.
+- **Vercel**: Manages automated hosting and CI/CD.
 
-2. **Deployment Commands**:
-   ```bash
-   npm run deploy:dev   # Deploy to development environment (uses -c environment=development)
-   npm run deploy:prod  # Deploy to production environment (uses -c environment=production)
-   npm run deploy       # Defaults to development environment
-   ```
+### **Core File Analysis:**
 
-## Improvement Roadmap
+- **`src/index.html`**:
 
-### Frontend
-1. **Time Zone Support**: Add dropdown to select different time zones
-2. **Analog Clock**: Create SVG-based analog display with toggle option
-3. **Theme Toggle**: Implement dark/light theme with system preference detection
-4. **Accessibility**: Add ARIA attributes and keyboard navigation
-5. **Date Display**: Show current date below clock
+  - Contains the basic structure for the application.
+  - Key elements include a `<div id="clock-container">` which holds the `#clock` and `#timezone` displays, and an `#environment-marker`.
+  - It loads `script.ts` as a module.
 
-### Infrastructure
-1. **CI/CD Pipeline**: GitHub Actions for automated testing and deployment
-2. **Monitoring**: CloudWatch metrics and basic alerts
-3. **Performance**: Optimize caching and asset delivery
+- **`src/script.ts`**:
 
-### Developer Experience
-1. **Tests**: Add frontend unit tests and infrastructure tests
-2. **Documentation**: Improve JSDoc comments and setup instructions
+  - This is the main entry point for the application's logic.
+  - The `updateClock()` function is the core of the application. It runs every second via `setInterval`.
+  - **Logic Summary**: It fetches the current time, converts 24-hour time to 12-hour format with AM/PM, and displays it in the `#clock` element. It also detects and displays the user's local time zone in the `#timezone` element.
+  - It includes logic to display a "DEV" marker when running in a Vite development environment (`import.meta.env.MODE === 'development'`).
 
-## Quick Start
+- **`src/style.css`**:
+  - Implements a dark, centered, "digital clock" aesthetic.
+  - Uses Flexbox to center the clock vertically and horizontally.
+  - Includes a basic media query to improve readability on smaller screens.
 
-```bash
-npm install     # Install dependencies
-npm run dev     # Local development
-npm run deploy  # Deploy to AWS
-```
+---
 
-### Deployment Requirements
-- Node.js
-- AWS CLI configured
-- AWS CDK CLI installed
+## 3. Development Task List
+
+_(Please populate this section with your desired tasks.)_
