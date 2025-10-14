@@ -1,4 +1,4 @@
-import { formatTime } from './utils/time';
+import { formatTime, formatTimeForTitle } from './utils/time';
 
 interface ClockElements {
   clock: HTMLElement;
@@ -9,6 +9,7 @@ interface ClockElements {
 export function createClock(elements: ClockElements) {
   const { clock, timezone, environmentMarker } = elements;
   let lastSecond: number | null = null;
+  let lastMinute: number | null = null;
 
   const formatter = new Intl.DateTimeFormat();
   const timeZone = formatter.resolvedOptions().timeZone.replace('_', ' ');
@@ -16,13 +17,16 @@ export function createClock(elements: ClockElements) {
   function tick() {
     const now = new Date();
     const currentSecond = now.getSeconds();
+    const currentMinute = now.getMinutes();
+
+    if (currentMinute !== lastMinute) {
+      lastMinute = currentMinute;
+      document.title = `${formatTimeForTitle(now)} | Simple Clock`;
+    }
 
     if (currentSecond !== lastSecond) {
       lastSecond = currentSecond;
-      const formattedTime = formatTime(now);
-
-      clock.textContent = formattedTime;
-      document.title = `${formattedTime} | Simple Clock` 
+      clock.textContent = formatTime(now);
       timezone.textContent = timeZone;
 
       if (import.meta.env.MODE === 'development') {
