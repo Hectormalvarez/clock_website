@@ -3,6 +3,8 @@ import { playBeep } from '../utils/audio';
 
 export type TimerState = 'idle' | 'running' | 'paused' | 'finished';
 
+const STORAGE_KEY = 'timer-presets';
+
 export interface TimerElements {
   display: HTMLElement;
   minInput: HTMLInputElement;
@@ -13,10 +15,38 @@ export interface TimerElements {
   incSecBtn: HTMLButtonElement;
   toggleBtn: HTMLButtonElement;
   panel: HTMLElement;
+  presetsContainer: HTMLElement;
+  presetAddBtn: HTMLButtonElement;
 }
 
 export interface TimerCallbacks {
   onStateChange?: (state: TimerState) => void;
+}
+
+function loadPresets(): number[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.every((n: unknown) => typeof n === 'number' && n > 0)) {
+        return parsed;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return [300, 900, 1500]; // 5m, 15m, 25m defaults
+}
+
+function savePresets(presets: number[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(presets));
+}
+
+function formatPresetLabel(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (secs === 0) return `${mins}m`;
+  return `${mins}m ${secs}s`;
 }
 
 export function createTimer(elements: TimerElements, callbacks: TimerCallbacks = {}) {
@@ -30,6 +60,8 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     incSecBtn,
     toggleBtn,
     panel,
+    presetsContainer,
+    presetAddBtn,
   } = elements;
 
   // Internal state
@@ -40,6 +72,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
   let configuredDuration = 5 * 60; // default 5:00
   let intervalId: number | null = null;
   let isPanelOpen = false;
+  let presets: number[] = loadPresets();
 
   // ---------- Helpers ----------
 
@@ -83,6 +116,55 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     secInput.disabled = !enabled;
     decMinBtn.disabled = !enabled;
     incSecBtn.disabled = !enabled;
+  }
+
+  // ---------- Preset rendering ----------
+
+  function renderPresets() {
+    presetsContainer.innerHTML = '';
+    presets.forEach((seconds, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'preset-btn';
+      btn.textContent = formatPresetLabel(seconds);
+      btn.addEventListener('click', () => applyPreset(seconds));
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'preset-remove';
+      removeBtn.textContent = '×';
+      removeBtn.title = 'Remove preset';
+      removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removePreset(index);
+      });
+
+      btn.appendChild(removeBtn);
+      presetsContainer.appendChild(btn);
+    });
+  }
+
+  function applyPreset(seconds: number) {
+    if (state === 'running') return; // don't change while running
+    configuredDuration = seconds;
+    remaining = seconds;
+    setInputsFromSeconds(seconds);
+    updateDisplay();
+  }
+
+  function addPreset() {
+    const seconds = getInputSeconds();
+    if (seconds <= 0) return;
+    // Don't add duplicates
+    if (presets.includes(seconds)) return;
+    presets.push(seconds);
+    presets.sort((a, b) => a - b);
+    savePresets(presets);
+    renderPresets();
+  }
+
+  function removePreset(index: number) {
+    presets.splice(index, 1);
+    savePresets(presets);
+    renderPresets();
   }
 
   // ---------- UI button handlers ----------
@@ -270,6 +352,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     setInputsFromSeconds(configuredDuration);
     updateDisplay();
     enableInputs(true);
+    renderPresets();
 
     // Wire events
     toggleBtn.addEventListener('click', togglePanel);
@@ -279,6 +362,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     incSecBtn.addEventListener('click', onIncSec);
     minInput.addEventListener('change', validateInputs);
     secInput.addEventListener('change', validateInputs);
+    presetAddBtn.addEventListener('click', addPreset);
     document.addEventListener('click', onDocumentClick);
     document.addEventListener('keydown', onDocumentKeydown);
 
