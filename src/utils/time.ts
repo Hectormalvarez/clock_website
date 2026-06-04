@@ -6,9 +6,9 @@
 
 export function formatTime(date: Date): string {
   let hours24 = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  const ampm = hours24 >= 12 ? "PM" : "AM";
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const ampm = hours24 >= 12 ? 'PM' : 'AM';
 
   let hours12 = hours24 % 12;
   hours12 = hours12 ? hours12 : 12; // Convert hour '0' to '12'
@@ -24,12 +24,24 @@ export function formatTime(date: Date): string {
  */
 export function formatTimeForTitle(date: Date): string {
   let hours24 = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const ampm = hours24 >= 12 ? "PM" : "AM";
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours24 >= 12 ? 'PM' : 'AM';
 
   let hours12 = hours24 % 12;
   hours12 = hours12 ? hours12 : 12;
 
   const hoursStr = String(hours12);
   return `${hoursStr}:${minutes} ${ampm}`;
+}
+
+/**
+ * Converts total seconds into a `MM:SS` string.
+ * @param totalSeconds Non-negative number of seconds.
+ * @returns The formatted duration string (e.g., "05:30").
+ */
+export function formatDuration(totalSeconds: number): string {
+  if (totalSeconds < 0) totalSeconds = 0;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
