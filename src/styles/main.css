@@ -271,4 +271,63 @@ body.timer-finished #clock-container {
     }
 }
 
+/* Landscape on phones — short viewport, scale everything down */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        overflow: auto;
+        min-height: 100vh;
+    }
+
+    #clock-container {
+        gap: 6px;
+    }
+
+    #clock {
+        font-size: 2.5em;
+    }
+    #timezone {
+        font-size: 0.8em;
+        margin-top: 4px;
+    }
+
+    #timer-wrapper {
+        gap: 4px;
+    }
+
+    #timer-toggle {
+        font-size: 1.1em;
+        padding: 2px 8px;
+    }
+
+    #timer-display {
+        font-size: 1.4em;
+    }
+
+    #timer-panel {
+        padding: 6px 10px;
+        gap: 6px;
+        max-width: calc(100vw - 16px);
+    }
+
+    #timer-controls input[type="number"] {
+        width: 1.8em;
+        font-size: 0.85em;
+        padding: 2px 4px;
+    }
+
+    #timer-controls button {
+        font-size: 0.85em;
+        padding: 2px 6px;
+    }
+
+    .timer-colon {
+        font-size: 0.9em;
+    }
+
+    #timer-actions button {
+        font-size: 0.8em;
+        padding: 4px 10px;
+    }
+}
+
 /* Added comment to trigger potential Vite update */
