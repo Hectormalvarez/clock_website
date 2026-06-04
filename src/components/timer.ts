@@ -101,6 +101,21 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
   // ---------- Core timer actions ----------
 
+  function runCountdown() {
+    intervalId = window.setInterval(() => {
+      remaining--;
+      updateDisplay();
+
+      if (remaining <= 0) {
+        finish();
+      }
+    }, 1000);
+  }
+
+  function msToNextSecond(): number {
+    return 1000 - new Date().getMilliseconds();
+  }
+
   function start() {
     if (state === 'running') return;
 
@@ -118,14 +133,11 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     startBtn.textContent = '⏸ Pause';
     updateDisplay();
 
-    intervalId = window.setInterval(() => {
-      remaining--;
-      updateDisplay();
-
-      if (remaining <= 0) {
-        finish();
-      }
-    }, 1000);
+    // Sync first tick with the clock's next whole second boundary
+    setTimeout(() => {
+      if (state !== 'running') return; // was paused/reset during delay
+      runCountdown();
+    }, msToNextSecond());
   }
 
   function pause() {
