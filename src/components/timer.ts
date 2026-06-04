@@ -186,6 +186,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     if (mins > 0) {
       minInput.value = String(mins - 1);
     }
+    updateAddBtnState();
   }
 
   function onIncSec() {
@@ -193,6 +194,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     if (secs < 59) {
       secInput.value = String(secs + 1);
     }
+    updateAddBtnState();
   }
 
   function validateInputs(): boolean {
@@ -374,9 +376,13 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     incSecBtn.addEventListener('click', onIncSec);
     minInput.addEventListener('change', () => { validateInputs(); updateAddBtnState(); });
     secInput.addEventListener('change', () => { validateInputs(); updateAddBtnState(); });
+    minInput.addEventListener('input', updateAddBtnState);
+    secInput.addEventListener('input', updateAddBtnState);
     presetAddBtn.addEventListener('click', addPreset);
     document.addEventListener('click', onDocumentClick);
     document.addEventListener('keydown', onDocumentKeydown);
+
+    updateAddBtnState();
 
     // Close panel initially
     closePanel();
