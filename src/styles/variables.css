@@ -50,6 +50,8 @@
     --panel-width: 320px;
     --panel-padding-x: var(--space-4xl);
     --panel-padding-y: var(--space-2xl);
+    /* Inner content width — all interactive rows align to this */
+    --panel-content-width: calc(var(--panel-width) - var(--panel-padding-x) * 2);
 
     /* === Borders === */
     --border-width: 1px;

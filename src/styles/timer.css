@@ -220,6 +220,7 @@
     align-items: center;
     gap: var(--space-sm);
     justify-content: center;
+    width: 100%;
     transition: opacity var(--transition-normal);
 }
 
@@ -261,12 +262,12 @@
 
 #timer-actions {
     display: flex;
-    justify-content: center;
     gap: var(--space-md);
     width: 100%;
 }
 
 #timer-actions button {
+    flex: 1;
     background: none;
     border: var(--border-width) solid var(--color-primary);
     color: var(--color-primary);
@@ -274,6 +275,7 @@
     cursor: pointer;
     border-radius: var(--border-radius-sm);
     padding: var(--space-sm) var(--space-2xl);
+    text-align: center;
     transition: background-color var(--transition-normal),
                 box-shadow var(--transition-normal);
 }
