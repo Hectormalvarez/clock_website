@@ -29,6 +29,7 @@ const timerIncMinBtn = document.getElementById('timer-inc-min') as HTMLButtonEle
 const timerToggleBtn = document.getElementById('timer-toggle') as HTMLButtonElement | null;
 const timerPanel = document.getElementById('timer-panel');
 const timerPresetsContainer = document.getElementById('timer-presets');
+const timerPresetsBar = document.getElementById('timer-presets-bar');
 const timerPresetAddBtn = document.getElementById('timer-preset-add') as HTMLButtonElement | null;
 
 if (
@@ -42,6 +43,7 @@ if (
   timerToggleBtn &&
   timerPanel &&
   timerPresetsContainer &&
+  timerPresetsBar &&
   timerPresetAddBtn
 ) {
   void createTimer(
@@ -56,6 +58,7 @@ if (
       toggleBtn: timerToggleBtn,
       panel: timerPanel,
       presetsContainer: timerPresetsContainer,
+      presetsBar: timerPresetsBar,
       presetAddBtn: timerPresetAddBtn,
     },
     {

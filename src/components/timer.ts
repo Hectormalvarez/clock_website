@@ -4,6 +4,7 @@ import { playBeep } from '../utils/audio';
 export type TimerState = 'idle' | 'running' | 'paused' | 'finished';
 
 const STORAGE_KEY = 'timer-presets';
+const MAX_PRESETS = 10;
 
 export interface TimerElements {
   display: HTMLElement;
@@ -16,6 +17,7 @@ export interface TimerElements {
   toggleBtn: HTMLButtonElement;
   panel: HTMLElement;
   presetsContainer: HTMLElement;
+  presetsBar: HTMLElement;
   presetAddBtn: HTMLButtonElement;
 }
 
@@ -61,6 +63,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     toggleBtn,
     panel,
     presetsContainer,
+    presetsBar,
     presetAddBtn,
   } = elements;
 
@@ -124,13 +127,16 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
   function renderPresets() {
     presetsContainer.innerHTML = '';
     presets.forEach((seconds, index) => {
-      const btn = document.createElement('button');
-      btn.className = 'preset-btn';
-      btn.textContent = formatPresetLabel(seconds);
-      btn.addEventListener('click', () => applyPreset(seconds));
+      const row = document.createElement('div');
+      row.className = 'preset-row';
+      row.addEventListener('click', () => applyPreset(seconds));
+
+      const label = document.createElement('span');
+      label.className = 'preset-row-label';
+      label.textContent = formatPresetLabel(seconds);
 
       const removeBtn = document.createElement('button');
-      removeBtn.className = 'preset-remove';
+      removeBtn.className = 'preset-row-remove';
       removeBtn.textContent = '×';
       removeBtn.title = 'Remove preset';
       removeBtn.addEventListener('click', (e) => {
@@ -138,17 +144,23 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
         removePreset(index);
       });
 
-      btn.appendChild(removeBtn);
-      presetsContainer.appendChild(btn);
+      row.appendChild(label);
+      row.appendChild(removeBtn);
+      presetsContainer.appendChild(row);
     });
   }
 
   function updateAddBtnState() {
     const seconds = getInputSeconds();
-    if (seconds <= 0 || presets.includes(seconds)) {
-      presetAddBtn.classList.add('inactive');
+    if (presets.length >= MAX_PRESETS) {
+      presetsBar.style.display = 'none';
     } else {
-      presetAddBtn.classList.remove('inactive');
+      presetsBar.style.display = '';
+      if (seconds <= 0 || presets.includes(seconds)) {
+        presetAddBtn.classList.add('inactive');
+      } else {
+        presetAddBtn.classList.remove('inactive');
+      }
     }
   }
 
@@ -166,6 +178,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     if (seconds <= 0) return;
     // Don't add duplicates
     if (presets.includes(seconds)) return;
+    if (presets.length >= MAX_PRESETS) return;
     presets.push(seconds);
     presets.sort((a, b) => a - b);
     savePresets(presets);
