@@ -63,6 +63,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
   function updateDisplay() {
     display.textContent = formatDuration(remaining);
+    updateToggleContent();
   }
 
   function enableInputs(enabled: boolean) {
@@ -203,16 +204,28 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
   // ---------- Panel toggle ----------
 
+  function updateToggleContent() {
+    if (isPanelOpen) {
+      toggleBtn.textContent = '⏱';
+    } else if (state !== 'idle') {
+      toggleBtn.textContent = formatDuration(remaining);
+    } else {
+      toggleBtn.textContent = '⏱';
+    }
+  }
+
   function openPanel() {
     isPanelOpen = true;
     panel.removeAttribute('hidden');
     toggleBtn.classList.add('active');
+    updateToggleContent();
   }
 
   function closePanel() {
     isPanelOpen = false;
     panel.setAttribute('hidden', '');
     toggleBtn.classList.remove('active');
+    updateToggleContent();
   }
 
   function togglePanel() {
@@ -259,6 +272,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
     // Close panel initially
     closePanel();
+    updateToggleContent();
   }
 
   function destroy() {
