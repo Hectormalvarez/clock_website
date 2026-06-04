@@ -1,12 +1,20 @@
+:root {
+    --bg-color: #222;
+    --text-color: #0f0;
+    --text-glow: 0 0 10px #0f0;
+    --border-color: #0f0;
+    --font-family: 'Arial', sans-serif;
+}
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #222;
-    color: #0f0;
-    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
     overflow: hidden; /* Prevent scrollbars */
 }
 
@@ -15,6 +23,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 20px;
 }
 
 #clock {
@@ -28,10 +37,183 @@ body {
     font-size: 2em; /* Smaller than the clock */
     text-align: center;
     margin-top: 10px; /* Space below the clock */
-    color: #0f0; /* Consistent with clock color */
+    color: var(--text-color); /* Consistent with clock color */
 }
 
-/* Basic responsiveness for smaller screens */
+/* ---------- Timer ---------- */
+
+#timer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+#timer-toggle {
+    background: none;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 1.8em;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 4px 12px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    line-height: 1;
+}
+
+#timer-toggle:hover,
+#timer-toggle:focus-visible {
+    background-color: rgba(0, 255, 0, 0.1);
+    box-shadow: var(--text-glow);
+}
+
+#timer-toggle.active {
+    box-shadow: var(--text-glow);
+}
+
+/* Pulse animation when timer is running */
+#timer-toggle.running {
+    animation: timer-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes timer-pulse {
+    0%, 100% { box-shadow: 0 0 5px var(--text-color); }
+    50%       { box-shadow: 0 0 20px var(--text-color); }
+}
+
+#timer-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    animation: timer-fade-in 0.2s ease-out;
+}
+
+#timer-panel[hidden] {
+    display: none;
+}
+
+@keyframes timer-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#timer-display {
+    font-size: 3em;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 0.05em;
+}
+
+#timer-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#timer-controls input[type="number"] {
+    width: 2.5em;
+    padding: 4px 6px;
+    font-size: 1.2em;
+    text-align: center;
+    background-color: #111;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-color);
+    font-family: var(--font-family);
+    -moz-appearance: textfield;
+}
+
+#timer-controls input[type="number"]::-webkit-inner-spin-button,
+#timer-controls input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#timer-controls button {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 4px 10px;
+    transition: background-color 0.2s;
+    line-height: 1;
+}
+
+#timer-controls button:hover,
+#timer-controls button:focus-visible {
+    background-color: rgba(0, 255, 0, 0.15);
+}
+
+.timer-colon {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#timer-actions {
+    display: flex;
+    gap: 8px;
+}
+
+#timer-actions button {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 6px 16px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+#timer-actions button:hover,
+#timer-actions button:focus-visible {
+    background-color: rgba(0, 255, 0, 0.15);
+    box-shadow: var(--text-glow);
+}
+
+#timer-actions button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Flash animation when timer finishes */
+body.timer-finished #clock-container {
+    animation: timer-flash 0.5s ease-in-out 4;
+}
+
+@keyframes timer-flash {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.2; }
+}
+
+/* ---------- Environment Marker ---------- */
+
+#environment-marker {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 2em; /* Semi-large lettering */
+    color: var(--text-color); /* Similar to clock color */
+    text-shadow: var(--text-glow); /* Similar glow effect */
+    z-index: 1000;
+}
+
+/* ---------- Responsive ---------- */
+
 @media (max-width: 600px) {
     #clock {
         font-size: 4em;
@@ -39,16 +221,12 @@ body {
     #timezone {
         font-size: 1em; /* Adjust for smaller screens */
     }
-}
-
-#environment-marker {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    font-size: 2em; /* Semi-large lettering */
-    color: #0f0; /* Similar to clock color */
-    text-shadow: 0 0 10px #0f0; /* Similar glow effect */
-    z-index: 1000;
+    #timer-display {
+        font-size: 2em;
+    }
+    #timer-panel {
+        padding: 12px 16px;
+    }
 }
 
 /* Added comment to trigger potential Vite update */
