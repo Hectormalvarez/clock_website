@@ -44,7 +44,12 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
   // ---------- Helpers ----------
 
   function setState(newState: TimerState) {
+    const wasActive = state !== 'idle' && state !== 'finished';
     state = newState;
+    const isActive = state !== 'idle' && state !== 'finished';
+    if (isActive !== wasActive) {
+      document.body.toggleAttribute('data-timer-active', isActive);
+    }
     updateTitle();
     callbacks.onStateChange?.(newState);
   }

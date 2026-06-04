@@ -22,7 +22,10 @@ export function createClock(elements: ClockElements) {
 
     if (currentMinute !== lastMinute) {
       lastMinute = currentMinute;
-      document.title = `${formatTimeForTitle(now)} | Simple Clock`;
+      // Don't overwrite title when timer is running/paused
+      if (!document.body.hasAttribute('data-timer-active')) {
+        document.title = `${formatTimeForTitle(now)} | Simple Clock`;
+      }
     }
 
     if (currentSecond !== lastSecond) {
