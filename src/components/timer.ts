@@ -45,7 +45,13 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
   function setState(newState: TimerState) {
     state = newState;
+    updateTitle();
     callbacks.onStateChange?.(newState);
+  }
+
+  function updateTitle() {
+    const prefix = state === 'idle' || state === 'finished' ? '' : `${formatDuration(remaining)} | `;
+    document.title = `${prefix}Simple Clock`;
   }
 
   function getInputSeconds(): number {
@@ -64,6 +70,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
   function updateDisplay() {
     display.textContent = formatDuration(remaining);
     updateToggleContent();
+    updateTitle();
   }
 
   function enableInputs(enabled: boolean) {
