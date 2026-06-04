@@ -142,12 +142,22 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     });
   }
 
+  function updateAddBtnState() {
+    const seconds = getInputSeconds();
+    if (seconds <= 0 || presets.includes(seconds)) {
+      presetAddBtn.classList.add('inactive');
+    } else {
+      presetAddBtn.classList.remove('inactive');
+    }
+  }
+
   function applyPreset(seconds: number) {
     if (state === 'running') return; // don't change while running
     configuredDuration = seconds;
     remaining = seconds;
     setInputsFromSeconds(seconds);
     updateDisplay();
+    updateAddBtnState();
   }
 
   function addPreset() {
@@ -159,12 +169,14 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     presets.sort((a, b) => a - b);
     savePresets(presets);
     renderPresets();
+    updateAddBtnState();
   }
 
   function removePreset(index: number) {
     presets.splice(index, 1);
     savePresets(presets);
     renderPresets();
+    updateAddBtnState();
   }
 
   // ---------- UI button handlers ----------
@@ -360,8 +372,8 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     resetBtn.addEventListener('click', reset);
     decMinBtn.addEventListener('click', onDecMin);
     incSecBtn.addEventListener('click', onIncSec);
-    minInput.addEventListener('change', validateInputs);
-    secInput.addEventListener('change', validateInputs);
+    minInput.addEventListener('change', () => { validateInputs(); updateAddBtnState(); });
+    secInput.addEventListener('change', () => { validateInputs(); updateAddBtnState(); });
     presetAddBtn.addEventListener('click', addPreset);
     document.addEventListener('click', onDocumentClick);
     document.addEventListener('keydown', onDocumentKeydown);

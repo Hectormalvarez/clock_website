@@ -250,6 +250,19 @@ body {
     box-shadow: 0 0 6px var(--text-color);
 }
 
+#timer-preset-add.inactive {
+    opacity: 0.3;
+    cursor: default;
+    box-shadow: none;
+}
+
+#timer-preset-add.inactive:hover,
+#timer-preset-add.inactive:focus-visible {
+    background-color: transparent;
+    opacity: 0.3;
+    box-shadow: none;
+}
+
 #timer-actions {
     display: flex;
     gap: 8px;
