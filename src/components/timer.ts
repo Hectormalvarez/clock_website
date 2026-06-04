@@ -87,6 +87,8 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     if (isActive !== wasActive) {
       document.body.toggleAttribute('data-timer-active', isActive);
     }
+    updateResetBtnVisibility();
+    updatePresetsVisibility();
     updateTitle();
     callbacks.onStateChange?.(newState);
   }
@@ -120,6 +122,22 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     secInput.disabled = !enabled;
     decMinBtn.disabled = !enabled;
     incMinBtn.disabled = !enabled;
+  }
+
+  function updateResetBtnVisibility() {
+    resetBtn.style.display = state === 'idle' ? 'none' : '';
+  }
+
+  function updatePresetsVisibility() {
+    const hide = state === 'running' || state === 'paused';
+    presetsContainer.style.display = hide ? 'none' : '';
+    decMinBtn.style.display = hide ? 'none' : '';
+    incMinBtn.style.display = hide ? 'none' : '';
+    if (!hide) {
+      updateAddBtnState();
+    } else {
+      presetsBar.style.display = 'none';
+    }
   }
 
   // ---------- Preset rendering ----------
@@ -166,6 +184,19 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
   function applyPreset(seconds: number) {
     if (state === 'running') return; // don't change while running
+
+    // If paused, reset the timer first so we start fresh
+    if (state === 'paused') {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      setState('idle');
+      enableInputs(true);
+      startBtn.textContent = '▶ Start';
+      document.body.classList.remove('timer-finished');
+    }
+
     configuredDuration = seconds;
     remaining = seconds;
     setInputsFromSeconds(seconds);
@@ -411,6 +442,8 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     setInputsFromSeconds(configuredDuration);
     updateDisplay();
     enableInputs(true);
+    updateResetBtnVisibility();
+    updatePresetsVisibility();
     renderPresets();
 
     // Wire events
