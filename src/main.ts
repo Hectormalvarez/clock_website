@@ -25,7 +25,7 @@ const timerSecInput = document.getElementById('timer-sec') as HTMLInputElement |
 const timerStartBtn = document.getElementById('timer-start') as HTMLButtonElement | null;
 const timerResetBtn = document.getElementById('timer-reset') as HTMLButtonElement | null;
 const timerDecMinBtn = document.getElementById('timer-dec-min') as HTMLButtonElement | null;
-const timerIncSecBtn = document.getElementById('timer-inc-sec') as HTMLButtonElement | null;
+const timerIncMinBtn = document.getElementById('timer-inc-min') as HTMLButtonElement | null;
 const timerToggleBtn = document.getElementById('timer-toggle') as HTMLButtonElement | null;
 const timerPanel = document.getElementById('timer-panel');
 const timerPresetsContainer = document.getElementById('timer-presets');
@@ -38,7 +38,7 @@ if (
   timerStartBtn &&
   timerResetBtn &&
   timerDecMinBtn &&
-  timerIncSecBtn &&
+  timerIncMinBtn &&
   timerToggleBtn &&
   timerPanel &&
   timerPresetsContainer &&
@@ -52,7 +52,7 @@ if (
       startBtn: timerStartBtn,
       resetBtn: timerResetBtn,
       decMinBtn: timerDecMinBtn,
-      incSecBtn: timerIncSecBtn,
+      incMinBtn: timerIncMinBtn,
       toggleBtn: timerToggleBtn,
       panel: timerPanel,
       presetsContainer: timerPresetsContainer,

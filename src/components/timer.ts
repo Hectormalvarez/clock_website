@@ -12,7 +12,7 @@ export interface TimerElements {
   startBtn: HTMLButtonElement;
   resetBtn: HTMLButtonElement;
   decMinBtn: HTMLButtonElement;
-  incSecBtn: HTMLButtonElement;
+  incMinBtn: HTMLButtonElement;
   toggleBtn: HTMLButtonElement;
   panel: HTMLElement;
   presetsContainer: HTMLElement;
@@ -57,7 +57,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     startBtn,
     resetBtn,
     decMinBtn,
-    incSecBtn,
+    incMinBtn,
     toggleBtn,
     panel,
     presetsContainer,
@@ -73,6 +73,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
   let intervalId: number | null = null;
   let isPanelOpen = false;
   let presets: number[] = loadPresets();
+  let activeInput: 'min' | 'sec' = 'min';
 
   // ---------- Helpers ----------
 
@@ -115,7 +116,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     minInput.disabled = !enabled;
     secInput.disabled = !enabled;
     decMinBtn.disabled = !enabled;
-    incSecBtn.disabled = !enabled;
+    incMinBtn.disabled = !enabled;
   }
 
   // ---------- Preset rendering ----------
@@ -181,18 +182,49 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
   // ---------- UI button handlers ----------
 
-  function onDecMin() {
-    const mins = parseInt(minInput.value, 10) || 0;
-    if (mins > 0) {
-      minInput.value = String(mins - 1);
+  function onDec() {
+    if (activeInput === 'sec') {
+      let secs = parseInt(secInput.value, 10) || 0;
+      let mins = parseInt(minInput.value, 10) || 0;
+      const raw = Math.ceil(secs / 15) * 15 - 15;
+      if (raw < 0) {
+        // Wrapped below 0 (e.g. 0 → -15) → 45, decrement minute
+        secs = 45;
+        if (mins > 0) mins--;
+        else secs = 0;
+      } else {
+        secs = raw;
+      }
+      secInput.value = String(secs);
+      minInput.value = String(mins);
+    } else {
+      const mins = parseInt(minInput.value, 10) || 0;
+      if (mins > 0) {
+        minInput.value = String(mins - 1);
+      }
     }
     updateAddBtnState();
   }
 
-  function onIncSec() {
-    const secs = parseInt(secInput.value, 10) || 0;
-    if (secs < 59) {
-      secInput.value = String(secs + 1);
+  function onInc() {
+    if (activeInput === 'sec') {
+      let secs = parseInt(secInput.value, 10) || 0;
+      let mins = parseInt(minInput.value, 10) || 0;
+      const raw = Math.floor(secs / 15) * 15 + 15;
+      if (raw > 59) {
+        // Wrapped past 59 (e.g. 59 → 60) → 0, increment minute
+        secs = 0;
+        if (mins < 99) mins++;
+      } else {
+        secs = raw;
+      }
+      secInput.value = String(secs);
+      minInput.value = String(mins);
+    } else {
+      const mins = parseInt(minInput.value, 10) || 0;
+      if (mins < 99) {
+        minInput.value = String(mins + 1);
+      }
     }
     updateAddBtnState();
   }
@@ -372,8 +404,10 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     toggleBtn.addEventListener('click', togglePanel);
     startBtn.addEventListener('click', handleStartPause);
     resetBtn.addEventListener('click', reset);
-    decMinBtn.addEventListener('click', onDecMin);
-    incSecBtn.addEventListener('click', onIncSec);
+    decMinBtn.addEventListener('click', onDec);
+    incMinBtn.addEventListener('click', onInc);
+    minInput.addEventListener('focus', () => { activeInput = 'min'; minInput.select(); });
+    secInput.addEventListener('focus', () => { activeInput = 'sec'; secInput.select(); });
     minInput.addEventListener('change', () => { validateInputs(); updateAddBtnState(); });
     secInput.addEventListener('change', () => { validateInputs(); updateAddBtnState(); });
     minInput.addEventListener('input', updateAddBtnState);
