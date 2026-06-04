@@ -1,0 +1,128 @@
+/* ============================================================
+   RESPONSIVE
+   All media queries in one place for easy maintenance.
+   Breakpoints: 600px (tablet), 400px (small phone),
+   500px-height landscape.
+   ============================================================ */
+
+/* ---------- Tablet / Small screens (≤600px) ---------- */
+
+@media (max-width: 600px) {
+    #clock-container {
+        gap: var(--space-xl);
+    }
+
+    #clock {
+        font-size: 4em;
+    }
+
+    #timezone {
+        font-size: var(--font-size-body);
+    }
+
+    #timer-toggle {
+        font-size: 1.4em;
+        padding: 3px var(--space-lg);
+    }
+
+    #timer-display {
+        font-size: 2em;
+    }
+
+    #timer-controls input[type="number"] {
+        width: 2em;
+        font-size: var(--font-size-body);
+    }
+
+    #timer-controls button {
+        font-size: var(--font-size-body);
+        padding: 3px var(--space-md);
+    }
+
+    #timer-panel {
+        padding: var(--space-lg) var(--space-xl);
+        max-width: calc(100vw - 24px);
+    }
+
+    #timer-actions button {
+        font-size: 0.9em;
+        padding: 5px var(--space-xl);
+    }
+}
+
+/* ---------- Small phone (≤400px) ---------- */
+
+@media (max-width: 400px) {
+    #clock {
+        font-size: 3em;
+    }
+
+    #timezone {
+        font-size: 0.85em;
+    }
+
+    #timer-panel {
+        padding: var(--space-md) var(--space-lg);
+    }
+}
+
+/* ---------- Landscape on phones (short viewport) ---------- */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        overflow: auto;
+        min-height: 100vh;
+    }
+
+    #clock-container {
+        gap: var(--space-sm);
+    }
+
+    #clock {
+        font-size: 2.5em;
+    }
+
+    #timezone {
+        font-size: 0.8em;
+        margin-top: var(--space-xs);
+    }
+
+    #timer-wrapper {
+        gap: var(--space-xs);
+    }
+
+    #timer-toggle {
+        font-size: 1.1em;
+        padding: var(--space-2xs) var(--space-md);
+    }
+
+    #timer-display {
+        font-size: 1.4em;
+    }
+
+    #timer-panel {
+        padding: var(--space-sm) var(--space-lg);
+        gap: var(--space-sm);
+        max-width: calc(100vw - 16px);
+    }
+
+    #timer-controls input[type="number"] {
+        width: 1.8em;
+        font-size: 0.85em;
+        padding: var(--space-2xs) var(--space-xs);
+    }
+
+    #timer-controls button {
+        font-size: 0.85em;
+        padding: var(--space-2xs) var(--space-sm);
+    }
+
+    .timer-colon {
+        font-size: 0.9em;
+    }
+
+    #timer-actions button {
+        font-size: 0.8em;
+        padding: var(--space-xs) var(--space-lg);
+    }
+}
