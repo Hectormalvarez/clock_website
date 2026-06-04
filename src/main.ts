@@ -20,6 +20,7 @@ if (clockElement && timezoneElement && environmentMarker) {
 
 // Timer
 const timerDisplay = document.getElementById('timer-display');
+const timerFinishTime = document.getElementById('timer-finish-time');
 const timerMinInput = document.getElementById('timer-min') as HTMLInputElement | null;
 const timerSecInput = document.getElementById('timer-sec') as HTMLInputElement | null;
 const timerStartBtn = document.getElementById('timer-start') as HTMLButtonElement | null;
@@ -34,6 +35,7 @@ const timerPresetAddBtn = document.getElementById('timer-preset-add') as HTMLBut
 
 if (
   timerDisplay &&
+  timerFinishTime &&
   timerMinInput &&
   timerSecInput &&
   timerStartBtn &&
@@ -49,6 +51,7 @@ if (
   void createTimer(
     {
       display: timerDisplay,
+      finishTimeEl: timerFinishTime,
       minInput: timerMinInput,
       secInput: timerSecInput,
       startBtn: timerStartBtn,

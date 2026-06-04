@@ -1,4 +1,4 @@
-import { formatDuration } from '../utils/time';
+import { formatDuration, formatFinishTime } from '../utils/time';
 import { playBeep } from '../utils/audio';
 
 export type TimerState = 'idle' | 'running' | 'paused' | 'finished';
@@ -8,6 +8,7 @@ const MAX_PRESETS = 10;
 
 export interface TimerElements {
   display: HTMLElement;
+  finishTimeEl: HTMLElement;
   minInput: HTMLInputElement;
   secInput: HTMLInputElement;
   startBtn: HTMLButtonElement;
@@ -54,6 +55,7 @@ function formatPresetLabel(seconds: number): string {
 export function createTimer(elements: TimerElements, callbacks: TimerCallbacks = {}) {
   const {
     display,
+    finishTimeEl,
     minInput,
     secInput,
     startBtn,
@@ -73,6 +75,8 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
   let remaining = 0;
   /** Last configured duration in seconds (for reset) */
   let configuredDuration = 5 * 60; // default 5:00
+  /** Timestamp (ms) when the timer will finish */
+  let finishTimestamp: number | null = null;
   let intervalId: number | null = null;
   let isPanelOpen = false;
   let presets: number[] = loadPresets();
@@ -113,8 +117,19 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
 
   function updateDisplay() {
     display.textContent = formatDuration(remaining);
+    updateFinishTimeEl();
     updateToggleContent();
     updateTitle();
+  }
+
+  function updateFinishTimeEl() {
+    if (state === 'running' && remaining > 0 && finishTimestamp !== null) {
+      finishTimeEl.textContent = `→ ${formatFinishTime(remaining)}`;
+      finishTimeEl.classList.add('visible');
+    } else {
+      finishTimeEl.textContent = '';
+      finishTimeEl.classList.remove('visible');
+    }
   }
 
   function enableInputs(enabled: boolean) {
@@ -313,6 +328,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     }
 
     // If paused, remaining is already set
+    finishTimestamp = Date.now() + remaining * 1000;
     setState('running');
     enableInputs(false);
     startBtn.textContent = '⏸ Pause';
@@ -329,6 +345,9 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
     if (state !== 'running' || intervalId === null) return;
     clearInterval(intervalId);
     intervalId = null;
+    // Recalculate remaining from timestamp in case of drift
+    remaining = Math.max(0, Math.ceil((finishTimestamp! - Date.now()) / 1000));
+    finishTimestamp = null;
     setState('paused');
     startBtn.textContent = '▶ Resume';
   }
@@ -339,6 +358,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
       intervalId = null;
     }
 
+    finishTimestamp = null;
     setState('idle');
     remaining = configuredDuration;
     setInputsFromSeconds(configuredDuration);
@@ -356,6 +376,7 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
       intervalId = null;
     }
     remaining = 0;
+    finishTimestamp = null;
     updateDisplay();
     setState('finished');
     startBtn.textContent = '▶ Start';
@@ -391,6 +412,8 @@ export function createTimer(elements: TimerElements, callbacks: TimerCallbacks =
   function updateToggleContent() {
     if (isPanelOpen) {
       toggleBtn.textContent = '⏱';
+    } else if (state === 'running' && remaining > 0 && finishTimestamp !== null) {
+      toggleBtn.textContent = formatFinishTime(remaining);
     } else if (state !== 'idle') {
       toggleBtn.textContent = formatDuration(remaining);
     } else {
