@@ -3,7 +3,9 @@
  * Accepts an optional AudioContext for testability (dependency injection).
  */
 export function playBeep(audioCtx?: AudioContext): Promise<void> {
+	const isLocalCtx = !audioCtx;
 	const ctx = audioCtx ?? new AudioContext();
+
 	return new Promise((resolve) => {
 		const oscillator = ctx.createOscillator();
 		const gainNode = ctx.createGain();
@@ -21,7 +23,9 @@ export function playBeep(audioCtx?: AudioContext): Promise<void> {
 		oscillator.stop(ctx.currentTime + 0.5);
 
 		oscillator.onended = () => {
-			ctx.close();
+			if (isLocalCtx && ctx.state !== 'closed') {
+				ctx.close().catch(console.error);
+			}
 			resolve();
 		};
 	});

@@ -113,6 +113,15 @@ export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 	let isPanelOpen = false;
 	let activeInput: 'min' | 'sec' = 'min';
 
+	let sharedAudioCtx: AudioContext | null = null;
+
+	function getAudioCtx() {
+		if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+			sharedAudioCtx = new AudioContext();
+		}
+		return sharedAudioCtx;
+	}
+
 	// ---------- Persistence ----------
 
 	function savePresets() {
@@ -270,10 +279,10 @@ export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 					intervalId = null;
 				}
 				document.body.classList.add('timer-finished');
-				playBeep();
+				playBeep(getAudioCtx());
 				let beepCount = 0;
 				beepIntervalId = window.setInterval(() => {
-					playBeep();
+					playBeep(getAudioCtx());
 					beepCount++;
 					if (beepCount >= 2) {
 						if (beepIntervalId !== null) {
@@ -502,6 +511,9 @@ export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 		if (beepIntervalId !== null) {
 			clearInterval(beepIntervalId);
 			beepIntervalId = null;
+		}
+		if (sharedAudioCtx && sharedAudioCtx.state !== 'closed') {
+			sharedAudioCtx.close().catch(console.error);
 		}
 		document.removeEventListener('click', onDocumentClick);
 		document.removeEventListener('keydown', onDocumentKeydown);
