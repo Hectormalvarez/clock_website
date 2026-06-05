@@ -109,6 +109,7 @@
 	border-radius: var(--border-radius-sm);
 	color: var(--color-primary);
 	font-family: var(--font-family);
+	appearance: textfield;
 	-moz-appearance: textfield;
 }
 
