@@ -423,8 +423,6 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 		dom.presetAddBtn.addEventListener('click', onAddPreset);
 		document.addEventListener('click', onDocumentClick);
 		document.addEventListener('keydown', onDocumentKeydown);
-
-		closePanel();
 	}
 
 	function destroy() {
