@@ -1,54 +1,25 @@
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #222;
-    color: #0f0;
-    font-family: 'Arial', sans-serif;
-    overflow: hidden; /* Prevent scrollbars */
-}
+/* ============================================================
+   MAIN STYLESHEET — IMPORT HUB
+   This is the only file loaded by the app.
+   It imports all CSS modules in the correct order.
 
-#clock-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+   To add a new component:
+   1. Create a new .css file in src/styles/
+   2. Add an @import below in the appropriate section
+   ============================================================ */
 
-#clock {
-    font-size: 8em; /* Large font size */
-    text-align: center;
-    font-weight: bold; /* Added for better readability */
-    /* text-shadow: 0 0 10px #0f0; */ /* Removed for crispness */
-}
+/* --- Design Tokens (must come first) --- */
+@import './variables.css';
 
-#timezone {
-    font-size: 2em; /* Smaller than the clock */
-    text-align: center;
-    margin-top: 10px; /* Space below the clock */
-    color: #0f0; /* Consistent with clock color */
-}
+/* --- Base / Reset --- */
+@import './base.css';
 
-/* Basic responsiveness for smaller screens */
-@media (max-width: 600px) {
-    #clock {
-        font-size: 4em;
-    }
-    #timezone {
-        font-size: 1em; /* Adjust for smaller screens */
-    }
-}
+/* --- Components --- */
+@import './clock.css';
+@import './timer.css';
 
-#environment-marker {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    font-size: 2em; /* Semi-large lettering */
-    color: #0f0; /* Similar to clock color */
-    text-shadow: 0 0 10px #0f0; /* Similar glow effect */
-    z-index: 1000;
-}
+/* --- Animations --- */
+@import './animations.css';
 
-/* Added comment to trigger potential Vite update */
+/* --- Responsive (must come last to override above) --- */
+@import './responsive.css';

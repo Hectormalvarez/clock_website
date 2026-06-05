@@ -6,9 +6,9 @@
 
 export function formatTime(date: Date): string {
   let hours24 = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  const ampm = hours24 >= 12 ? "PM" : "AM";
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const ampm = hours24 >= 12 ? 'PM' : 'AM';
 
   let hours12 = hours24 % 12;
   hours12 = hours12 ? hours12 : 12; // Convert hour '0' to '12'
@@ -24,12 +24,40 @@ export function formatTime(date: Date): string {
  */
 export function formatTimeForTitle(date: Date): string {
   let hours24 = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const ampm = hours24 >= 12 ? "PM" : "AM";
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours24 >= 12 ? 'PM' : 'AM';
 
   let hours12 = hours24 % 12;
   hours12 = hours12 ? hours12 : 12;
 
   const hoursStr = String(hours12);
   return `${hoursStr}:${minutes} ${ampm}`;
+}
+
+/**
+ * Converts total seconds into a `MM:SS` string.
+ * @param totalSeconds Non-negative number of seconds.
+ * @returns The formatted duration string (e.g., "05:30").
+ */
+export function formatDuration(totalSeconds: number): string {
+  if (totalSeconds < 0) totalSeconds = 0;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+/**
+ * Converts a number of seconds from now into a wall-clock time string.
+ * @param secondsFromNow Seconds until the timer finishes.
+ * @returns Formatted time like "5:12 PM".
+ */
+export function formatFinishTime(secondsFromNow: number): string {
+  const finish = new Date(Date.now() + secondsFromNow * 1000);
+  let hours24 = finish.getHours();
+  const minutes = String(finish.getMinutes()).padStart(2, '0');
+  const seconds = String(finish.getSeconds()).padStart(2, '0');
+  const ampm = hours24 >= 12 ? 'PM' : 'AM';
+  let hours12 = hours24 % 12;
+  hours12 = hours12 ? hours12 : 12;
+  return `${hours12}:${minutes}:${seconds} ${ampm}`;
 }
