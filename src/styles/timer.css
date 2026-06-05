@@ -14,7 +14,7 @@
 	position: relative;
 }
 
-#timer-toggle {
+.timer-toggle {
 	background: none;
 	border: var(--border-width-strong) solid var(--color-primary);
 	color: var(--color-primary);
@@ -28,23 +28,23 @@
 	line-height: 1;
 }
 
-#timer-toggle:hover,
-#timer-toggle:focus-visible {
+.timer-toggle:hover,
+.timer-toggle:focus-visible {
 	background-color: var(--color-primary-soft);
 	box-shadow: var(--glow-md);
 }
 
-#timer-toggle.active {
+.timer-toggle.active {
 	box-shadow: var(--glow-md);
 }
 
-#timer-toggle.running {
+.timer-toggle.running {
 	animation: timer-pulse 1.5s ease-in-out infinite;
 }
 
 /* ---------- Panel ---------- */
 
-#timer-panel {
+.timer-panel {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
@@ -59,18 +59,18 @@
 	animation: timer-panel-open 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-#timer-panel[hidden] {
+.timer-panel[hidden] {
 	display: none;
 }
 
-#timer-panel.closing {
+.timer-panel.closing {
 	animation: timer-panel-close 0.2s ease-in both;
 	pointer-events: none;
 }
 
 /* ---------- Display ---------- */
 
-#timer-display {
+.timer-display {
 	font-size: var(--font-size-timer-display);
 	font-weight: var(--font-weight-bold);
 	text-align: center;
@@ -79,7 +79,7 @@
 	width: 100%;
 }
 
-#timer-finish-time {
+.timer-finish-time {
 	font-size: var(--font-size-timer-finish);
 	text-align: center;
 	opacity: 0;
@@ -91,13 +91,13 @@
 	width: 100%;
 }
 
-#timer-finish-time.visible {
+.timer-finish-time.visible {
 	opacity: 0.75;
 }
 
 /* ---------- Controls (Inputs + Inc/Dec) ---------- */
 
-#timer-controls {
+.timer-controls {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -105,7 +105,7 @@
 	width: 100%;
 }
 
-#timer-controls input[type='number'] {
+.timer-controls input[type='number'] {
 	width: 2.5em;
 	padding: var(--space-xs) var(--space-sm);
 	font-size: var(--font-size-timer-input);
@@ -119,13 +119,13 @@
 	-moz-appearance: textfield;
 }
 
-#timer-controls input[type='number']::-webkit-inner-spin-button,
-#timer-controls input[type='number']::-webkit-outer-spin-button {
+.timer-controls input[type='number']::-webkit-inner-spin-button,
+.timer-controls input[type='number']::-webkit-outer-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
 
-#timer-controls button {
+.timer-controls button {
 	background: none;
 	border: var(--border-width) solid var(--color-primary);
 	color: var(--color-primary);
@@ -142,14 +142,14 @@
 	visibility: hidden;
 }
 
-#timer-controls:hover button,
-#timer-controls:focus-within button {
+.timer-controls:hover button,
+.timer-controls:focus-within button {
 	opacity: 0.5;
 	visibility: visible;
 }
 
-#timer-controls button:hover,
-#timer-controls button:focus-visible {
+.timer-controls button:hover,
+.timer-controls button:focus-visible {
 	opacity: 1 !important;
 	background-color: var(--color-primary-medium);
 }
@@ -161,7 +161,7 @@
 
 /* ---------- Presets ---------- */
 
-#timer-presets {
+.timer-presets {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: var(--space-sm);
@@ -226,7 +226,7 @@
 
 /* ---------- Presets Bar (Add Button) ---------- */
 
-#timer-presets-bar {
+.timer-presets-bar {
 	display: flex;
 	align-items: center;
 	gap: var(--space-sm);
@@ -235,7 +235,7 @@
 	transition: opacity var(--transition-normal);
 }
 
-#timer-preset-add {
+.timer-preset-add {
 	background: none;
 	border: var(--border-width) dashed var(--color-primary);
 	color: var(--color-primary);
@@ -250,21 +250,21 @@
 	opacity: 0.7;
 }
 
-#timer-preset-add:hover,
-#timer-preset-add:focus-visible {
+.timer-preset-add:hover,
+.timer-preset-add:focus-visible {
 	background-color: var(--color-primary-soft);
 	opacity: 1;
 	box-shadow: var(--glow-sm);
 }
 
-#timer-preset-add.inactive {
+.timer-preset-add.inactive {
 	opacity: 0.3;
 	cursor: default;
 	box-shadow: none;
 }
 
-#timer-preset-add.inactive:hover,
-#timer-preset-add.inactive:focus-visible {
+.timer-preset-add.inactive:hover,
+.timer-preset-add.inactive:focus-visible {
 	background-color: transparent;
 	opacity: 0.3;
 	box-shadow: none;
@@ -272,13 +272,13 @@
 
 /* ---------- Actions (Start / Reset) ---------- */
 
-#timer-actions {
+.timer-actions {
 	display: flex;
 	gap: var(--space-md);
 	width: 100%;
 }
 
-#timer-actions button {
+.timer-actions button {
 	flex: 1;
 	background: none;
 	border: var(--border-width) solid var(--color-primary);
@@ -293,13 +293,13 @@
 		box-shadow var(--transition-normal);
 }
 
-#timer-actions button:hover,
-#timer-actions button:focus-visible {
+.timer-actions button:hover,
+.timer-actions button:focus-visible {
 	background-color: var(--color-primary-medium);
 	box-shadow: var(--glow-md);
 }
 
-#timer-actions button:disabled {
+.timer-actions button:disabled {
 	opacity: 0.4;
 	cursor: not-allowed;
 	box-shadow: none;
@@ -308,38 +308,38 @@
 /* ---------- Custom Scrollbars ---------- */
 
 /* Firefox */
-#timer-panel,
-#timer-presets {
+.timer-panel,
+.timer-presets {
 	scrollbar-width: thin;
 	scrollbar-color: var(--color-primary) transparent;
 }
 
 /* Webkit (Chrome, Safari, Edge) */
-#timer-panel::-webkit-scrollbar,
-#timer-presets::-webkit-scrollbar {
+.timer-panel::-webkit-scrollbar,
+.timer-presets::-webkit-scrollbar {
 	width: 6px;
 	height: 6px;
 }
 
-#timer-panel::-webkit-scrollbar-track,
-#timer-presets::-webkit-scrollbar-track {
+.timer-panel::-webkit-scrollbar-track,
+.timer-presets::-webkit-scrollbar-track {
 	background: transparent;
 	border-radius: 3px;
 }
 
-#timer-panel::-webkit-scrollbar-thumb,
-#timer-presets::-webkit-scrollbar-thumb {
+.timer-panel::-webkit-scrollbar-thumb,
+.timer-presets::-webkit-scrollbar-thumb {
 	background-color: var(--color-primary);
 	border-radius: 3px;
 	box-shadow: var(--glow-sm);
 }
 
-#timer-panel::-webkit-scrollbar-thumb:hover,
-#timer-presets::-webkit-scrollbar-thumb:hover {
+.timer-panel::-webkit-scrollbar-thumb:hover,
+.timer-presets::-webkit-scrollbar-thumb:hover {
 	background-color: var(--color-primary);
 	box-shadow: var(--glow-md);
 }
 
-#timer-panel::-webkit-scrollbar-corner {
+.timer-panel::-webkit-scrollbar-corner {
 	background: transparent;
 }

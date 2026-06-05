@@ -2,5 +2,12 @@ import './styles/main.css';
 import { initClock } from './components/clock';
 import { initTimer } from './components/timer';
 
-initClock()?.start();
-initTimer();
+const clockContainer = document.getElementById('clock-container');
+if (clockContainer) {
+	initClock(clockContainer)?.start();
+}
+
+const timerWrapper = document.getElementById('timer-wrapper');
+if (timerWrapper) {
+	initTimer(timerWrapper);
+}

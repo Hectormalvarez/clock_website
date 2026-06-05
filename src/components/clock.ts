@@ -61,10 +61,12 @@ export function msToNextSecond(now: Date): number {
 
 // ---------- DOM wiring ----------
 
-export function initClock(): { start: () => void; stop: () => void } | null {
-	const clockEl = document.getElementById('clock');
-	const timezoneEl = document.getElementById('timezone');
-	const envMarkerEl = document.getElementById('environment-marker');
+export function initClock(
+	rootElement: HTMLElement,
+): { start: () => void; stop: () => void } | null {
+	const clockEl = rootElement.querySelector('.clock');
+	const timezoneEl = rootElement.querySelector('.timezone');
+	const envMarkerEl = document.querySelector('.environment-marker');
 
 	if (!clockEl || !timezoneEl || !envMarkerEl) {
 		console.error('Could not find all required clock elements.');
@@ -72,9 +74,9 @@ export function initClock(): { start: () => void; stop: () => void } | null {
 	}
 
 	// Non-null after guard
-	const clock = clockEl;
-	const timezone = timezoneEl;
-	const envMarker = envMarkerEl;
+	const clock = clockEl as HTMLElement;
+	const timezone = timezoneEl as HTMLElement;
+	const envMarker = envMarkerEl as HTMLElement;
 
 	let lastMinute: number | null = null;
 	let lastSecond: number | null = null;

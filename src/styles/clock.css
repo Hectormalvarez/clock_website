@@ -12,13 +12,13 @@
 	margin-top: -8vh;
 }
 
-#clock {
+.clock {
 	font-size: var(--font-size-display);
 	text-align: center;
 	font-weight: var(--font-weight-bold);
 }
 
-#timezone {
+.timezone {
 	font-size: var(--font-size-timezone);
 	text-align: center;
 	margin-top: var(--space-lg);

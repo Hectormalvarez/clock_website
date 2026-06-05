@@ -31,37 +31,44 @@ export interface TimerCallbacks {
 
 const STORAGE_KEY = 'timer-presets';
 
-export function initTimer(_callbacks: TimerCallbacks = {}) {
+export function initTimer(
+	rootElement: HTMLElement,
+	_callbacks: TimerCallbacks = {},
+) {
 	// ---------- DOM lookups (with type narrowing guard) ----------
 
-	const display = document.getElementById('timer-display');
-	const finishTimeEl = document.getElementById('timer-finish-time');
-	const minInput = document.getElementById(
-		'timer-min',
+	const display = rootElement.querySelector('.timer-display');
+	const finishTimeEl = rootElement.querySelector('.timer-finish-time');
+	const minInput = rootElement.querySelector(
+		'.timer-min',
 	) as HTMLInputElement | null;
-	const secInput = document.getElementById(
-		'timer-sec',
+	const secInput = rootElement.querySelector(
+		'.timer-sec',
 	) as HTMLInputElement | null;
-	const startBtn = document.getElementById(
-		'timer-start',
+	const startBtn = rootElement.querySelector(
+		'.timer-start',
 	) as HTMLButtonElement | null;
-	const resetBtn = document.getElementById(
-		'timer-reset',
+	const resetBtn = rootElement.querySelector(
+		'.timer-reset',
 	) as HTMLButtonElement | null;
-	const decMinBtn = document.getElementById(
-		'timer-dec-min',
+	const decMinBtn = rootElement.querySelector(
+		'.timer-dec-min',
 	) as HTMLButtonElement | null;
-	const incMinBtn = document.getElementById(
-		'timer-inc-min',
+	const incMinBtn = rootElement.querySelector(
+		'.timer-inc-min',
 	) as HTMLButtonElement | null;
-	const toggleBtn = document.getElementById(
-		'timer-toggle',
+	const toggleBtn = rootElement.querySelector(
+		'.timer-toggle',
 	) as HTMLButtonElement | null;
-	const panel = document.getElementById('timer-panel');
-	const presetsContainer = document.getElementById('timer-presets');
-	const presetsBar = document.getElementById('timer-presets-bar');
-	const presetAddBtn = document.getElementById(
-		'timer-preset-add',
+	const panel = rootElement.querySelector('.timer-panel') as HTMLElement | null;
+	const presetsContainer = rootElement.querySelector(
+		'.timer-presets',
+	) as HTMLElement | null;
+	const presetsBar = rootElement.querySelector(
+		'.timer-presets-bar',
+	) as HTMLElement | null;
+	const presetAddBtn = rootElement.querySelector(
+		'.timer-preset-add',
 	) as HTMLButtonElement | null;
 
 	if (
@@ -364,7 +371,9 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 	// The clock sliding up/down IS the open/close animation for the
 	// surrounding layout, so open and close feel symmetric.
 	function flipAnimateClockContainer(action: () => void) {
-		const container = document.getElementById('clock-container');
+		const container = rootElement.closest(
+			'#clock-container',
+		) as HTMLElement | null;
 		if (!container) {
 			action();
 			return;
@@ -449,8 +458,7 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 
 	function onDocumentClick(e: MouseEvent) {
 		const target = e.target as Node;
-		const wrapper = document.getElementById('timer-wrapper');
-		if (isPanelOpen && wrapper && !wrapper.contains(target)) {
+		if (isPanelOpen && rootElement && !rootElement.contains(target)) {
 			closePanel();
 		}
 	}
