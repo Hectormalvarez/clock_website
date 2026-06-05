@@ -105,6 +105,7 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 	const presets = parsePresets(localStorage.getItem(STORAGE_KEY));
 	let core = createTimerCore(presets);
 	let intervalId: number | null = null;
+	let beepIntervalId: number | null = null;
 	let isPanelOpen = false;
 	let activeInput: 'min' | 'sec' = 'min';
 
@@ -267,11 +268,14 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 				document.body.classList.add('timer-finished');
 				playBeep();
 				let beepCount = 0;
-				const beepInterval = window.setInterval(() => {
+				beepIntervalId = window.setInterval(() => {
 					playBeep();
 					beepCount++;
 					if (beepCount >= 2) {
-						clearInterval(beepInterval);
+						if (beepIntervalId !== null) {
+							clearInterval(beepIntervalId);
+							beepIntervalId = null;
+						}
 					}
 				}, 700);
 			}
@@ -316,6 +320,10 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 		if (intervalId !== null) {
 			clearInterval(intervalId);
 			intervalId = null;
+		}
+		if (beepIntervalId !== null) {
+			clearInterval(beepIntervalId);
+			beepIntervalId = null;
 		}
 		core = resetTimer(core);
 		setInputsFromSeconds(core.configuredDuration);
@@ -423,7 +431,14 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 			dom.toggleBtn.classList.remove('active');
 			dom.panel.classList.remove('closing');
 			dom.panel.setAttribute('hidden', '');
-			renderToggle();
+			// If the timer had just finished, auto-reset it on close so the
+			// next time the panel opens, it's ready to start a new countdown
+			// at the configured duration (and silences any in-flight beeps).
+			if (core.state === 'finished') {
+				onReset();
+			} else {
+				renderToggle();
+			}
 		});
 	}
 
@@ -478,6 +493,10 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 		if (intervalId !== null) {
 			clearInterval(intervalId);
 			intervalId = null;
+		}
+		if (beepIntervalId !== null) {
+			clearInterval(beepIntervalId);
+			beepIntervalId = null;
 		}
 		document.removeEventListener('click', onDocumentClick);
 		document.removeEventListener('keydown', onDocumentKeydown);
