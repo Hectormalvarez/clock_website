@@ -1,43 +1,33 @@
 /**
- * Formats a Date object into a `h:mm:ss AM/PM` string.
- * @param date The Date object to format.
- * @returns The formatted time string.
+ * Converts a 24-hour Date into 12-hour components.
  */
-
-export function formatTime(date: Date): string {
-  let hours24 = date.getHours();
+function to12Hour(date: Date): { hours: number; minutes: string; seconds: string; ampm: string } {
+  const hours24 = date.getHours();
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
   const ampm = hours24 >= 12 ? 'PM' : 'AM';
+  const hours12 = hours24 % 12 || 12;
+  return { hours: hours12, minutes, seconds, ampm };
+}
 
-  let hours12 = hours24 % 12;
-  hours12 = hours12 ? hours12 : 12; // Convert hour '0' to '12'
-
-  const hoursStr = String(hours12);
-  return `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+/**
+ * Formats a Date object into a `h:mm:ss AM/PM` string.
+ */
+export function formatTime(date: Date): string {
+  const { hours, minutes, seconds, ampm } = to12Hour(date);
+  return `${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
 /**
  * Formats a Date object into a `h:mm AM/PM` string for the document title.
- * @param date The Date object to format.
- * @returns The formatted time string without seconds.
  */
 export function formatTimeForTitle(date: Date): string {
-  let hours24 = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const ampm = hours24 >= 12 ? 'PM' : 'AM';
-
-  let hours12 = hours24 % 12;
-  hours12 = hours12 ? hours12 : 12;
-
-  const hoursStr = String(hours12);
-  return `${hoursStr}:${minutes} ${ampm}`;
+  const { hours, minutes, ampm } = to12Hour(date);
+  return `${hours}:${minutes} ${ampm}`;
 }
 
 /**
  * Converts total seconds into a `MM:SS` string.
- * @param totalSeconds Non-negative number of seconds.
- * @returns The formatted duration string (e.g., "05:30").
  */
 export function formatDuration(totalSeconds: number): string {
   if (totalSeconds < 0) totalSeconds = 0;
@@ -48,16 +38,9 @@ export function formatDuration(totalSeconds: number): string {
 
 /**
  * Converts a number of seconds from now into a wall-clock time string.
- * @param secondsFromNow Seconds until the timer finishes.
- * @returns Formatted time like "5:12 PM".
  */
 export function formatFinishTime(secondsFromNow: number): string {
   const finish = new Date(Date.now() + secondsFromNow * 1000);
-  let hours24 = finish.getHours();
-  const minutes = String(finish.getMinutes()).padStart(2, '0');
-  const seconds = String(finish.getSeconds()).padStart(2, '0');
-  const ampm = hours24 >= 12 ? 'PM' : 'AM';
-  let hours12 = hours24 % 12;
-  hours12 = hours12 ? hours12 : 12;
-  return `${hours12}:${minutes}:${seconds} ${ampm}`;
+  const { hours, minutes, seconds, ampm } = to12Hour(finish);
+  return `${hours}:${minutes}:${seconds} ${ampm}`;
 }
