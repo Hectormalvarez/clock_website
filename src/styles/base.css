@@ -12,7 +12,8 @@ body {
 	background-color: var(--color-bg);
 	color: var(--color-primary);
 	font-family: var(--font-family);
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 /* ---------- Environment Marker ---------- */
