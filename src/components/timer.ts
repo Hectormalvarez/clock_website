@@ -360,9 +360,22 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 
 	function closePanel() {
 		isPanelOpen = false;
-		dom.panel.setAttribute('hidden', '');
 		dom.toggleBtn.classList.remove('active');
 		renderToggle();
+
+		// Play close animation before hiding
+		dom.panel.classList.add('closing');
+		dom.panel.removeAttribute('hidden');
+
+		const onEnd = () => {
+			dom.panel.removeEventListener('animationend', onEnd);
+			dom.panel.classList.remove('closing');
+			dom.panel.setAttribute('hidden', '');
+		};
+		dom.panel.addEventListener('animationend', onEnd);
+
+		// Fallback in case animationend doesn't fire
+		setTimeout(onEnd, 300);
 	}
 
 	function togglePanel() {
