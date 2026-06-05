@@ -9,5 +9,5 @@ if (clockContainer) {
 
 const timerWrapper = document.getElementById('timer-wrapper');
 if (timerWrapper) {
-	initTimer(timerWrapper);
+	initTimer(timerWrapper, { storageKey: 'main-timer-presets' });
 }

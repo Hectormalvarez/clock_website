@@ -25,16 +25,12 @@ import type { TimerState } from '../utils/timer-core';
 
 export type { TimerState };
 
-export interface TimerCallbacks {
+export interface TimerConfig {
 	onStateChange?: (state: TimerState) => void;
+	storageKey?: string;
 }
 
-const STORAGE_KEY = 'timer-presets';
-
-export function initTimer(
-	rootElement: HTMLElement,
-	_callbacks: TimerCallbacks = {},
-) {
+export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 	// ---------- DOM lookups (with type narrowing guard) ----------
 
 	const display = rootElement.querySelector('.timer-display');
@@ -109,7 +105,8 @@ export function initTimer(
 
 	// ---------- Core state ----------
 
-	const presets = parsePresets(localStorage.getItem(STORAGE_KEY));
+	const storageKey = config.storageKey ?? 'timer-presets';
+	const presets = parsePresets(localStorage.getItem(storageKey));
 	let core = createTimerCore(presets);
 	let intervalId: number | null = null;
 	let beepIntervalId: number | null = null;
@@ -119,7 +116,7 @@ export function initTimer(
 	// ---------- Persistence ----------
 
 	function savePresets() {
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(core.presets));
+		localStorage.setItem(storageKey, JSON.stringify(core.presets));
 	}
 
 	// ---------- Render ----------
