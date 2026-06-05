@@ -1,22 +1,10 @@
 import './styles/main.css';
-import { createClock } from './components/clock';
+import { initClock } from './components/clock';
 import { createTimer } from './components/timer';
 import type { TimerState } from './components/timer';
 
-const clockElement = document.getElementById('clock');
-const timezoneElement = document.getElementById('timezone');
-const environmentMarker = document.getElementById('environment-marker');
-
-if (clockElement && timezoneElement && environmentMarker) {
-  const clock = createClock({
-    clock: clockElement,
-    timezone: timezoneElement,
-    environmentMarker: environmentMarker,
-  });
-  clock.start();
-} else {
-  console.error('Could not find all required clock elements.');
-}
+const clock = initClock();
+clock?.start();
 
 // Timer
 const timerDisplay = document.getElementById('timer-display');

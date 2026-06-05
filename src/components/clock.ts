@@ -1,55 +1,115 @@
 import { formatTime, formatTimeForTitle } from '../utils/time';
 
-interface ClockElements {
-  clock: HTMLElement;
-  timezone: HTMLElement;
-  environmentMarker: HTMLElement;
+// ---------- Pure logic (testable without DOM) ----------
+
+export interface ClockTickInput {
+  now: Date;
+  lastMinute: number | null;
+  lastSecond: number | null;
+  isTimerActive: boolean;
+  devMode: boolean;
 }
 
-export function createClock(elements: ClockElements) {
-  const { clock, timezone, environmentMarker } = elements;
-  let lastSecond: number | null = null;
-  let lastMinute: number | null = null;
-  let intervalId: number | null = null;
+export interface ClockTickResult {
+  clockText: string;
+  timezoneText: string | null;
+  envMarkerText: string;
+  titleText: string | null;
+  newLastMinute: number;
+  newLastSecond: number;
+}
 
-  const formatter = new Intl.DateTimeFormat();
-  const timeZone = formatter.resolvedOptions().timeZone.replace('_', ' ');
+const cachedTimezone = new Intl.DateTimeFormat().resolvedOptions().timeZone.replace('_', ' ');
+
+/**
+ * Pure function: given the current state, returns what the clock should display.
+ */
+export function computeClockTick(input: ClockTickInput): ClockTickResult {
+  const { now, lastMinute, lastSecond, isTimerActive, devMode } = input;
+  const currentSecond = now.getSeconds();
+  const currentMinute = now.getMinutes();
+
+  let titleText: string | null = null;
+  let timezoneText: string | null = null;
+
+  if (currentMinute !== lastMinute && !isTimerActive) {
+    titleText = `${formatTimeForTitle(now)} | Simple Clock`;
+  }
+
+  if (currentSecond !== lastSecond) {
+    timezoneText = cachedTimezone;
+  }
+
+  return {
+    clockText: formatTime(now),
+    timezoneText,
+    envMarkerText: devMode ? 'DEV' : '',
+    titleText,
+    newLastMinute: currentMinute,
+    newLastSecond: currentSecond,
+  };
+}
+
+/**
+ * Returns milliseconds until the next whole second boundary.
+ */
+export function msToNextSecond(now: Date): number {
+  return 1000 - now.getMilliseconds();
+}
+
+// ---------- DOM wiring ----------
+
+export function initClock(): { start: () => void; stop: () => void } | null {
+  const clockEl = document.getElementById('clock');
+  const timezoneEl = document.getElementById('timezone');
+  const envMarkerEl = document.getElementById('environment-marker');
+
+  if (!clockEl || !timezoneEl || !envMarkerEl) {
+    console.error('Could not find all required clock elements.');
+    return null;
+  }
+
+  // Non-null after guard
+  const clock = clockEl;
+  const timezone = timezoneEl;
+  const envMarker = envMarkerEl;
+
+  let lastMinute: number | null = null;
+  let lastSecond: number | null = null;
+  let intervalId: number | null = null;
+  const isDevMode = import.meta.env.MODE === 'development';
 
   function tick() {
     const now = new Date();
-    const currentSecond = now.getSeconds();
-    const currentMinute = now.getMinutes();
+    const result = computeClockTick({
+      now,
+      lastMinute,
+      lastSecond,
+      isTimerActive: document.body.hasAttribute('data-timer-active'),
+      devMode: isDevMode,
+    });
 
-    if (currentMinute !== lastMinute) {
-      lastMinute = currentMinute;
-      // Don't overwrite title when timer is running/paused
-      if (!document.body.hasAttribute('data-timer-active')) {
-        document.title = `${formatTimeForTitle(now)} | Simple Clock`;
-      }
+    lastMinute = result.newLastMinute;
+    lastSecond = result.newLastSecond;
+
+    if (result.titleText !== null) {
+      document.title = result.titleText;
     }
 
-    if (currentSecond !== lastSecond) {
-      lastSecond = currentSecond;
-      clock.textContent = formatTime(now);
-      timezone.textContent = timeZone;
-
-      if (import.meta.env.MODE === 'development') {
-        environmentMarker.textContent = 'DEV';
-      } else {
-        environmentMarker.textContent = '';
-      }
+    if (result.timezoneText !== null) {
+      timezone.textContent = result.timezoneText;
     }
+
+    clock.textContent = result.clockText;
+    envMarker.textContent = result.envMarkerText;
   }
 
   function start() {
-    // Sync to the next whole second for a clean first tick
-    const now = new Date();
-    const msToNextSecond = 1000 - now.getMilliseconds();
-
+    const ms = msToNextSecond(new Date());
     setTimeout(() => {
       tick();
       intervalId = window.setInterval(tick, 1000);
-    }, msToNextSecond);
+    }, ms);
   }
 
   function stop() {
