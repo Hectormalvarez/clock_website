@@ -5,28 +5,38 @@
 
 /* Timer pulse — toggle button glow when timer is running */
 @keyframes timer-pulse {
-    0%, 100% { box-shadow: 0 0 5px var(--color-primary); }
-    50%      { box-shadow: 0 0 20px var(--color-primary); }
+	0%,
+	100% {
+		box-shadow: 0 0 5px var(--color-primary);
+	}
+	50% {
+		box-shadow: 0 0 20px var(--color-primary);
+	}
 }
 
 /* Panel fade-in — timer panel opens */
 @keyframes timer-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 /* Flash — clock fades in/out when timer finishes */
 @keyframes timer-flash {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0.2; }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.2;
+	}
 }
 
 body.timer-finished #clock-container {
-    animation: timer-flash 0.5s ease-in-out 4;
+	animation: timer-flash 0.5s ease-in-out 4;
 }

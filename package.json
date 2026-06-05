@@ -1,18 +1,39 @@
 {
-  "name": "clock_website",
-  "version": "1.0.0",
-  "main": "dist/app.js",
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "description": "",
-  "devDependencies": {
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
-  }
+	"name": "clock_website",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*.{ts,js}": [
+			"prettier --write",
+			"eslint --fix"
+		],
+		"*.{json,css,md}": [
+			"prettier --write"
+		]
+	},
+	"license": "ISC",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"eslint": "^10.4.1",
+		"husky": "^9.1.7",
+		"jsdom": "^29.1.1",
+		"lint-staged": "^17.0.7",
+		"prettier": "^3.8.3",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.60.1",
+		"vite": "^6.3.5",
+		"vitest": "^4.1.8"
+	}
 }

@@ -1,50 +1,68 @@
-# [SYSTEM PROMPT] Clock Website Development Assistant
+# Simple Clock
 
-## 1. AI Directives
+A clean, dark-themed digital clock with a built-in countdown timer. Built with TypeScript and Vite.
 
-**Persona:** You are an expert pair programmer specializing in modern frontend development.
+## Tech Stack
 
-**Mission:** Your objective is to assist in developing this portfolio project by writing clean, high-quality code. Analyze the provided context thoroughly before generating solutions.
+- **TypeScript** — Application logic and DOM manipulation
+- **Vite** — Build tool and dev server
+- **Vitest** — Unit testing with jsdom
 
-**Rules of Engagement:**
+## Project Structure
 
-- **Primary Language:** Use **TypeScript** for all new application logic (`.ts` files). Use HTML and CSS for structure and styling as needed.
-- **Style:** Prioritize clarity and simplicity. Adhere to the existing code style.
-- **Commits:** All Git commit messages you generate must follow the Conventional Commits specification (e.g., `feat:`, `fix:`, `chore:`).
-- **Output:** Provide responses as complete code files, diffs, or executable shell commands.
+```
+src/
+├── main.ts                    # Entry point (4 lines — thin glue)
+├── index.html                 # HTML shell
+├── vite-env.d.ts              # Vite client types
+├── assets/
+│   └── favicon.svg
+├── components/
+│   ├── clock.ts               # Clock UI — initClock(), pure computeClockTick()
+│   └── timer.ts               # Timer UI — initTimer(), thin renderer for timer-core
+├── styles/
+│   ├── main.css               # Import hub
+│   ├── variables.css          # Design tokens
+│   ├── base.css               # Reset / body
+│   ├── clock.css              # Clock styles
+│   ├── timer.css              # Timer styles
+│   ├── animations.css         # Keyframes
+│   └── responsive.css         # Media queries
+└── utils/
+    ├── time.ts                # Time formatting (pure functions)
+    ├── audio.ts               # Web Audio beep (injectable AudioContext)
+    ├── timer-core.ts          # Pure timer state machine (no DOM)
+    └── __tests__/
+        ├── time.test.ts
+        ├── clock.test.ts      # (in components/__tests__/)
+        └── timer-core.test.ts
+```
 
----
+## Architecture
 
-## 2. Project Architecture & Codebase Context
+The codebase is structured for **testability**:
 
-### **Technology Stack:**
+- **Pure functions** (`timer-core.ts`, `time.ts`, `computeClockTick`) contain all business logic with zero DOM dependencies — fully unit-testable.
+- **UI layers** (`initClock`, `initTimer`) are thin wrappers that query the DOM, bind events, and render state from the pure core.
+- **Dependency injection** — `playBeep()` accepts an optional `AudioContext`, enabling test mocking.
 
-- **TypeScript**: Handles all clock logic and DOM manipulation.
-- **Vite**: Serves as the build tool and local dev server.
-- **Vercel**: Manages automated hosting and CI/CD.
+## Scripts
 
-### **Core File Analysis:**
+```bash
+npm run dev          # Start dev server (auto-opens browser)
+npm run build        # Production build → dist/
+npm test             # Run tests once
+npm run test:watch   # Run tests in watch mode
+```
 
-- **`src/index.html`**:
+## Testing
 
-  - Contains the basic structure for the application.
-  - Key elements include a `<div id="clock-container">` which holds the `#clock` and `#timezone` displays, and an `#environment-marker`.
-  - It loads `script.ts` as a module.
+```bash
+npm test
+```
 
-- **`src/script.ts`**:
+Tests cover:
 
-  - This is the main entry point for the application's logic.
-  - The `updateClock()` function is the core of the application. It runs every second via `setInterval`.
-  - **Logic Summary**: It fetches the current time, converts 24-hour time to 12-hour format with AM/PM, and displays it in the `#clock` element. It also detects and displays the user's local time zone in the `#timezone` element.
-  - It includes logic to display a "DEV" marker when running in a Vite development environment (`import.meta.env.MODE === 'development'`).
-
-- **`src/style.css`**:
-  - Implements a dark, centered, "digital clock" aesthetic.
-  - Uses Flexbox to center the clock vertically and horizontally.
-  - Includes a basic media query to improve readability on smaller screens.
-
----
-
-## 3. Development Task List
-
-_(Please populate this section with your desired tasks.)_
+- Time formatting (12h, AM/PM, midnight, noon, duration)
+- Clock tick logic (title updates, timezone display, dev marker, timer-active guard)
+- Timer state machine (start/pause/reset/tick transitions, input validation, presets)
