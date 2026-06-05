@@ -62,6 +62,7 @@ npm test
 ```
 
 Tests cover:
+
 - Time formatting (12h, AM/PM, midnight, noon, duration)
 - Clock tick logic (title updates, timezone display, dev marker, timer-active guard)
 - Timer state machine (start/pause/reset/tick transitions, input validation, presets)

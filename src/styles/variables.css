@@ -5,69 +5,69 @@
    ============================================================ */
 
 :root {
-    /* === Colors === */
-    --color-bg: #222;
-    --color-surface: #1a1a1a;
-    --color-surface-alt: #111;
+	/* === Colors === */
+	--color-bg: #222;
+	--color-surface: #1a1a1a;
+	--color-surface-alt: #111;
 
-    --color-primary: #0f0;
-    --color-primary-dim: rgba(0, 255, 0, 0.03);
-    --color-primary-subtle: rgba(0, 255, 0, 0.08);
-    --color-primary-soft: rgba(0, 255, 0, 0.1);
-    --color-primary-medium: rgba(0, 255, 0, 0.15);
-    --color-primary-strong: rgba(0, 255, 0, 0.3);
+	--color-primary: #0f0;
+	--color-primary-dim: rgba(0, 255, 0, 0.03);
+	--color-primary-subtle: rgba(0, 255, 0, 0.08);
+	--color-primary-soft: rgba(0, 255, 0, 0.1);
+	--color-primary-medium: rgba(0, 255, 0, 0.15);
+	--color-primary-strong: rgba(0, 255, 0, 0.3);
 
-    --color-danger: #f00;
+	--color-danger: #f00;
 
-    /* === Typography === */
-    --font-family: 'Arial', sans-serif;
+	/* === Typography === */
+	--font-family: 'Arial', sans-serif;
 
-    --font-size-display: 8em;
-    --font-size-timezone: 2em;
-    --font-size-toggle: 1.8em;
-    --font-size-timer-display: 3em;
-    --font-size-timer-finish: 1.5em;
-    --font-size-timer-input: 1.2em;
-    --font-size-body: 1em;
-    --font-size-small: 0.85em;
-    --font-size-xs: 0.8em;
-    --font-size-env: 2em;
+	--font-size-display: 8em;
+	--font-size-timezone: 2em;
+	--font-size-toggle: 1.8em;
+	--font-size-timer-display: 3em;
+	--font-size-timer-finish: 1.5em;
+	--font-size-timer-input: 1.2em;
+	--font-size-body: 1em;
+	--font-size-small: 0.85em;
+	--font-size-xs: 0.8em;
+	--font-size-env: 2em;
 
-    --font-weight-bold: bold;
+	--font-weight-bold: bold;
 
-    /* === Spacing === */
-    --space-2xs: 2px;
-    --space-xs: 4px;
-    --space-sm: 6px;
-    --space-md: 8px;
-    --space-lg: 10px;
-    --space-xl: 12px;
-    --space-2xl: 16px;
-    --space-3xl: 20px;
-    --space-4xl: 24px;
+	/* === Spacing === */
+	--space-2xs: 2px;
+	--space-xs: 4px;
+	--space-sm: 6px;
+	--space-md: 8px;
+	--space-lg: 10px;
+	--space-xl: 12px;
+	--space-2xl: 16px;
+	--space-3xl: 20px;
+	--space-4xl: 24px;
 
-    /* === Layout === */
-    --panel-width: 320px;
-    --panel-padding-x: var(--space-4xl);
-    --panel-padding-y: var(--space-2xl);
-    /* Inner content width — all interactive rows align to this */
-    --panel-content-width: calc(var(--panel-width) - var(--panel-padding-x) * 2);
+	/* === Layout === */
+	--panel-width: 320px;
+	--panel-padding-x: var(--space-4xl);
+	--panel-padding-y: var(--space-2xl);
+	/* Inner content width — all interactive rows align to this */
+	--panel-content-width: calc(var(--panel-width) - var(--panel-padding-x) * 2);
 
-    /* === Borders === */
-    --border-width: 1px;
-    --border-width-strong: 2px;
-    --border-radius-sm: 4px;
-    --border-radius-md: 6px;
-    --border-radius-lg: 8px;
+	/* === Borders === */
+	--border-width: 1px;
+	--border-width-strong: 2px;
+	--border-radius-sm: 4px;
+	--border-radius-md: 6px;
+	--border-radius-lg: 8px;
 
-    /* === Shadows & Glow === */
-    --glow-sm: 0 0 5px var(--color-primary);
-    --glow-md: 0 0 10px var(--color-primary);
-    --glow-lg: 0 0 20px var(--color-primary);
-    --glow-subtle: 0 0 20px var(--color-primary-subtle);
+	/* === Shadows & Glow === */
+	--glow-sm: 0 0 5px var(--color-primary);
+	--glow-md: 0 0 10px var(--color-primary);
+	--glow-lg: 0 0 20px var(--color-primary);
+	--glow-subtle: 0 0 20px var(--color-primary-subtle);
 
-    /* === Transitions === */
-    --transition-fast: 0.15s ease;
-    --transition-normal: 0.2s ease;
-    --transition-slow: 0.3s ease;
+	/* === Transitions === */
+	--transition-fast: 0.15s ease;
+	--transition-normal: 0.2s ease;
+	--transition-slow: 0.3s ease;
 }
