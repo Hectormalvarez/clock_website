@@ -105,6 +105,7 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 	const presets = parsePresets(localStorage.getItem(STORAGE_KEY));
 	let core = createTimerCore(presets);
 	let intervalId: number | null = null;
+	let beepIntervalId: number | null = null;
 	let isPanelOpen = false;
 	let activeInput: 'min' | 'sec' = 'min';
 
@@ -267,11 +268,14 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 				document.body.classList.add('timer-finished');
 				playBeep();
 				let beepCount = 0;
-				const beepInterval = window.setInterval(() => {
+				beepIntervalId = window.setInterval(() => {
 					playBeep();
 					beepCount++;
 					if (beepCount >= 2) {
-						clearInterval(beepInterval);
+						if (beepIntervalId !== null) {
+							clearInterval(beepIntervalId);
+							beepIntervalId = null;
+						}
 					}
 				}, 700);
 			}
@@ -317,6 +321,10 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 			clearInterval(intervalId);
 			intervalId = null;
 		}
+		if (beepIntervalId !== null) {
+			clearInterval(beepIntervalId);
+			beepIntervalId = null;
+		}
 		core = resetTimer(core);
 		setInputsFromSeconds(core.configuredDuration);
 		document.body.classList.remove('timer-finished');
@@ -351,18 +359,87 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 
 	// ---------- Panel toggle ----------
 
+	// FLIP animation: smoothly animate #clock-container movement when the
+	// panel is added/removed (which re-centers the container in the body).
+	// The clock sliding up/down IS the open/close animation for the
+	// surrounding layout, so open and close feel symmetric.
+	function flipAnimateClockContainer(action: () => void) {
+		const container = document.getElementById('clock-container');
+		if (!container) {
+			action();
+			return;
+		}
+
+		// Lock body overflow so the page can't scroll while the height changes
+		const prevBodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+
+		// First: record the current position of #clock-container
+		const firstRect = container.getBoundingClientRect();
+
+		// Run the DOM mutation (open/close panel)
+		action();
+
+		// Last: measure the new position synchronously
+		const lastRect = container.getBoundingClientRect();
+
+		// Compute the delta and invert it with a transform
+		const dx = firstRect.left - lastRect.left;
+		const dy = firstRect.top - lastRect.top;
+		if (dx === 0 && dy === 0) {
+			document.body.style.overflow = prevBodyOverflow;
+			return;
+		}
+
+		container.style.transition = 'none';
+		container.style.transform = `translate(${dx}px, ${dy}px)`;
+
+		// Play: on the next frame, animate the transform back to identity
+		requestAnimationFrame(() => {
+			container.style.transition = 'transform 0.3s ease-out';
+			container.style.transform = '';
+		});
+
+		// Clean up inline styles after the transition completes
+		const onEnd = () => {
+			container.removeEventListener('transitionend', onEnd);
+			container.style.transition = '';
+			container.style.transform = '';
+			document.body.style.overflow = prevBodyOverflow;
+		};
+		container.addEventListener('transitionend', onEnd);
+
+		// Fallback in case transitionend doesn't fire
+		setTimeout(onEnd, 400);
+	}
+
 	function openPanel() {
-		isPanelOpen = true;
-		dom.panel.removeAttribute('hidden');
-		dom.toggleBtn.classList.add('active');
-		renderToggle();
+		flipAnimateClockContainer(() => {
+			isPanelOpen = true;
+			dom.panel.removeAttribute('hidden');
+			dom.toggleBtn.classList.add('active');
+			renderToggle();
+		});
 	}
 
 	function closePanel() {
-		isPanelOpen = false;
-		dom.panel.setAttribute('hidden', '');
-		dom.toggleBtn.classList.remove('active');
-		renderToggle();
+		// Mirror open exactly: hide the panel immediately and let the FLIP
+		// clock slide-up be the close animation. This avoids the lag of
+		// waiting for a separate CSS close animation on the panel.
+		flipAnimateClockContainer(() => {
+			isPanelOpen = false;
+			dom.toggleBtn.classList.remove('active');
+			dom.panel.classList.remove('closing');
+			dom.panel.setAttribute('hidden', '');
+			// If the timer had just finished, auto-reset it on close so the
+			// next time the panel opens, it's ready to start a new countdown
+			// at the configured duration (and silences any in-flight beeps).
+			if (core.state === 'finished') {
+				onReset();
+			} else {
+				renderToggle();
+			}
+		});
 	}
 
 	function togglePanel() {
@@ -410,14 +487,16 @@ export function initTimer(_callbacks: TimerCallbacks = {}) {
 		dom.presetAddBtn.addEventListener('click', onAddPreset);
 		document.addEventListener('click', onDocumentClick);
 		document.addEventListener('keydown', onDocumentKeydown);
-
-		closePanel();
 	}
 
 	function destroy() {
 		if (intervalId !== null) {
 			clearInterval(intervalId);
 			intervalId = null;
+		}
+		if (beepIntervalId !== null) {
+			clearInterval(beepIntervalId);
+			beepIntervalId = null;
 		}
 		document.removeEventListener('click', onDocumentClick);
 		document.removeEventListener('keydown', onDocumentKeydown);

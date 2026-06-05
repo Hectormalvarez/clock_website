@@ -14,15 +14,27 @@
 	}
 }
 
-/* Panel fade-in — timer panel opens */
-@keyframes timer-fade-in {
+/* Panel open — timer panel pops in */
+@keyframes timer-panel-open {
 	from {
 		opacity: 0;
-		transform: translateY(-6px);
+		transform: translateY(-8px) scale(0.95);
 	}
 	to {
 		opacity: 1;
-		transform: translateY(0);
+		transform: translateY(0) scale(1);
+	}
+}
+
+/* Panel close — timer panel pops out */
+@keyframes timer-panel-close {
+	from {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-8px) scale(0.95);
 	}
 }
 

@@ -107,6 +107,7 @@ export function initClock(): { start: () => void; stop: () => void } | null {
 	}
 
 	function start() {
+		tick();
 		const ms = msToNextSecond(new Date());
 		setTimeout(() => {
 			tick();
