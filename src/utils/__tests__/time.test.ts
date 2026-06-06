@@ -34,9 +34,10 @@ describe('formatTime', () => {
 		expect(formatTime(fakeDate(2025, 12, 31, 23, 59, 59))).toBe('11:59:59 PM');
 	});
 
-	it('pads single-digit hours', () => {
-		// 1 AM → "1:00:00 AM" (no leading zero on hours)
-		expect(formatTime(fakeDate(2025, 1, 1, 1, 0, 0))).toBe('1:00:00 AM');
+	it('supports hiding seconds', () => {
+		expect(
+			formatTime(fakeDate(2025, 1, 1, 14, 30, 45), { showSeconds: false }),
+		).toBe('2:30 PM');
 	});
 });
 

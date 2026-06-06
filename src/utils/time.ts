@@ -1,39 +1,35 @@
-/**
- * Converts a 24-hour Date into 12-hour components.
- */
-function to12Hour(date: Date): {
-	hours: number;
-	minutes: string;
-	seconds: string;
-	ampm: string;
-} {
-	const hours24 = date.getHours();
-	const minutes = String(date.getMinutes()).padStart(2, '0');
-	const seconds = String(date.getSeconds()).padStart(2, '0');
-	const ampm = hours24 >= 12 ? 'PM' : 'AM';
-	const hours12 = hours24 % 12 || 12;
-	return { hours: hours12, minutes, seconds, ampm };
+export interface TimeFormatOptions {
+	timeZone?: string;
+	showSeconds?: boolean;
+	use12Hour?: boolean;
 }
 
-/**
- * Formats a Date object into a `h:mm:ss AM/PM` string.
- */
-export function formatTime(date: Date): string {
-	const { hours, minutes, seconds, ampm } = to12Hour(date);
-	return `${hours}:${minutes}:${seconds} ${ampm}`;
+export function formatTime(
+	date: Date,
+	options: TimeFormatOptions = {},
+): string {
+	const {
+		timeZone, // undefined falls back to local system timezone
+		showSeconds = true,
+		use12Hour = true,
+	} = options;
+
+	const formatter = new Intl.DateTimeFormat('en-US', {
+		timeZone,
+		hour: 'numeric',
+		minute: '2-digit',
+		second: showSeconds ? '2-digit' : undefined,
+		hour12: use12Hour,
+	});
+
+	// Replace non-breaking spaces (\u202F) with standard spaces for consistent cross-browser testing
+	return formatter.format(date).replace(/\u202F/g, ' ');
 }
 
-/**
- * Formats a Date object into a `h:mm AM/PM` string for the document title.
- */
-export function formatTimeForTitle(date: Date): string {
-	const { hours, minutes, ampm } = to12Hour(date);
-	return `${hours}:${minutes} ${ampm}`;
+export function formatTimeForTitle(date: Date, timeZone?: string): string {
+	return formatTime(date, { timeZone, showSeconds: false, use12Hour: true });
 }
 
-/**
- * Converts total seconds into a `MM:SS` string.
- */
 export function formatDuration(totalSeconds: number): string {
 	if (totalSeconds < 0) totalSeconds = 0;
 	const minutes = Math.floor(totalSeconds / 60);
@@ -41,11 +37,7 @@ export function formatDuration(totalSeconds: number): string {
 	return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-/**
- * Converts a number of seconds from now into a wall-clock time string.
- */
 export function formatFinishTime(secondsFromNow: number): string {
 	const finish = new Date(Date.now() + secondsFromNow * 1000);
-	const { hours, minutes, seconds, ampm } = to12Hour(finish);
-	return `${hours}:${minutes}:${seconds} ${ampm}`;
+	return formatTime(finish, { showSeconds: true, use12Hour: true });
 }
