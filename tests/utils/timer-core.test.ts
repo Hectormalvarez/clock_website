@@ -26,8 +26,8 @@ import {
 	isAddBtnInactive,
 	DEFAULT_PRESETS,
 	DEFAULT_DURATION,
-} from '../timer-core';
-import type { TimerCore } from '../timer-core';
+} from '../../src/utils/timer-core';
+import type { TimerCore } from '../../src/utils/timer-core';
 
 function makeCore(overrides: Partial<TimerCore> = {}): TimerCore {
 	return { ...createTimerCore(), ...overrides };

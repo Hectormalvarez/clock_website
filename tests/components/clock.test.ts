@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { computeClockTick, msToNextSecond } from '../clock';
-import type { ClockTickInput } from '../clock';
+import { computeClockTick, msToNextSecond } from '../../src/components/clock';
+import type { ClockTickInput } from '../../src/components/clock';
 
 function fakeDate(h: number, m: number, s: number, ms = 0): Date {
 	return new Date(2025, 5, 15, h, m, s, ms);
