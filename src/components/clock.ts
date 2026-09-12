@@ -1,4 +1,5 @@
 import { formatTime, formatTimeForTitle } from '@/shared/time/format';
+import { queryOptional } from '@/shared/dom/query';
 
 // ---------- Pure logic (testable without DOM) ----------
 
@@ -64,19 +65,22 @@ export function msToNextSecond(now: Date): number {
 export function initClock(
 	rootElement: HTMLElement,
 ): { start: () => void; stop: () => void } | null {
-	const clockEl = rootElement.querySelector('.clock');
-	const timezoneEl = rootElement.querySelector('.timezone');
-	const envMarkerEl = document.querySelector('.environment-marker');
+	const clockEl = queryOptional<HTMLElement>(rootElement, '.clock');
+	const timezoneEl = queryOptional<HTMLElement>(rootElement, '.timezone');
+	const envMarkerEl = queryOptional<HTMLElement>(
+		document,
+		'.environment-marker',
+	);
 
 	if (!clockEl || !timezoneEl || !envMarkerEl) {
 		console.error('Could not find all required clock elements.');
 		return null;
 	}
 
-	// Non-null after guard
-	const clock = clockEl as HTMLElement;
-	const timezone = timezoneEl as HTMLElement;
-	const envMarker = envMarkerEl as HTMLElement;
+	// Narrow once so the closures below capture non-null bindings.
+	const clock = clockEl;
+	const timezone = timezoneEl;
+	const envMarker = envMarkerEl;
 
 	let lastMinute: number | null = null;
 	let lastSecond: number | null = null;
