@@ -1,6 +1,6 @@
 import './styles/main.css';
 import { initClock } from '@/features/clock';
-import { initTimer } from '@/features/timer/timer.ui';
+import { initTimer } from '@/features/timer';
 
 const clockContainer = document.getElementById('clock-container');
 if (clockContainer) {

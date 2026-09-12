@@ -31,7 +31,20 @@ export interface TimerConfig {
 	storageKey?: string;
 }
 
-export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
+/** Handle returned by {@link initTimer} for driving the timer from outside. */
+export interface TimerInstance {
+	start: () => void;
+	pause: () => void;
+	reset: () => void;
+	destroy: () => void;
+	togglePanel: () => void;
+	getState: () => TimerState;
+}
+
+export function initTimer(
+	rootElement: HTMLElement,
+	config: TimerConfig = {},
+): TimerInstance | undefined {
 	// ---------- DOM lookups (with type narrowing guard) ----------
 
 	const display = queryOptional<HTMLElement>(rootElement, '.timer-display');
