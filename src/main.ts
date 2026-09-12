@@ -1,5 +1,5 @@
 import './styles/main.css';
-import { initClock } from './components/clock';
+import { initClock } from '@/features/clock/clock.ui';
 import { initTimer } from './components/timer';
 
 const clockContainer = document.getElementById('clock-container');
