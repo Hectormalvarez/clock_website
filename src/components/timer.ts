@@ -21,8 +21,8 @@ import {
 	isPresetsHidden,
 	isInputsEnabled,
 	isAddBtnInactive,
-} from '../utils/timer-core';
-import type { TimerState } from '../utils/timer-core';
+} from '@/features/timer/timer.core';
+import type { TimerState } from '@/features/timer/timer.core';
 
 export type { TimerState };
 
