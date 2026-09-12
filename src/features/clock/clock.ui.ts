@@ -1,3 +1,4 @@
+import { IS_DEV } from '@/app/config';
 import { computeClockTick, msToNextSecond } from '@/features/clock/clock.core';
 import { queryOptional } from '@/shared/dom/query';
 
@@ -30,7 +31,6 @@ export function initClock(rootElement: HTMLElement): ClockInstance | null {
 	let lastMinute: number | null = null;
 	let lastSecond: number | null = null;
 	let intervalId: number | null = null;
-	const isDevMode = import.meta.env.MODE === 'development';
 
 	function tick() {
 		const now = new Date();
@@ -39,7 +39,7 @@ export function initClock(rootElement: HTMLElement): ClockInstance | null {
 			lastMinute,
 			lastSecond,
 			isTimerActive: document.body.hasAttribute('data-timer-active'),
-			devMode: isDevMode,
+			devMode: IS_DEV,
 		});
 
 		lastMinute = result.newLastMinute;
