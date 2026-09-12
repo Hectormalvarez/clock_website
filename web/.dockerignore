@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+
+.git
+.gitignore
+
+# Build inputs that are not needed inside the image.
+Dockerfile
+Dockerfile.prod
+.dockerignore
+.dockerignore.prod
