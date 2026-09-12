@@ -73,3 +73,26 @@ jobs:
             --add-host web:127.0.0.1 \
             nginxinc/nginx-unprivileged:1.27-alpine \
             nginx -t
+
+  compose-config-check:
+    name: Compose Config Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate the dev stack
+        run: docker compose -f docker-compose.yml config -q
+
+      - name: Validate the production stack
+        run: |
+          # Stub secrets: compose interpolates every `${VAR:?}` before it can
+          # validate the file, so CI needs placeholder values.
+          cat > .env.prod <<'ENVEOF'
+          WEBHOOK_TOKEN=ci-stub-token
+          CLOUDFLARE_TUNNEL_TOKEN=ci-stub-tunnel-token
+          REGISTRY_OWNER=ci
+          IMAGE_TAG=latest
+          ENVEOF
+          docker compose -f docker-compose.prod.yml --env-file .env.prod config -q
