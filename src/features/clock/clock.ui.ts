@@ -3,9 +3,13 @@ import { queryOptional } from '@/shared/dom/query';
 
 // ---------- DOM wiring ----------
 
-export function initClock(
-	rootElement: HTMLElement,
-): { start: () => void; stop: () => void } | null {
+/** Handle returned by {@link initClock} so callers can control the ticker. */
+export interface ClockInstance {
+	start: () => void;
+	stop: () => void;
+}
+
+export function initClock(rootElement: HTMLElement): ClockInstance | null {
 	const clockEl = queryOptional<HTMLElement>(rootElement, '.clock');
 	const timezoneEl = queryOptional<HTMLElement>(rootElement, '.timezone');
 	const envMarkerEl = queryOptional<HTMLElement>(
