@@ -23,7 +23,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 8080
 
 # Probe the static server directly; the edge has its own /healthz.
+# Exec form (not shell) so wget's exit status is the health status.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-	CMD wget -q --spider http://127.0.0.1:8080/healthz || exit 1
+	CMD ["wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
 
 CMD ["nginx", "-g", "daemon off;"]
