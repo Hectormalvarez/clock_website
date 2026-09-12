@@ -1,5 +1,5 @@
 import { formatDuration, formatFinishTime } from '@/shared/time/format';
-import { playBeep } from '../utils/audio';
+import { playBeep } from '@/shared/audio/beep';
 import {
 	createTimerCore,
 	startTimer,
