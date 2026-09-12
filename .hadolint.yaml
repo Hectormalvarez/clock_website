@@ -1,7 +1,9 @@
 # hadolint configuration.
 #
-# Run locally with:
-#   docker run --rm -i hadolint/hadolint < path/to/Dockerfile
+# Run locally with (the config mount matters — without it the `ignored` list
+# below is not applied and DL3018 will be reported):
+#   docker run --rm -i -v "$PWD/.hadolint.yaml:/.hadolint.yaml:ro" \
+#     hadolint/hadolint < path/to/Dockerfile
 failure-threshold: warning
 
 ignored:
