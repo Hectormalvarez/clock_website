@@ -1,3 +1,9 @@
+/**
+ * Multi-clock registry scaffolding.
+ *
+ * NOTE: not wired into the app yet - `initClock` renders a single clock
+ * today. Kept under the feature so multi-clock work has a home.
+ */
 export interface ClockConfig {
 	id: string;
 	timezone: string;
