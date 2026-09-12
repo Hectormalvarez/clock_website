@@ -1,4 +1,4 @@
-import { formatTime, formatTimeForTitle } from '../utils/time';
+import { formatTime, formatTimeForTitle } from '@/shared/time/format';
 
 // ---------- Pure logic (testable without DOM) ----------
 

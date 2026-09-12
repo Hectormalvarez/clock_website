@@ -4,7 +4,7 @@ import {
 	formatTimeForTitle,
 	formatDuration,
 	formatFinishTime,
-} from '../../src/utils/time';
+} from '@/shared/time/format';
 
 function fakeDate(
 	year: number,
