@@ -96,3 +96,35 @@ jobs:
           IMAGE_TAG=latest
           ENVEOF
           docker compose -f docker-compose.prod.yml --env-file .env.prod config -q
+
+  dockerfile-lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lint the app images
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: web/Dockerfile
+          config: .hadolint.yaml
+
+      - name: Lint the production app image
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: web/Dockerfile.prod
+          config: .hadolint.yaml
+
+      - name: Lint the edge image
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: nginx/Dockerfile
+          config: .hadolint.yaml
+
+      - name: Lint the webhook image
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: webhook/Dockerfile
+          config: .hadolint.yaml
