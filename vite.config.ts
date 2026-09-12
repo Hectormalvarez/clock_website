@@ -2,6 +2,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: 'src',
+	// Keep Vite/Vitest caches out of src/ so they never pollute the source tree.
+	cacheDir: '../node_modules/.vite',
 	build: {
 		outDir: '../dist',
 		emptyOutDir: true,
