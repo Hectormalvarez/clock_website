@@ -1,5 +1,12 @@
 node_modules/
 dist/
+coverage/
+
 .env
+.env.prod
+.env.dev
+
+docker-compose.override.yml
+
 .DS_Store
 *.log
