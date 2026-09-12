@@ -45,8 +45,8 @@ jobs:
       - name: Check Types
         run: npm run typecheck
 
-      - name: Run Vitest
-        run: npm run test
+      - name: Run Vitest with coverage
+        run: npm run test -- --coverage
 
       - name: Verify Build
         run: npm run build
