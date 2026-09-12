@@ -3,8 +3,29 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Simple Clock</title>
-		<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+		<title>Simple Clock — Digital Clock &amp; Countdown Timer</title>
+
+		<meta
+			name="description"
+			content="A clean, dark-themed digital clock with a built-in countdown timer. Runs entirely in your browser — no accounts, no tracking."
+		/>
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#222" />
+
+		<!-- Open Graph / social preview -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Simple Clock" />
+		<meta
+			property="og:title"
+			content="Simple Clock — Digital Clock &amp; Countdown Timer"
+		/>
+		<meta
+			property="og:description"
+			content="A clean, dark-themed digital clock with a built-in countdown timer. Runs entirely in your browser — no accounts, no tracking."
+		/>
+		<meta name="twitter:card" content="summary" />
+
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 	</head>
 	<body>
 		<div id="clock-container">
@@ -22,9 +43,23 @@
 						<button class="timer-dec-min" aria-label="Decrease minutes">
 							−
 						</button>
-						<input class="timer-min" type="number" min="0" max="99" value="5" />
+						<input
+							class="timer-min"
+							type="number"
+							min="0"
+							max="99"
+							value="5"
+							aria-label="Minutes"
+						/>
 						<span class="timer-colon">:</span>
-						<input class="timer-sec" type="number" min="0" max="59" value="0" />
+						<input
+							class="timer-sec"
+							type="number"
+							min="0"
+							max="59"
+							value="0"
+							aria-label="Seconds"
+						/>
 						<button class="timer-inc-min" aria-label="Increase minutes">
 							+
 						</button>

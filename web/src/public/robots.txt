@@ -1,0 +1,4 @@
+# https://www.robotstxt.org/robotstxt.html
+# The app is a single public page with no private areas.
+User-agent: *
+Allow: /
