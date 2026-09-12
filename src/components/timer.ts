@@ -20,10 +20,8 @@ import {
 	isInputsEnabled,
 	isAddBtnInactive,
 } from '@/features/timer/timer.core';
-import {
-	formatPresetLabel,
-	parsePresets,
-} from '@/features/timer/timer.presets';
+import { formatPresetLabel } from '@/features/timer/timer.presets';
+import { loadPresets, savePresets } from '@/features/timer/timer.storage';
 import type { TimerState } from '@/features/timer/timer.core';
 
 export type { TimerState };
@@ -116,7 +114,7 @@ export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 	// ---------- Core state ----------
 
 	const storageKey = config.storageKey ?? 'timer-presets';
-	const presets = parsePresets(localStorage.getItem(storageKey));
+	const presets = loadPresets(storageKey);
 	let core = createTimerCore(presets);
 	let intervalId: number | null = null;
 	let beepIntervalId: number | null = null;
@@ -134,8 +132,8 @@ export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 
 	// ---------- Persistence ----------
 
-	function savePresets() {
-		localStorage.setItem(storageKey, JSON.stringify(core.presets));
+	function persistPresets() {
+		savePresets(storageKey, core.presets);
 	}
 
 	// ---------- Render ----------
@@ -265,7 +263,7 @@ export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 			removeBtn.addEventListener('click', (e) => {
 				e.stopPropagation();
 				core = removeUserPreset(core, index);
-				savePresets();
+				persistPresets();
 				renderPresets();
 				render();
 			});
@@ -375,7 +373,7 @@ export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 	function onAddPreset() {
 		const seconds = parseInputSeconds(dom.minInput.value, dom.secInput.value);
 		core = addUserPreset(core, seconds);
-		savePresets();
+		persistPresets();
 		renderPresets();
 		render();
 	}
