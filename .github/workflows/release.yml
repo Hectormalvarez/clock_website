@@ -30,9 +30,14 @@ jobs:
           - context: ./web
             name: web
             dockerfile: Dockerfile.prod
+            # Baked into canonical/OG URLs and sitemap.xml. Set the SITE_URL
+            # repository variable (Settings → Secrets and variables → Actions →
+            # Variables) to the public origin, e.g. https://clock.example.net
+            build-args: VITE_SITE_URL=${{ vars.SITE_URL }}
           - context: ./nginx
             name: nginx
             dockerfile: Dockerfile
+            build-args: ""
 
     steps:
       - name: Checkout the commit CI validated
@@ -55,6 +60,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.context }}/${{ matrix.dockerfile }}
+          build-args: ${{ matrix.build-args }}
           push: true
           # Attach provenance attestations and an SBOM to every image.
           provenance: true
