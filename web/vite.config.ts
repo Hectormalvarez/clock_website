@@ -21,5 +21,9 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		include: ['../tests/**/*.test.ts'],
+		// Vite's root is src/, so keep generated reports out of the source tree.
+		coverage: {
+			reportsDirectory: '../coverage',
+		},
 	},
 });
