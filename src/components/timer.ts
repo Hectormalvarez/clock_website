@@ -1,5 +1,6 @@
 import { formatDuration, formatFinishTime } from '@/shared/time/format';
 import { playBeep } from '@/shared/audio/beep';
+import { queryOptional } from '@/shared/dom/query';
 import {
 	createTimerCore,
 	startTimer,
@@ -33,39 +34,46 @@ export interface TimerConfig {
 export function initTimer(rootElement: HTMLElement, config: TimerConfig = {}) {
 	// ---------- DOM lookups (with type narrowing guard) ----------
 
-	const display = rootElement.querySelector('.timer-display');
-	const finishTimeEl = rootElement.querySelector('.timer-finish-time');
-	const minInput = rootElement.querySelector(
-		'.timer-min',
-	) as HTMLInputElement | null;
-	const secInput = rootElement.querySelector(
-		'.timer-sec',
-	) as HTMLInputElement | null;
-	const startBtn = rootElement.querySelector(
+	const display = queryOptional<HTMLElement>(rootElement, '.timer-display');
+	const finishTimeEl = queryOptional<HTMLElement>(
+		rootElement,
+		'.timer-finish-time',
+	);
+	const minInput = queryOptional<HTMLInputElement>(rootElement, '.timer-min');
+	const secInput = queryOptional<HTMLInputElement>(rootElement, '.timer-sec');
+	const startBtn = queryOptional<HTMLButtonElement>(
+		rootElement,
 		'.timer-start',
-	) as HTMLButtonElement | null;
-	const resetBtn = rootElement.querySelector(
+	);
+	const resetBtn = queryOptional<HTMLButtonElement>(
+		rootElement,
 		'.timer-reset',
-	) as HTMLButtonElement | null;
-	const decMinBtn = rootElement.querySelector(
+	);
+	const decMinBtn = queryOptional<HTMLButtonElement>(
+		rootElement,
 		'.timer-dec-min',
-	) as HTMLButtonElement | null;
-	const incMinBtn = rootElement.querySelector(
+	);
+	const incMinBtn = queryOptional<HTMLButtonElement>(
+		rootElement,
 		'.timer-inc-min',
-	) as HTMLButtonElement | null;
-	const toggleBtn = rootElement.querySelector(
+	);
+	const toggleBtn = queryOptional<HTMLButtonElement>(
+		rootElement,
 		'.timer-toggle',
-	) as HTMLButtonElement | null;
-	const panel = rootElement.querySelector('.timer-panel') as HTMLElement | null;
-	const presetsContainer = rootElement.querySelector(
+	);
+	const panel = queryOptional<HTMLElement>(rootElement, '.timer-panel');
+	const presetsContainer = queryOptional<HTMLElement>(
+		rootElement,
 		'.timer-presets',
-	) as HTMLElement | null;
-	const presetsBar = rootElement.querySelector(
+	);
+	const presetsBar = queryOptional<HTMLElement>(
+		rootElement,
 		'.timer-presets-bar',
-	) as HTMLElement | null;
-	const presetAddBtn = rootElement.querySelector(
+	);
+	const presetAddBtn = queryOptional<HTMLButtonElement>(
+		rootElement,
 		'.timer-preset-add',
-	) as HTMLButtonElement | null;
+	);
 
 	if (
 		!display ||
