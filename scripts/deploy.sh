@@ -51,8 +51,15 @@ IMAGE_TAG="$IMAGE_TAG" $COMPOSE pull web nginx || err "Could not pull images for
 ok "Images pulled"
 
 # ── Step 4: Swap containers ───────────────────────────────────────
+# Reconcile ONLY the services whose images were just pulled. A bare
+# `up -d --remove-orphans` would also recreate the webhook container — which is
+# the process running this script when the deploy arrives via
+# scripts/webhook-bridge.sh. That sends SIGTERM to the deploy mid-swap and
+# leaves web/nginx stopped, so the release reports success while the site is
+# down. cloudflared and webhook depend on nginx, never the reverse, so naming
+# the image services here leaves the orchestrator itself untouched.
 info "Starting updated containers..."
-IMAGE_TAG="$IMAGE_TAG" $COMPOSE up -d --remove-orphans
+IMAGE_TAG="$IMAGE_TAG" $COMPOSE up -d --remove-orphans $IMAGE_SERVICES
 ok "Containers started"
 
 # ── Step 5: Health check through the edge ─────────────────────────
