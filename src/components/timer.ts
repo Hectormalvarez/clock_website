@@ -15,13 +15,15 @@ import {
 	hasValidInput,
 	decInputs,
 	incInputs,
-	parsePresets,
-	formatPresetLabel,
 	isResetVisible,
 	isPresetsHidden,
 	isInputsEnabled,
 	isAddBtnInactive,
 } from '@/features/timer/timer.core';
+import {
+	formatPresetLabel,
+	parsePresets,
+} from '@/features/timer/timer.presets';
 import type { TimerState } from '@/features/timer/timer.core';
 
 export type { TimerState };

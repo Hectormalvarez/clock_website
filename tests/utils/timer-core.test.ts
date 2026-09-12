@@ -6,10 +6,6 @@ import {
 	hasValidInput,
 	decInputs,
 	incInputs,
-	parsePresets,
-	formatPresetLabel,
-	addPreset,
-	removePreset,
 	createTimerCore,
 	canStart,
 	startTimer,
@@ -24,9 +20,15 @@ import {
 	isPresetsHidden,
 	isInputsEnabled,
 	isAddBtnInactive,
-	DEFAULT_PRESETS,
 	DEFAULT_DURATION,
 } from '@/features/timer/timer.core';
+import {
+	addPreset,
+	DEFAULT_PRESETS,
+	formatPresetLabel,
+	parsePresets,
+	removePreset,
+} from '@/features/timer/timer.presets';
 import type { TimerCore } from '@/features/timer/timer.core';
 
 function makeCore(overrides: Partial<TimerCore> = {}): TimerCore {
