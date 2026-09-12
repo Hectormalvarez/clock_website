@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Simple Clock — Digital Clock &amp; Countdown Timer</title>
+
+		<meta
+			name="description"
+			content="A clean, dark-themed digital clock with a built-in countdown timer. Runs entirely in your browser — no accounts, no tracking."
+		/>
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#222" />
+		<link rel="canonical" href="%SITE_URL%/" />
+
+		<!-- Open Graph / social preview -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Simple Clock" />
+		<meta
+			property="og:title"
+			content="Simple Clock — Digital Clock &amp; Countdown Timer"
+		/>
+		<meta
+			property="og:description"
+			content="A clean, dark-themed digital clock with a built-in countdown timer. Runs entirely in your browser — no accounts, no tracking."
+		/>
+		<meta name="twitter:card" content="summary" />
+		<meta property="og:url" content="%SITE_URL%/" />
+
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	</head>
+	<body>
+		<div id="clock-container">
+			<div class="clock" role="timer" tabindex="0"></div>
+			<div class="timezone"></div>
+
+			<div id="timer-wrapper">
+				<button class="timer-toggle" aria-label="Toggle timer" title="Timer">
+					⏱
+				</button>
+				<div class="timer-panel" hidden>
+					<div class="timer-display">--:--</div>
+					<div class="timer-finish-time"></div>
+					<div class="timer-controls">
+						<button class="timer-dec-min" aria-label="Decrease minutes">
+							−
+						</button>
+						<input
+							class="timer-min"
+							type="number"
+							min="0"
+							max="99"
+							value="5"
+							aria-label="Minutes"
+						/>
+						<span class="timer-colon">:</span>
+						<input
+							class="timer-sec"
+							type="number"
+							min="0"
+							max="59"
+							value="0"
+							aria-label="Seconds"
+						/>
+						<button class="timer-inc-min" aria-label="Increase minutes">
+							+
+						</button>
+					</div>
+					<div class="timer-presets">
+						<!-- Preset buttons rendered dynamically -->
+					</div>
+					<div class="timer-presets-bar">
+						<button
+							class="timer-preset-add"
+							aria-label="Add preset"
+							title="Add preset from current time"
+						>
+							+ Add
+						</button>
+					</div>
+					<div class="timer-actions">
+						<button class="timer-start" aria-label="Start timer">
+							▶ Start
+						</button>
+						<button class="timer-reset" aria-label="Reset timer">↺</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="environment-marker"></div>
+
+		<script type="module" src="./main.ts"></script>
+	</body>
+</html>

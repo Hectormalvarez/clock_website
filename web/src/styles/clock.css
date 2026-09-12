@@ -1,0 +1,26 @@
+/* ============================================================
+   CLOCK COMPONENT
+   Clock container, clock display, and timezone.
+   ============================================================ */
+
+#clock-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-3xl);
+	margin-top: -8vh;
+}
+
+.clock {
+	font-size: var(--font-size-display);
+	text-align: center;
+	font-weight: var(--font-weight-bold);
+}
+
+.timezone {
+	font-size: var(--font-size-timezone);
+	text-align: center;
+	margin-top: var(--space-lg);
+	color: var(--color-primary);
+}

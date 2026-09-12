@@ -1,0 +1,13 @@
+# hadolint configuration.
+#
+# Run locally with (the config mount matters — without it the `ignored` list
+# below is not applied and DL3018 will be reported):
+#   docker run --rm -i -v "$PWD/.hadolint.yaml:/.hadolint.yaml:ro" \
+#     hadolint/hadolint < path/to/Dockerfile
+failure-threshold: warning
+
+ignored:
+  # DL3018 — pin apk package versions.
+  # Pinning every apk package would need manual churn on each base-image bump.
+  # Reproducibility is already guaranteed by pinning base images by digest.
+  - DL3018

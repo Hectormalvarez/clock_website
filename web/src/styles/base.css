@@ -1,0 +1,29 @@
+/* ============================================================
+   BASE / RESET
+   Body layout, typography defaults, global elements.
+   ============================================================ */
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	margin: 0;
+	background-color: var(--color-bg);
+	color: var(--color-primary);
+	font-family: var(--font-family);
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+/* ---------- Environment Marker ---------- */
+
+.environment-marker {
+	position: fixed;
+	bottom: var(--space-3xl);
+	right: var(--space-3xl);
+	font-size: var(--font-size-env);
+	color: var(--color-primary);
+	text-shadow: var(--glow-md);
+	z-index: 1000;
+}

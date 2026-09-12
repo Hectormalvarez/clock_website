@@ -1,0 +1,51 @@
+/* Standalone styles for the 404 page.
+   Kept in its own file because the edge sends a strict
+   `style-src 'self'` CSP — an inline <style> block would be blocked. */
+
+:root {
+	--bg: #222;
+	--surface: #1a1a1a;
+	--text: #eee;
+	--muted: #999;
+	--primary: #0f0;
+}
+
+body {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	margin: 0;
+	background-color: var(--bg);
+	color: var(--text);
+	font-family: 'Arial', sans-serif;
+}
+
+main {
+	padding: 2rem 3rem;
+	text-align: center;
+	background-color: var(--surface);
+	border: 1px solid var(--primary);
+	border-radius: 8px;
+}
+
+.code {
+	margin: 0;
+	font-size: 5rem;
+	line-height: 1;
+	color: var(--primary);
+}
+
+h1 {
+	margin: 0.5rem 0;
+	font-size: 1.5rem;
+}
+
+.message {
+	margin: 0 0 1.5rem;
+	color: var(--muted);
+}
+
+.home {
+	color: var(--primary);
+}

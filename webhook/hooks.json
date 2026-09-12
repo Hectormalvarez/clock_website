@@ -1,0 +1,31 @@
+[
+  {
+    "id": "deploy",
+    "execute-command": "/opt/clock_website/scripts/webhook-bridge.sh",
+    "command-working-directory": "/opt/clock_website",
+    "pass-arguments-to-command": [
+      {
+        "source": "payload",
+        "name": "image_tag"
+      },
+      {
+        "source": "payload",
+        "name": "ref"
+      }
+    ],
+    "trigger-rule": {
+      "and": [
+        {
+          "match": {
+            "type": "value",
+            "value": "__WEBHOOK_TOKEN__",
+            "parameter": {
+              "source": "header",
+              "name": "X-Webhook-Token"
+            }
+          }
+        }
+      ]
+    }
+  }
+]

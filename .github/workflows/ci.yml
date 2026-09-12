@@ -1,5 +1,8 @@
 name: CI Pipeline
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -15,6 +18,10 @@ jobs:
     name: Build, Lint, and Test
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: web
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,8 +29,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version-file: web/.nvmrc
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -37,8 +45,86 @@ jobs:
       - name: Check Types
         run: npm run typecheck
 
-      - name: Run Vitest
-        run: npm run test
+      - name: Run Vitest with coverage
+        run: npm run test -- --coverage
 
       - name: Verify Build
         run: npm run build
+
+  nginx-config-check:
+    name: Nginx Config Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate the app server config
+        run: |
+          docker run --rm \
+            -v "$PWD/web/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
+            nginxinc/nginx-unprivileged:1.27-alpine \
+            nginx -t
+
+      - name: Validate the edge proxy config
+        run: |
+          docker run --rm \
+            -v "$PWD/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
+            --add-host web:127.0.0.1 \
+            nginxinc/nginx-unprivileged:1.27-alpine \
+            nginx -t
+
+  compose-config-check:
+    name: Compose Config Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate the dev stack
+        run: docker compose -f docker-compose.yml config -q
+
+      - name: Validate the production stack
+        run: |
+          # Stub secrets: compose interpolates every `${VAR:?}` before it can
+          # validate the file, so CI needs placeholder values.
+          cat > .env.prod <<'ENVEOF'
+          WEBHOOK_TOKEN=ci-stub-token
+          CLOUDFLARE_TUNNEL_TOKEN=ci-stub-tunnel-token
+          REGISTRY_OWNER=ci
+          IMAGE_TAG=latest
+          ENVEOF
+          docker compose -f docker-compose.prod.yml --env-file .env.prod config -q
+
+  dockerfile-lint:
+    name: Dockerfile Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lint the app images
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: web/Dockerfile
+          config: .hadolint.yaml
+
+      - name: Lint the production app image
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: web/Dockerfile.prod
+          config: .hadolint.yaml
+
+      - name: Lint the edge image
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: nginx/Dockerfile
+          config: .hadolint.yaml
+
+      - name: Lint the webhook image
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: webhook/Dockerfile
+          config: .hadolint.yaml

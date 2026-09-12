@@ -1,0 +1,66 @@
+# Development stack: source-built web container behind the edge proxy.
+#
+# `make dev-up` starts web + nginx. The Cloudflare Tunnel is opt-in (see the
+# "tunnel" profile below) and is started with `make dev-tunnel-up`.
+
+name: clock-dev
+
+services:
+  web:
+    build: ./web
+    restart: unless-stopped
+    volumes:
+      # Bind-mount the source for live reload. node_modules stays inside the
+      # container (anonymous volume) so a host-side install can never shadow
+      # the dependencies baked into the image.
+      - ./web:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  nginx:
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HOST_PORT:-8100}:8080"
+    depends_on:
+      web:
+        condition: service_healthy
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Containerized Cloudflare Tunnel for the DEV stack.
+  #
+  # Opt-in only: this service sits behind the "tunnel" profile, so `make dev-up`
+  # never starts it — use `make dev-tunnel-up`. It belongs to the clock-dev
+  # compose project, so it is completely independent of the production
+  # connector in docker-compose.prod.yml.
+  #
+  # In the Cloudflare dashboard the tunnel's public hostname must target the
+  # edge service by name on this network: http://nginx:8080
+  #
+  # TUNNEL_TOKEN is deliberately defaulted to empty rather than `${VAR:?}`:
+  # Compose interpolates every service in the file even when its profile is
+  # disabled, so a required-variable guard here would break `make dev-up`. The
+  # empty-token check lives in the `dev-tunnel-up` Make target instead.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel run
+    profiles: ["tunnel"]
+    restart: unless-stopped
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - nginx
+    cap_drop:
+      - ALL
