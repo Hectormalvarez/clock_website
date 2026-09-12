@@ -41,8 +41,10 @@ runs three long-lived containers:
    make prod-verify
    ```
 
-6. **Add the GitHub secrets** `WEBHOOK_URL` and `WEBHOOK_TOKEN` and add a
-   production environment in the repository settings. Until both exist,
+6. **Add the GitHub secrets** `WEBHOOK_URL` and `WEBHOOK_TOKEN`, plus the
+   `SITE_URL` **variable** (Settings → Secrets and variables → Actions →
+   Variables) set to the public origin, e.g. `https://clock.example.net`. Add a
+   production environment in the repository settings. Until both secrets exist,
    `.github/workflows/release.yml` still publishes images but the `deploy` job
    cannot authenticate.
 
@@ -110,4 +112,6 @@ deploy, then exits non-zero so the failure is visible in the webhook response.
 | `git pull --ff-only` fails                          | The host checkout diverged; reset it to `main` and re-run              |
 | Containers healthy, public URL 404s                 | Tunnel public hostname must target `http://nginx:8080` (edge, not web) |
 | `make env-check` fails                              | `.env.prod` is missing or a secret is empty                            |
+| Canonical URL points at localhost                   | `SITE_URL` repository variable was unset when the image was built      |
+| `sitemap.xml` returns 404                           | The running image predates the site-URL build step — rebuild, redeploy |
 | Rollback restored containers but CI reports failure | Expected — the run is marked failed on purpose; fix forward            |

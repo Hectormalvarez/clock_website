@@ -141,8 +141,14 @@ make prod-verify     # check the loopback port the tunnel uses
 Production is the `clock-prod` stack. `.github/workflows/release.yml` builds and
 publishes the `web` and `nginx` images to GHCR — tagged both `latest` and
 `sha-<commit>`, with provenance and SBOM attestations — then POSTs to the deploy
-webhook on the host. `scripts/deploy.sh` performs the swap and rolls back
-automatically if the post-deploy health check fails.
+webhook on the host. `deploy.sh` performs the swap and rolls back automatically if the post-deploy
+health check fails.
+
+The site origin is a **build-time** value. `release.yml` passes the `SITE_URL`
+repository variable into the image build as `VITE_SITE_URL`, and
+`vite.config.ts` derives `<link rel="canonical">`, `og:url`, `sitemap.xml`, and
+the `Sitemap:` line in `robots.txt` from it. Set the variable before the first
+release; if it is unset the build falls back to `http://localhost:8100`.
 
 See:
 

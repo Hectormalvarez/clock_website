@@ -103,6 +103,25 @@ checks on its own.
    deploy mechanism — add or update an ADR in `docs/adr/` in the same pull
    request.
 
+## Site URL and SEO output
+
+`vite.config.ts` derives all absolute URLs from `VITE_SITE_URL` — there is no
+second place to edit. It fills `<link rel="canonical">` and `og:url` in
+`index.html`, and generates `sitemap.xml` plus the `Sitemap:` line in
+`robots.txt` during the build. Both of those files are **generated**, so never
+add them to `src/public/`.
+
+```bash
+cd web
+npm run build                                        # → http://localhost:8100
+VITE_SITE_URL=https://clock.example.net npm run build # → that origin
+```
+
+`VITE_SITE_URL` can also live in `web/.env.local` (gitignored) for a persistent
+local override. The production image receives it as a build arg — see
+`web/Dockerfile.prod` and the `SITE_URL` repository variable in
+`release.yml`.
+
 ## Editing container configuration
 
 - Base images are pinned by digest. Update the `FROM` line deliberately rather
