@@ -13,6 +13,7 @@ One directory per buildable artifact:
 | `webhook/` | Deploy webhook image, hooks, and entrypoint          |
 | `scripts/` | Host-side helpers (deploy, tunnel bridge, bootstrap) |
 | `docs/`    | Architecture decision records and runbooks           |
+| `tasks/`   | Backlog and sprint tracking                          |
 
 The built app is served by **two** containers. `nginx/` is the edge: it owns the
 security headers, the real client IP, and `/healthz`. `web/` is a plain static
@@ -61,7 +62,6 @@ web/                                    # Application workspace
 │   │   └── dom/query.ts                # Typed querySelector helpers
 │   ├── public/                         # Copied verbatim to the build root
 │   │   ├── favicon.svg
-│   │   ├── robots.txt
 │   │   ├── 404.html                    # Served by nginx with a real 404 status
 │   │   └── 404.css                     # Separate file — the CSP forbids inline styles
 │   └── styles/
@@ -76,12 +76,17 @@ web/                                    # Application workspace
 ├── tests/
 │   └── unit/                           # Mirrors src/ one-to-one
 │       ├── features/alarm/alarm.core.test.ts
+│       ├── features/alarm/alarm.storage.test.ts
 │       ├── features/clock/clock.core.test.ts
 │       ├── features/timer/timer.core.test.ts
 │       └── shared/time/format.test.ts
 ├── package.json
 └── vite.config.ts
 ```
+
+`robots.txt` and `sitemap.xml` are **generated at build time** from
+`VITE_SITE_URL` (see [Deployment](#deployment)) — never hand-add them to
+`src/public/`.
 
 ## Architecture
 
