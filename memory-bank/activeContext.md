@@ -35,4 +35,3 @@ Updated: 2026-09-13
 - Owner: production audio check (alarm tone) → US-001 fully Done.
 - Pick next epic: US-002 (recurring alarms) vs US-004 (multi-clock).
 - Schedule HK-5 (nginx 1.27 → current stable, tag + digest together).
-
