@@ -28,4 +28,13 @@ Additional files may be added under `memory-bank/` for complex features, integra
 3. On explicit "update memory bank" request (review ALL files)
 4. When context needs clarification to proceed
 
+## Maintenance
+
+The memory bank is a cache, not a journal. On every update:
+
+- Prune `activeContext.md` aggressively — completed items are deleted, not archived. It must stay readable in seconds.
+- Graduate stable, lasting knowledge into `systemPatterns.md` / `techContext.md`; session noise dies in `activeContext.md`.
+- Treat edits to `projectbrief.md` as exceptional — it changes rarely.
+- Delete entries that no longer hold; stale context is worse than no context.
+
 The Memory Bank is the only link to previous work. Maintain it with precision — effectiveness depends entirely on its accuracy.
