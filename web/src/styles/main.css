@@ -17,6 +17,7 @@
 /* --- Components --- */
 @import './clock.css';
 @import './timer.css';
+@import './alarm.css';
 
 /* --- Animations --- */
 @import './animations.css';

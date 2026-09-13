@@ -20,7 +20,8 @@
 		font-size: var(--font-size-body);
 	}
 
-	.timer-toggle {
+	.timer-toggle,
+	.alarm-toggle {
 		font-size: 1.4em;
 		padding: 3px var(--space-lg);
 	}
@@ -39,12 +40,30 @@
 		padding: 3px var(--space-md);
 	}
 
-	.timer-panel {
+	.timer-panel,
+	.alarm-panel {
 		padding: var(--space-lg) var(--space-xl);
 		max-width: calc(100vw - 24px);
 	}
 
+	.alarm-create {
+		flex-wrap: wrap;
+	}
+
+	.alarm-create input {
+		font-size: var(--font-size-body);
+	}
+
+	.alarm-overlay-time {
+		font-size: 2em;
+	}
+
 	.timer-actions button {
+		font-size: 0.9em;
+		padding: 5px var(--space-xl);
+	}
+
+	.alarm-overlay-actions button {
 		font-size: 0.9em;
 		padding: 5px var(--space-xl);
 	}
@@ -61,8 +80,18 @@
 		font-size: 0.85em;
 	}
 
-	.timer-panel {
+	.timer-panel,
+	.alarm-panel {
 		padding: var(--space-md) var(--space-lg);
+	}
+
+	.alarm-overlay-actions {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.alarm-overlay-actions button {
+		width: 100%;
 	}
 }
 
@@ -87,11 +116,13 @@
 		margin-top: var(--space-xs);
 	}
 
-	#timer-wrapper {
+	#timer-wrapper,
+	#alarm-wrapper {
 		gap: var(--space-xs);
 	}
 
-	.timer-toggle {
+	.timer-toggle,
+	.alarm-toggle {
 		font-size: 1.1em;
 		padding: var(--space-2xs) var(--space-md);
 	}
@@ -100,10 +131,19 @@
 		font-size: 1.4em;
 	}
 
-	.timer-panel {
+	.timer-panel,
+	.alarm-panel {
 		padding: var(--space-sm) var(--space-lg);
 		gap: var(--space-sm);
 		max-width: calc(100vw - 16px);
+	}
+
+	.alarm-list {
+		max-height: 100px;
+	}
+
+	.alarm-overlay-time {
+		font-size: 1.6em;
 	}
 
 	.timer-controls input[type='number'] {
@@ -121,7 +161,8 @@
 		font-size: 0.9em;
 	}
 
-	.timer-actions button {
+	.timer-actions button,
+	.alarm-overlay-actions button {
 		font-size: 0.8em;
 		padding: var(--space-xs) var(--space-lg);
 	}

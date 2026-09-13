@@ -1,0 +1,317 @@
+/* ============================================================
+   ALARM COMPONENT
+   Alarm wrapper, toggle, panel, create controls, list, and the
+   ringing overlay. Reuses the design tokens and mirrors the
+   timer component's styling conventions.
+   ============================================================ */
+
+/* ---------- Wrapper & Toggle ---------- */
+
+#alarm-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-md);
+	position: relative;
+}
+
+.alarm-toggle {
+	background: none;
+	border: var(--border-width-strong) solid var(--color-primary);
+	color: var(--color-primary);
+	font-size: var(--font-size-toggle);
+	cursor: pointer;
+	border-radius: var(--border-radius-md);
+	padding: var(--space-xs) var(--space-xl);
+	transition:
+		background-color var(--transition-normal),
+		box-shadow var(--transition-normal);
+	line-height: 1;
+}
+
+.alarm-toggle:hover,
+.alarm-toggle:focus-visible {
+	background-color: var(--color-primary-soft);
+	box-shadow: var(--glow-md);
+}
+
+.alarm-toggle.active {
+	box-shadow: var(--glow-md);
+}
+
+/* Pulse while at least one alarm is armed */
+.alarm-toggle.armed {
+	animation: timer-pulse 1.5s ease-in-out infinite;
+}
+
+/* ---------- Panel ---------- */
+
+.alarm-panel {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: var(--space-sm);
+	padding: var(--panel-padding-y) var(--panel-padding-x);
+	border: var(--border-width) solid var(--color-primary);
+	border-radius: var(--border-radius-lg);
+	background-color: var(--color-surface);
+	box-sizing: border-box;
+	width: var(--panel-width);
+	box-shadow: var(--glow-subtle);
+	animation: timer-panel-open 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.alarm-panel[hidden] {
+	display: none;
+}
+
+/* ---------- Create controls ---------- */
+
+.alarm-create {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	width: 100%;
+}
+
+.alarm-create input {
+	min-width: 0;
+	flex: 1;
+	padding: var(--space-xs) var(--space-sm);
+	font-size: var(--font-size-timer-input);
+	text-align: center;
+	background-color: var(--color-surface-alt);
+	border: var(--border-width) solid var(--color-primary);
+	border-radius: var(--border-radius-sm);
+	color: var(--color-primary);
+	font-family: var(--font-family);
+}
+
+.alarm-add {
+	background: none;
+	border: var(--border-width) dashed var(--color-primary);
+	color: var(--color-primary);
+	font-size: var(--font-size-xs);
+	cursor: pointer;
+	border-radius: var(--border-radius-sm);
+	padding: var(--space-2xs) var(--space-lg);
+	transition:
+		background-color var(--transition-normal),
+		box-shadow var(--transition-normal);
+	line-height: 1;
+	opacity: 0.7;
+	flex-shrink: 0;
+}
+
+.alarm-add:hover,
+.alarm-add:focus-visible {
+	background-color: var(--color-primary-soft);
+	opacity: 1;
+	box-shadow: var(--glow-sm);
+}
+
+.alarm-error {
+	color: var(--color-danger);
+	font-size: var(--font-size-small);
+	min-height: 1.2em;
+	text-align: center;
+}
+
+/* ---------- List ---------- */
+
+.alarm-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	width: 100%;
+	max-height: 180px;
+	overflow-y: auto;
+}
+
+.alarm-list:empty::after {
+	content: 'No alarms yet';
+	display: block;
+	text-align: center;
+	font-size: var(--font-size-small);
+	opacity: 0.5;
+	padding: var(--space-md) 0;
+}
+
+.alarm-row {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	padding: var(--space-xs) var(--space-md);
+	border: var(--border-width) solid var(--color-primary-medium);
+	border-radius: var(--border-radius-sm);
+}
+
+.alarm-row-name {
+	flex: 1;
+	font-size: var(--font-size-small);
+	line-height: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	user-select: none;
+}
+
+.alarm-row-time {
+	font-size: var(--font-size-small);
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.alarm-row-time.snoozed::after {
+	content: ' · snoozed';
+	opacity: 0.6;
+}
+
+.alarm-row.disabled .alarm-row-name,
+.alarm-row.disabled .alarm-row-time {
+	opacity: 0.4;
+}
+
+.alarm-row-toggle {
+	accent-color: var(--color-primary);
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.alarm-row-remove {
+	background: none;
+	border: none;
+	color: var(--color-primary);
+	opacity: 0.5;
+	font-size: 0.9em;
+	line-height: 1;
+	padding: 0 var(--space-2xs);
+	cursor: pointer;
+	transition:
+		opacity var(--transition-fast),
+		color var(--transition-fast);
+	flex-shrink: 0;
+}
+
+.alarm-row-remove:hover {
+	opacity: 1;
+	color: var(--color-danger);
+}
+
+/* ---------- Note ---------- */
+
+.alarm-note {
+	margin: 0;
+	text-align: center;
+	font-size: var(--font-size-xs);
+	opacity: 0.55;
+}
+
+/* ---------- Ringing overlay ---------- */
+
+.alarm-overlay {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 100;
+}
+
+.alarm-overlay[hidden] {
+	display: none;
+}
+
+.alarm-overlay-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-3xl);
+	padding: var(--space-4xl) var(--space-3xl);
+	border: var(--border-width-strong) solid var(--color-primary);
+	border-radius: var(--border-radius-lg);
+	background-color: var(--color-surface);
+	box-shadow: var(--glow-lg);
+	animation: alarm-pulse 1s ease-in-out infinite;
+	min-width: 260px;
+	max-width: calc(100vw - 32px);
+	box-sizing: border-box;
+}
+
+.alarm-overlay-name {
+	font-size: var(--font-size-timer-finish);
+	font-weight: var(--font-weight-bold);
+	text-align: center;
+}
+
+.alarm-overlay-time {
+	font-size: var(--font-size-timer-display);
+	color: var(--color-primary);
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.05em;
+	text-align: center;
+}
+
+.alarm-overlay-actions {
+	display: flex;
+	gap: var(--space-md);
+}
+
+.alarm-overlay-actions button {
+	background: none;
+	border: var(--border-width) solid var(--color-primary);
+	color: var(--color-primary);
+	font-size: var(--font-size-body);
+	cursor: pointer;
+	border-radius: var(--border-radius-sm);
+	padding: var(--space-sm) var(--space-xl);
+	transition:
+		background-color var(--transition-normal),
+		box-shadow var(--transition-normal);
+}
+
+.alarm-overlay-actions button:hover,
+.alarm-overlay-actions button:focus-visible {
+	background-color: var(--color-primary-medium);
+	box-shadow: var(--glow-md);
+}
+
+.alarm-overlay-actions .alarm-dismiss {
+	border-color: var(--color-danger);
+	color: var(--color-danger);
+}
+
+/* ---------- Custom scrollbar (list) ---------- */
+
+/* Firefox */
+.alarm-list {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-primary) transparent;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+.alarm-list::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+.alarm-list::-webkit-scrollbar-track {
+	background: transparent;
+	border-radius: 3px;
+}
+
+.alarm-list::-webkit-scrollbar-thumb {
+	background-color: var(--color-primary);
+	border-radius: 3px;
+	box-shadow: var(--glow-sm);
+}
+
+.alarm-list::-webkit-scrollbar-thumb:hover {
+	background-color: var(--color-primary);
+	box-shadow: var(--glow-md);
+}
+
+.alarm-list::-webkit-scrollbar-corner {
+	background: transparent;
+}

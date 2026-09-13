@@ -14,3 +14,6 @@ export const IS_DEV = APP_ENV === 'development';
 
 /** localStorage key holding the main timer's saved presets. */
 export const TIMER_STORAGE_KEY = 'main-timer-presets';
+
+/** localStorage key holding the user's alarms. */
+export const ALARM_STORAGE_KEY = 'alarms';
