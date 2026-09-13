@@ -1,1 +1,7 @@
-cd web && npx lint-staged
+# lint-staged runs from web/ and its globs (web/package.json) only match
+# staged files under web/. Skip it entirely when the commit touches nothing
+# it can check — otherwise it prints a confusing "could not find any staged
+# files" warning on docs-, workflow-, or root-config-only commits.
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^web/.*\.(ts|js|json|css|md)$'; then
+	cd web && npx lint-staged
+fi
