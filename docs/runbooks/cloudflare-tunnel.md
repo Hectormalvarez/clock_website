@@ -121,11 +121,11 @@ the containers.
 
 ## Edge cache
 
-Cloudflare caches the HTML document at its edge for 10 minutes
-(`Cloudflare-CDN-Cache-Control`, see `web/nginx.conf` and ADR-0006); browsers
-always revalidate and there is **no** deploy-time cache purge, deliberately —
-no Cloudflare credentials are stored anywhere. `/healthz` is served
-`no-store` and must never be edge-cached.
+Cloudflare caches the HTML document at its edge for 2 hours via a zone
+**Cache Rule** (hostname + `{/, /index.html}`, Edge TTL 2h — the Free-plan
+floor; see ADR-0006). Browsers always revalidate and there is **no**
+deploy-time cache purge, deliberately — no Cloudflare credentials are stored
+anywhere. `/healthz` is served `no-store` and must never be edge-cached.
 
 After a deploy, confirm both:
 
