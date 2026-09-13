@@ -1,6 +1,6 @@
 # Simple Clock
 
-A clean, dark-themed digital clock with a built-in countdown timer. Built with TypeScript and Vite.
+A clean, dark-themed digital clock with a countdown timer and alarms. Built with TypeScript and Vite.
 
 ## Repository Layout
 
@@ -44,11 +44,16 @@ web/                                    # Application workspace
 │   │   │   ├── clock.ui.ts             # Clock DOM wiring — initClock()
 │   │   │   ├── clock-registry.ts       # Multi-clock scaffold (not wired up yet)
 │   │   │   └── index.ts                # Feature public surface
-│   │   └── timer/
-│   │       ├── timer.core.ts           # Pure state machine (no DOM)
-│   │       ├── timer.presets.ts        # Preset helpers (pure)
-│   │       ├── timer.storage.ts        # localStorage adapter
-│   │       ├── timer.ui.ts             # Timer DOM wiring — initTimer()
+│   │   ├── timer/
+│   │   │   ├── timer.core.ts           # Pure state machine (no DOM)
+│   │   │   ├── timer.presets.ts        # Preset helpers (pure)
+│   │   │   ├── timer.storage.ts        # localStorage adapter
+│   │   │   ├── timer.ui.ts             # Timer DOM wiring — initTimer()
+│   │   │   └── index.ts                # Feature public surface
+│   │   └── alarm/
+│   │       ├── alarm.core.ts           # Pure alarm state machine (no DOM)
+│   │       ├── alarm.storage.ts        # localStorage adapter
+│   │       ├── alarm.ui.ts             # Alarm DOM wiring — initAlarm()
 │   │       └── index.ts                # Feature public surface
 │   ├── shared/
 │   │   ├── time/format.ts              # Time formatting (pure functions)
@@ -65,10 +70,12 @@ web/                                    # Application workspace
 │       ├── base.css                    # Reset / body
 │       ├── clock.css                   # Clock styles
 │       ├── timer.css                   # Timer styles
+│       ├── alarm.css                   # Alarm styles
 │       ├── animations.css              # Keyframes
 │       └── responsive.css              # Media queries
 ├── tests/
 │   └── unit/                           # Mirrors src/ one-to-one
+│       ├── features/alarm/alarm.core.test.ts
 │       ├── features/clock/clock.core.test.ts
 │       ├── features/timer/timer.core.test.ts
 │       └── shared/time/format.test.ts
@@ -115,6 +122,8 @@ Tests cover:
 - Time formatting (12h, AM/PM, midnight, noon, duration)
 - Clock tick logic (title updates, timezone display, dev marker, timer-active guard)
 - Timer state machine (start/pause/reset/tick transitions, input validation, presets)
+- Alarm state machine (create/enable/delete, due-tick window, snooze, one-shot firing,
+  persistence parsing, input validation)
 
 ## Container stacks
 
