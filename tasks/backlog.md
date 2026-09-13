@@ -36,11 +36,15 @@ sized/sequenced by the SDM.
 
 ## Housekeeping (backlog, non-story)
 
-- HK-1: README lists `robots.txt`/`sitemap.xml` under `src/public/`; they are
-  build-time generated. One-line docs fix.
-- HK-2: Bump GitHub Actions pinned majors off the deprecated Node 20 runtime
-  (CI warnings observed; low urgency).
-- HK-3: lint-staged "could not find staged files" noise on docs-only commits —
-  verify web/package.json config matches repo-wide staging.
-- HK-4: Memory bank update — capture alarm feature patterns in
-  systemPatterns.md; prune activeContext.md.
+### HK-5 — Re-pin the nginx base image off the EOL 1.27 branch
+- Status: Candidate (found 2026-09-13 during the repo date/staleness audit).
+- Finding: `nginxinc/nginx-unprivileged:1.27-alpine` was last built
+  2025-06-23; the 1.27 mainline stopped shipping when 1.29 released, so the
+  edge and prod images run an unmaintained branch. The digest pin itself is
+  current for the tag — the staleness is at the version level.
+- Requires: choose the current nginx stable branch, bump tag + digest
+  together (ADR 0005) in `web/Dockerfile.prod` and `nginx/Dockerfile`, update
+  the image tag in `.github/workflows/ci.yml` (nginx-config-check), and run
+  `nginx -t` locally on both configs.
+- Priority: Medium — security updates are accruing on the EOL branch.
+

@@ -2,40 +2,47 @@
 
 Sprint window: active (no fixed calendar sprint; pipeline-driven).
 
-## In flight
+## Completed (pending final QA)
 
 ### US-001 — Multiple Alarms (Epic: Alarms)
-- Status: **COMPLETE — awaiting release approval.**
-- PR #13 (`dev` → `main`): OPEN, MERGEABLE, all 8 CI checks SUCCESS.
-- Story DoD: implementation ✅, tests ✅ (135 passing), QA ✅, code review ✅.
-- Blocker: none technical. **Merge of PR #13 deploys to production
-  automatically** (Release workflow → webhook) — human approval gate, owned by
-  the project owner.
-- Post-merge tasks:
-  1. Verify `https://clock.taylormadetech.net/healthz` (live, `DYNAMIC` — do
-     not judge freshness by the cached homepage; up to 2h edge cache).
-  2. Manual browser check: alarm tone plays (visual overlay is verified;
-     audio cannot be verified in jsdom).
-  3. Story status → Done after production verification.
+- Status: **MERGED + DEPLOYED.** PR #13 merged 2026-09-13 21:17Z (linear
+  history, 9 commits).
+- Release run #5 succeeded 21:18Z; webhook deploy fired; `/healthz` verified
+  HTTP 200 post-deploy.
+- Remaining DoD: manual browser check that the alarm tone plays (audio cannot
+  be verified in jsdom) — owner task. Then story status → Done.
+- Note: the homepage may serve up to 2 h of edge cache (ADR 0006); judge
+  deploy freshness via `/healthz` or hashed assets, not the cached HTML.
+
+## In flight
+
+### Housekeeping branch `chore/repo-housekeeping` (→ PR into `dev`)
+- HK-1 README corrections, HK-2 Actions bump to Node-24 majors
+  (checkout@v7, setup-node@v7, buildx@v4, login@v4, build-push@v7,
+  hadolint-action@v3.5.0), HK-3 husky lint-staged guard, HK-4 memory bank
+  init, plus US-001 sprint close-out (this file).
+- All committed on the branch; local `main` reset to `origin/main` after the
+  rebase-merge rewrote SHAs.
 
 ## Ready (not started)
 
-Nothing yet — next sprint content comes from the backlog once US-001 closes
-and the owner picks the next epic (Alarms follow-ups vs. Multi-clock).
+Nothing. Next sprint content comes from the backlog once the owner picks the
+next epic: US-002 (recurring alarms) vs US-004 (multi-clock).
 
 ## Dependencies & sequencing
 
-- US-002 (recurring alarms) depends only on US-001 merge — can start any time
-  after, even against `dev` before `main` moves.
-- US-003 (review follow-ups) is independent; best bundled with US-002 or US-004.
-- US-004 (multi-clock) should wait for US-003 item 1 (shared FLIP helper) and
-  needs PO + possibly an ADR.
+- US-002 can start any time — builds directly on the alarm core.
+- US-003 (review follow-ups) is independent; best bundled with US-002 or
+  US-004.
+- US-004 should wait for US-003 item 1 (shared FLIP helper) and needs a PO
+  story + possibly an ADR.
+- HK-5 (nginx 1.27 re-pin, see backlog) is independent of the epics.
 
 ## Risks
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| PR #13 merge forgotten; work silently stalls | Medium | High (pipeline blocked) | This sprint file; owner decides merge timing explicitly |
-| Two unrelated `chore(cline)` commits ride in PR #13 | Low | Low (cosmetic history) | Owner may strip before merge if desired |
-| Background-tab throttling delays rings up to ~1 min | By design | Low | Documented in-panel; matches story's stated limitation |
-| CI action-runtime deprecation warnings accumulate | Low | Medium later | HK-2 on backlog |
+| Production alarm audio unverified | Medium | Medium (US-001 DoD gap) | Owner manual check; tracked above |
+| nginx 1.27 base gets no security updates (EOL mainline) | High | Medium | HK-5: re-pin to current stable |
+| Edge cache hides new deploys for up to 2 h | By design | Low | Judge freshness via `/healthz` |
+
