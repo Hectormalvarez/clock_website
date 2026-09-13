@@ -1,37 +1,42 @@
 # Active Context
 
-Updated: 2026-09-13
+Updated: 2026-09-13 (post-merge)
 
 ## Current focus
 
-**Repo housekeeping — DONE on branch `chore/repo-housekeeping`**
-(5 commits off `dev`, awaiting PR into `dev` + review):
+**Housekeeping: MERGED.** PR #14 rebase-merged into `main` (7 commits,
+`16dbbdd`); all four CI checks passed _on the bumped actions_; Release run #6
+succeeded 21:47Z (images rebuilt, webhook deploy fired, `healthz` 200).
 
-1. ✅ Memory bank initialized (HK-4).
-2. ✅ README corrections (HK-1): `robots.txt` removed from `src/public/` tree,
-   build-time generation note added, alarm storage test added to tests tree,
-   `tasks/` added to the repo-layout table.
-3. ✅ Actions bump (HK-2): checkout@v7, setup-node@v7, setup-buildx@v4,
-   login@v4, build-push@v7, hadolint-action@v3.5.0. All four Dockerfiles
-   pre-validated locally with hadolint 2.15.1 (repo config: only info-level
-   DL3059 in the webhook image).
-4. ✅ Husky guard (HK-3): hook skips lint-staged unless staged files match
-   `^web/.*\.(ts|js|json|css|md)$`; verified silent on yml- and md-only
-   commits (noise previously confirmed on both).
-5. ✅ `tasks/` close-out: US-001 marked merged+deployed (Release #5,
-   healthz 200); HK-1..4 removed; HK-5 (nginx 1.27 EOL re-pin) added as a
-   backlog candidate.
+**Production verification (2026-09-13 ~22:05Z):**
+
+- Fresh homepage (cache-busted via query string) serves the US-001 alarm
+  build (`index-XH8wPmEB.js`, 200, alarm code present, 20 alarm refs in HTML).
+- **Remaining manual DoD: audible alarm-tone check (needs a human ear).**
+
+## Open finding: stale-HTML → dead-asset window (→ HK-6)
+
+ADR 0006's assumption ("old hashed assets remain edge-resident so stale HTML
+still resolves its assets") does NOT hold in practice:
+
+- A rebuild changed asset hashes even though app code was unchanged; the
+  edge-cached homepage (2 h TTL) referenced `index-CpV5GK4V.js`, which now
+  404s on origin — and the 404 response itself got edge-cached (HIT).
+- Until the HTML cache entry expires (~23:28Z), the cached homepage is
+  broken. Query strings DO vary the cache key (cache-busting works).
+- Fix candidates: CF API purge after deploy (needs API token), retain previous
+  build's assets on origin in `deploy.sh`, or shorter HTML TTL. Logged as
+  backlog HK-6.
 
 ## Environment state
 
-- `chore/repo-housekeeping` = dev + 5 commits; `dev` = `origin/dev` = `223d41f`.
-- Local `main` = `origin/main` = `c7ecdca` (post-rebase-merge sync).
-- US-001 deployed; homepage edge cache may lag up to 2 h.
+- `dev` = `origin/dev` (223d41f + this doc commit); `main` = `origin/main`
+  (16dbbdd). Housekeeping branch merged and deletable.
+- Local `chore/repo-housekeeping` rebased onto main pre-merge; may be deleted.
 
 ## Next steps
 
-- Open PR `chore/repo-housekeeping` → `dev`; merge (no production risk —
-  workflow changes ride CI on next dev push).
-- Owner: production audio check (alarm tone) → US-001 fully Done.
+- Owner: audible alarm-tone check → US-001 fully Done.
 - Pick next epic: US-002 (recurring alarms) vs US-004 (multi-clock).
-- Schedule HK-5 (nginx 1.27 → current stable, tag + digest together).
+- Schedule HK-5 (nginx 1.27 EOL re-pin) and HK-6 (post-deploy cache purge or
+  asset retention).

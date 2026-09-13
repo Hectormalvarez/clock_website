@@ -20,8 +20,13 @@ Site is live at `clock.taylormadetech.net`.
 
 - Production audio QA: alarm tone not yet verified by a human (jsdom can't
   test audio) — last open US-001 DoD item.
+- **Stale-HTML → dead-asset window after every deploy** (HK-6): a rebuild can
+  change asset hashes; the 2 h edge-cached homepage then references assets
+  that 404 on origin, and the 404 gets edge-cached too (observed 2026-09-13).
+  Fix candidates: CF API purge post-deploy, retain old assets in `deploy.sh`,
+  or shorter HTML TTL.
 - Edge-cached homepage can lag up to 2 h behind a deploy (expected; judge
-  freshness via `/healthz` or hashed assets).
+  freshness via `/healthz` or a query-string cache-bust, which works).
 - CI actions pinned to Node-20-runtime majors (HK-2 — fix in progress).
 - `nginxinc/nginx-unprivileged:1.27-alpine` is an EOL mainline branch
   (HK-5 candidate: re-pin to current stable + digest).

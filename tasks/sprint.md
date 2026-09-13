@@ -17,19 +17,14 @@ Sprint window: active (no fixed calendar sprint; pipeline-driven).
 
 ## In flight
 
-### Housekeeping branch `chore/repo-housekeeping` (→ PR into `dev`)
-
-- HK-1 README corrections, HK-2 Actions bump to Node-24 majors
-  (checkout@v7, setup-node@v7, buildx@v4, login@v4, build-push@v7,
-  hadolint-action@v3.5.0), HK-3 husky lint-staged guard, HK-4 memory bank
-  init, plus US-001 sprint close-out (this file).
-- All committed on the branch; local `main` reset to `origin/main` after the
-  rebase-merge rewrote SHAs.
+Nothing. Housekeeping (HK-1..HK-4 + US-001 close-out) merged via PR #14
+(rebase, 2026-09-13 21:47Z; Release run #6 deployed; healthz 200).
 
 ## Ready (not started)
 
-Nothing. Next sprint content comes from the backlog once the owner picks the
-next epic: US-002 (recurring alarms) vs US-004 (multi-clock).
+Next sprint content comes from the backlog once the owner picks the next
+epic: US-002 (recurring alarms) vs US-004 (multi-clock). HK-5/HK-6 are
+standalone housekeeping candidates.
 
 ## Dependencies & sequencing
 
@@ -42,8 +37,8 @@ next epic: US-002 (recurring alarms) vs US-004 (multi-clock).
 
 ## Risks
 
-| Risk                                                    | Likelihood | Impact                  | Mitigation                        |
-| ------------------------------------------------------- | ---------- | ----------------------- | --------------------------------- |
-| Production alarm audio unverified                       | Medium     | Medium (US-001 DoD gap) | Owner manual check; tracked above |
-| nginx 1.27 base gets no security updates (EOL mainline) | High       | Medium                  | HK-5: re-pin to current stable    |
-| Edge cache hides new deploys for up to 2 h              | By design  | Low                     | Judge freshness via `/healthz`    |
+| Risk                                                                                      | Likelihood | Impact                                        | Mitigation                                   |
+| ----------------------------------------------------------------------------------------- | ---------- | --------------------------------------------- | -------------------------------------------- |
+| Production alarm audio unverified                                                         | Medium     | Medium (US-001 DoD gap)                       | Owner manual check; tracked above            |
+| Stale edge HTML references dead assets after each deploy; cached 404s extend the breakage | High       | Medium (broken homepage up to 2 h per deploy) | HK-6: purge, asset retention, or shorter TTL |
+| nginx 1.27 base gets no security updates (EOL mainline)                                   | High       | Medium                                        | HK-5: re-pin to current stable               |
