@@ -52,3 +52,14 @@
 body.timer-finished #clock-container {
 	animation: timer-flash 0.5s ease-in-out 4;
 }
+
+/* Alarm pulse — ringing overlay card glow */
+@keyframes alarm-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 5px var(--color-primary);
+	}
+	50% {
+		box-shadow: 0 0 24px var(--color-primary);
+	}
+}

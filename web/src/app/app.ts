@@ -1,6 +1,7 @@
+import { initAlarm } from '@/features/alarm';
 import { initClock } from '@/features/clock';
 import { initTimer } from '@/features/timer';
-import { TIMER_STORAGE_KEY } from './config';
+import { ALARM_STORAGE_KEY, TIMER_STORAGE_KEY } from './config';
 
 /**
  * Composition root: wires the feature modules into the static page.
@@ -17,5 +18,10 @@ export function bootstrap(): void {
 	const timerWrapper = document.getElementById('timer-wrapper');
 	if (timerWrapper) {
 		initTimer(timerWrapper, { storageKey: TIMER_STORAGE_KEY });
+	}
+
+	const alarmWrapper = document.getElementById('alarm-wrapper');
+	if (alarmWrapper) {
+		initAlarm(alarmWrapper, { storageKey: ALARM_STORAGE_KEY });
 	}
 }

@@ -86,7 +86,53 @@
 					</div>
 				</div>
 			</div>
+
+			<div id="alarm-wrapper">
+				<button class="alarm-toggle" aria-label="Toggle alarms" title="Alarms">
+					⏰
+				</button>
+				<div class="alarm-panel" hidden>
+					<div class="alarm-create">
+						<input
+							class="alarm-name"
+							type="text"
+							maxlength="30"
+							placeholder="Name (optional)"
+							aria-label="Alarm name"
+						/>
+						<input class="alarm-time" type="time" aria-label="Alarm time" />
+						<button class="alarm-add" aria-label="Add alarm">+ Add</button>
+					</div>
+					<div class="alarm-error" role="alert"></div>
+					<div class="alarm-list">
+						<!-- Alarm rows rendered dynamically -->
+					</div>
+					<p class="alarm-note">Alarms ring only while this page is open.</p>
+				</div>
+			</div>
 		</div>
+
+		<!-- Ringing overlay — lives outside the clock container so it can cover
+		     the whole viewport -->
+		<div class="alarm-overlay" hidden>
+			<div
+				class="alarm-overlay-card"
+				role="alertdialog"
+				aria-label="Alarm ringing"
+			>
+				<div class="alarm-overlay-name"></div>
+				<div class="alarm-overlay-time"></div>
+				<div class="alarm-overlay-actions">
+					<button class="alarm-snooze" aria-label="Snooze alarm for 9 minutes">
+						💤 Snooze 9m
+					</button>
+					<button class="alarm-dismiss" aria-label="Dismiss alarm">
+						✕ Dismiss
+					</button>
+				</div>
+			</div>
+		</div>
+
 		<div class="environment-marker"></div>
 
 		<script type="module" src="./main.ts"></script>
