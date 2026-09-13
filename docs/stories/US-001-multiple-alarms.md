@@ -2,7 +2,7 @@
 
 **Story ID:** US-001  
 **Epic:** Alarms  
-**Status:** Draft
+**Status:** QA (QA assessment passed; code review approved — pending merge)
 
 ---
 
@@ -89,8 +89,9 @@ _These criteria define "Done." Every criterion must be verified by QA._
 
 ## 5. Definition of Done Checklist
 
-- [ ] Code implemented strictly according to ACs.
+- [x] Code implemented strictly according to ACs.
 
-- [ ] Unit/Integration tests written and passing.
-- [ ] QA assessment passed.
-- [ ] Code Review approved.
+- [x] Unit/Integration tests written and passing (135 total, incl. 40 alarm tests
+      plus adversarial reload/snooze/boundary checks run during QA assessment).
+- [x] QA assessment passed.
+- [x] Code Review approved.
