@@ -49,10 +49,41 @@ _These criteria define "Done." Every criterion must be verified by QA._
 
 ## 4. Technical Guidance & Architectural Constraints
 
-(Filled in by Architect)
+(Filled in by Architect. Verdict: **Yes** — the existing stack covers this fully; no new dependency, service, or framework is approved, and no ADR is required because the feature follows the established feature-module pattern without any new architectural decision.)
 
-- **Target Files / Boundaries:** TBD
-- **Constraints:** TBD
+### Target Files / Boundaries
+
+- New feature module `web/src/features/alarm/`, mirroring the timer feature's structure exactly:
+  - `alarm.core.ts` — pure state machine: alarm data shape, add / remove / enable / disable, next-occurrence computation, the per-tick check (e.g. `checkAlarms(state, now)`), and snooze. **Zero DOM, zero storage.**
+  - `alarm.storage.ts` — localStorage adapter, mirroring `timer.storage.ts`.
+  - `alarm.ui.ts` — DOM wiring, the 1-second scheduler interval, the alarm list rendering, and the ringing overlay. Exposes `initAlarm(rootElement, config)` returning a handle with `destroy()` (same contract as `initTimer`), and degrades gracefully when the container is absent.
+  - `index.ts` — barrel; other modules may only import via `@/features/alarm`.
+
+- `web/src/app/config.ts` — add an `ALARM_STORAGE_KEY` constant.
+- `web/src/app/app.ts` — wire `initAlarm` (composition root is the only place that resolves the container; `main.ts` stays a one-liner).
+- `web/src/index.html` — alarm toggle button + panel markup inside `#clock-container`, mirroring the timer wrapper pattern; every interactive element gets an `aria-label`.
+- `web/src/styles/alarm.css` (new) imported from `main.css`; reuse the design tokens in `variables.css`; any media-query rules go in `responsive.css`.
+- Tests mirror the source one-to-one under `web/tests/unit/features/alarm/` (core, storage parsing; optional UI tests via jsdom as the existing suite does).
+
+### Constraints
+
+- **No new dependencies.** The alert tone reuses `playBeep()` from `@/shared/audio/beep` (inject an `AudioContext` in tests); a repeating beep while ringing follows the timer's existing beep-interval pattern.
+- **Purity boundary:** `alarm.core.ts` must not import the DOM, `localStorage`, or `import.meta.env`; current time is always passed in as a parameter so ticks are deterministic in tests.
+- **Persistence:** a single JSON document under `ALARM_STORAGE_KEY`, read/written only through `alarm.storage.ts`; malformed stored data is discarded safely (fall back to empty list), matching the timer's parser.
+- **IDs:** follow the existing `clock-registry` convention (`alarm-<timestamp>-<rand>`). Do **not** wire `clock-registry.ts` into this story — it belongs to the separate multi-clock epic.
+- **Scheduling:** the alarm feature owns its own 1-second interval, independent of the clock's tick; it must be cleared in `destroy()`. The tick check must be idempotent — an alarm may not ring twice for the same occurrence (including the minute it fires in and after page reload).
+- **One-shot semantics:** firing disables the alarm (persisted immediately); snooze is modeled as a future `snoozedUntil` timestamp on the alarm, never as an edit to the alarm's target time. Snooze duration is the fixed constant 9 minutes.
+- **Next occurrence (AC-6):** today if HH:MM is still ahead of `now`, otherwise tomorrow; computed in the pure core.
+- **CSP:** inline styles and scripts are forbidden — all ringing visuals and dynamically rendered list items are styled via classes in `alarm.css` / `animations.css`.
+- **Accessibility:** toggles are real labeled inputs/buttons; the ringing overlay is keyboard-reachable, and pressing Escape (or Enter) dismisses.
+- The panel must display the "alarms ring only while the page is open" limitation (story In-Scope note).
+- **Forbidden moves:** no Service Workers, Notification API, background timers beyond the page interval, new npm packages, changes to `nginx/`, compose files, cache policies, or the timer/clock features' behavior.
+- **Verification gate:** `npm run typecheck`, `npm run lint`, `npx prettier --check .`, and `npm test` must pass locally before commit; CI additionally validates Docker/compose, which this story must not touch.
+
+### Risks for QA
+
+- Background-tab throttling may delay a ring by up to a minute — acceptable, and the panel copy must communicate the limitation.
+- The double-fire guard across page reloads (reload at 09:30:30 must not re-ring a 09:30 alarm) is the trickiest acceptance criterion and needs explicit QA coverage.
 
 ---
 
