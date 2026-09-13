@@ -1,4 +1,4 @@
-# 6. Cloudflare edge-caches the HTML document with a short TTL
+# 6. Cloudflare edge-caches the HTML document via a zone Cache Rule
 
 - **Status:** Accepted
 - **Date:** 2026-09-13
@@ -22,25 +22,31 @@ instructions, and `Cache-Control` alone gives both caches the same one.
 
 ## Decision
 
-- `web/nginx.conf` sends `Cloudflare-CDN-Cache-Control: max-age=600` on
-  `location = /index.html`, in addition to the existing `Cache-Control:
-  no-cache`.
-- Cloudflare evaluates `Cloudflare-CDN-Cache-Control` for its own caching
-  decisions and never sends it downstream; `Cache-Control` still governs the
-  browser and is proxied as-is. Net effect: the edge serves the document
-  without touching the origin for 10 minutes, while every browser still
-  revalidates on each visit (answered by the edge with a 304, via the existing
-  `ETag`/`Last-Modified`).
-- The TTL is deliberately short (10 minutes) because **there is no deploy-time
-  cache purge**. Purging would require storing Cloudflare API credentials on
-  the server or as a repository secret; a bounded 10-minute staleness window
-  after a deploy was judged the better trade-off.
+- The **origin** keeps `Cache-Control: no-cache` on `location = /index.html`
+  (`web/nginx.conf`), so every browser revalidates on each visit (answered at
+  the edge with a 304, via the existing `ETag`/`Last-Modified`).
+- The **edge** caches the document via a zone **Cache Rule**: hostname
+  `clock.taylormadetech.net`, URI path in `{/, /index.html}`, cache
+  eligibility *Eligible for cache*, **Edge TTL 2 hours** (the Free-plan
+  floor). The rule lives in the dashboard because origin headers cannot
+  express it on this plan (see Alternatives); `/healthz` is deliberately not
+  matched, so health checks can never be served from cache.
+- **There is no deploy-time cache purge.** Purging would require storing
+  Cloudflare API credentials on the server or as a repository secret; a
+  bounded 2-hour staleness window after a deploy was judged the better
+  trade-off.
 - `/healthz` is served with `Cache-Control: no-store` in **both** nginx
   configs, so no intermediary can ever serve a cached `ok` from a stack that
   is actually down.
 
 ## Alternatives considered
 
+- **`Cloudflare-CDN-Cache-Control` from the origin** — the first attempt
+  (`max-age=600` in `web/nginx.conf`). Documented as edge-only and
+  browser-invisible, but **empirically ignored on the Free plan**: the header
+  left the origin correctly and `cf-cache-status` stayed `DYNAMIC` on repeated
+  requests. The header was removed; if the plan is ever upgraded, revisit
+  this ADR and move the policy back into version control.
 - **Deploy-time purge via the Cloudflare API** — the textbook pattern (long
   TTL + purge on deploy). Rejected: requires `CLOUDFLARE_ZONE_ID` +
   `CLOUDFLARE_API_TOKEN` on the server or in repo secrets, and the deploy
@@ -49,21 +55,21 @@ instructions, and `Cache-Control` alone gives both caches the same one.
 - **`s-maxage` on `Cache-Control`** — Cloudflare honours it, but it implies
   `proxy-revalidate` semantics, which forecloses stale-serving behaviour and
   couples the edge TTL back into the browser-visible header.
-- **A Cache Rule with an explicit Edge TTL** — works, but on the Free plan the
-  minimum configurable Edge Cache TTL is 2 hours, and the policy would live in
-  the dashboard instead of in version control.
 
 ## Consequences
 
-- After a deploy, visitors can receive the previous HTML for at most 10
-  minutes. Because nothing is purged, old hashed assets remain edge-resident,
-  so even a stale HTML document still resolves its assets; the residual risk
-  is limited to an old asset being evicted from a data center's cache.
+- After a deploy, visitors can receive the previous HTML for at most **2
+  hours** (the Free-plan Edge TTL floor). Because nothing is purged, old
+  hashed assets remain edge-resident, so even a stale HTML document still
+  resolves its assets; the residual risk is limited to an old asset being
+  evicted from a data center's cache.
 - Origin load drops to roughly one HTML fetch per TTL expiry per data center,
   with Cloudflare's cache lock collapsing concurrent misses.
 - **No Cloudflare credentials exist in this repository, on the server, or in
   CI.** Any future change that reintroduces purging must revisit this ADR.
+- The cache policy is split between this repo (browser behaviour, in
+  `web/nginx.conf`) and the dashboard (edge behaviour, the Cache Rule). If
+  the zone is ever migrated, recreate the rule per the Decision section.
 - Verification after deploy: `curl -sI https://<site>/` should show
   `cf-cache-status: HIT` on a repeat request, while `/healthz` must always
-  show `DYNAMIC`. If the HTML never leaves `DYNAMIC`, the header is not being
-  honoured — fall back to a Cache Rule with a 2-hour Edge TTL.
+  show `DYNAMIC`.
