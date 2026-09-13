@@ -5,6 +5,7 @@ Sprint window: active (no fixed calendar sprint; pipeline-driven).
 ## Completed (pending final QA)
 
 ### US-001 — Multiple Alarms (Epic: Alarms)
+
 - Status: **MERGED + DEPLOYED.** PR #13 merged 2026-09-13 21:17Z (linear
   history, 9 commits).
 - Release run #5 succeeded 21:18Z; webhook deploy fired; `/healthz` verified
@@ -17,6 +18,7 @@ Sprint window: active (no fixed calendar sprint; pipeline-driven).
 ## In flight
 
 ### Housekeeping branch `chore/repo-housekeeping` (→ PR into `dev`)
+
 - HK-1 README corrections, HK-2 Actions bump to Node-24 majors
   (checkout@v7, setup-node@v7, buildx@v4, login@v4, build-push@v7,
   hadolint-action@v3.5.0), HK-3 husky lint-staged guard, HK-4 memory bank
@@ -40,9 +42,8 @@ next epic: US-002 (recurring alarms) vs US-004 (multi-clock).
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Production alarm audio unverified | Medium | Medium (US-001 DoD gap) | Owner manual check; tracked above |
-| nginx 1.27 base gets no security updates (EOL mainline) | High | Medium | HK-5: re-pin to current stable |
-| Edge cache hides new deploys for up to 2 h | By design | Low | Judge freshness via `/healthz` |
-
+| Risk                                                    | Likelihood | Impact                  | Mitigation                        |
+| ------------------------------------------------------- | ---------- | ----------------------- | --------------------------------- |
+| Production alarm audio unverified                       | Medium     | Medium (US-001 DoD gap) | Owner manual check; tracked above |
+| nginx 1.27 base gets no security updates (EOL mainline) | High       | Medium                  | HK-5: re-pin to current stable    |
+| Edge cache hides new deploys for up to 2 h              | By design  | Low                     | Judge freshness via `/healthz`    |

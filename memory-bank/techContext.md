@@ -15,14 +15,14 @@
 
 All npm commands run inside `web/`; make targets from the repo root.
 
-| Purpose | Command |
-| :--- | :--- |
-| Full quality gate (before declaring done) | `make check` (lint + typecheck + test) |
-| Dev stack up/down/health | `make dev-up` / `make dev-down` / `make dev-health` |
-| Fast host-only dev loop | `cd web && npm run dev` |
-| Format check (CI-enforced) | `cd web && npm run format:check` |
-| Coverage | `cd web && npm test -- --coverage` |
-| Production build | `cd web && npm run build` → `web/dist/` |
+| Purpose                                   | Command                                             |
+| :---------------------------------------- | :-------------------------------------------------- |
+| Full quality gate (before declaring done) | `make check` (lint + typecheck + test)              |
+| Dev stack up/down/health                  | `make dev-up` / `make dev-down` / `make dev-health` |
+| Fast host-only dev loop                   | `cd web && npm run dev`                             |
+| Format check (CI-enforced)                | `cd web && npm run format:check`                    |
+| Coverage                                  | `cd web && npm test -- --coverage`                  |
+| Production build                          | `cd web && npm run build` → `web/dist/`             |
 
 CI-relevant changes (compose, Dockerfiles, `nginx.conf`) must be validated
 locally with the same checks CI runs (hadolint via `hadolint/hadolint` image,
