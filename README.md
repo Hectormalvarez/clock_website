@@ -153,7 +153,7 @@ release; if it is unset the build falls back to `http://localhost:8100`.
 See:
 
 - [Deployment runbook](docs/runbooks/deployment.md) — setup, deploy, verify, rollback
-- [Cloudflare Tunnel runbook](docs/runbooks/cloudflare-tunnel.md) — ingress and token rotation
+- [Cloudflare Tunnel runbook](docs/runbooks/cloudflare-tunnel.md) — ingress, token rotation, edge cache
 
 ## Documentation
 

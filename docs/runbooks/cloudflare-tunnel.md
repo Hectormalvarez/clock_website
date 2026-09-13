@@ -118,3 +118,18 @@ make prod-verify
 If `prod-verify` passes but the public hostname fails, the fault is in
 Cloudflare — the tunnel, DNS record, or public hostname service target — not in
 the containers.
+
+## Edge cache
+
+Cloudflare caches the HTML document at its edge for 10 minutes
+(`Cloudflare-CDN-Cache-Control`, see `web/nginx.conf` and ADR-0006); browsers
+always revalidate and there is **no** deploy-time cache purge, deliberately —
+no Cloudflare credentials are stored anywhere. `/healthz` is served
+`no-store` and must never be edge-cached.
+
+After a deploy, confirm both:
+
+```bash
+curl -sI https://<site>/ | grep -i cf-cache-status        # expect HIT on repeat requests
+curl -sI https://<site>/healthz | grep -i cf-cache-status # expect DYNAMIC, never HIT
+```
