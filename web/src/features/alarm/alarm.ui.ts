@@ -119,6 +119,13 @@ export function initAlarm(
 
 	function renderAlarmList() {
 		dom.list.textContent = '';
+		if (core.alarms.length === 0) {
+			const empty = document.createElement('p');
+			empty.className = 'alarm-empty';
+			empty.textContent = 'No alarms yet';
+			dom.list.append(empty);
+			return;
+		}
 		for (const alarm of core.alarms) {
 			const row = document.createElement('div');
 			row.className = 'alarm-row';

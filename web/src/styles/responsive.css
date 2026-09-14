@@ -46,10 +46,6 @@
 		max-width: calc(100vw - 24px);
 	}
 
-	.alarm-create {
-		flex-wrap: wrap;
-	}
-
 	.alarm-create input {
 		font-size: var(--font-size-body);
 	}
