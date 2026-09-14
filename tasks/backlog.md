@@ -40,22 +40,3 @@ sized/sequenced by the SDM.
   the image tag in `.github/workflows/ci.yml` (nginx-config-check), and run
   `nginx -t` locally on both configs.
 - Priority: Medium — security updates are accruing on the EOL branch.
-
-### HK-6 — Eliminate the stale-HTML / dead-asset window after deploys
-
-- Status: Candidate (observed live 2026-09-13 ~22:00Z).
-- Finding: after a deploy that changes asset hashes, the edge-cached homepage
-  (2 h Cache Rule TTL, per ADR 0006) references assets that no longer exist
-  on origin; requests 404, and **Cloudflare caches the 404 itself**
-  (`cf-cache-status: HIT` on a 404). Until the HTML entry expires, the
-  homepage is broken. ADR 0006's assumption that old hashed assets remain
-  edge-resident does not hold in practice.
-- Fix candidates (pick one, or combine):
-  1. Purge the CF cache after a successful deploy (needs a CF API token —
-     scope decision + secret management).
-  2. Retain the previous build's `assets/` on origin in `scripts/deploy.sh`
-     so old hashes keep resolving (simplest, no CF dependency).
-  3. Shorten the HTML Edge TTL (e.g. 5-10 min) to shrink the window.
-  - Also consider making builds hash-deterministic for unchanged code.
-- Priority: Medium-High — every deploy currently risks a broken homepage for
-  up to 2 h.
