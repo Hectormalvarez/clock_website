@@ -15,6 +15,19 @@ export interface Alarm {
 	hour: number;
 	minute: number;
 	enabled: boolean;
+	/**
+	 * Daily recurrence (US-002). A repeat alarm is never consumed by
+	 * ringing: clearing a pending snooze re-arms it for the next day.
+	 * `false` keeps the US-001 one-shot behaviour.
+	 */
+	repeat: boolean;
+	/**
+	 * Local calendar day (from `Date.toDateString()`) on which a repeat
+	 * alarm last rang. Consumes the day's occurrence so a dismiss
+	 * mid-grace-window or a reload cannot ring it twice. `null` for
+	 * one-shot alarms and never-rung repeats.
+	 */
+	lastRungDay: string | null;
 	/** Epoch ms when a snoozed alarm re-arms; `null` when not snoozed. */
 	snoozedUntil: number | null;
 }
@@ -84,6 +97,10 @@ function isAlarm(value: unknown): value is Alarm {
 		candidate.minute >= 0 &&
 		candidate.minute <= 59 &&
 		typeof candidate.enabled === 'boolean' &&
+		(candidate.repeat === undefined || typeof candidate.repeat === 'boolean') &&
+		(candidate.lastRungDay === undefined ||
+			candidate.lastRungDay === null ||
+			typeof candidate.lastRungDay === 'string') &&
 		(candidate.snoozedUntil === null ||
 			typeof candidate.snoozedUntil === 'number')
 	);
@@ -95,7 +112,12 @@ export function parseAlarms(json: string | null): Alarm[] {
 	try {
 		const parsed: unknown = JSON.parse(json);
 		if (!Array.isArray(parsed)) return [];
-		return parsed.filter(isAlarm);
+		return parsed.filter(isAlarm).map((alarm) => ({
+			...alarm,
+			// Legacy records (pre-US-002) carry no flags; they stay one-shot.
+			repeat: alarm.repeat === true,
+			lastRungDay: alarm.lastRungDay ?? null,
+		}));
 	} catch {
 		return [];
 	}
@@ -113,6 +135,7 @@ export function addAlarm(
 	core: AlarmCore,
 	name: string,
 	time: AlarmTime,
+	repeat = false,
 ): AlarmCore {
 	const alarm: Alarm = {
 		id: createAlarmId(),
@@ -120,6 +143,8 @@ export function addAlarm(
 		hour: time.hour,
 		minute: time.minute,
 		enabled: true,
+		repeat,
+		lastRungDay: null,
 		snoozedUntil: null,
 	};
 	return { ...core, alarms: [...core.alarms, alarm] };
@@ -136,8 +161,9 @@ export function removeAlarm(core: AlarmCore, id: string): AlarmCore {
 /**
  * Enable or disable an alarm.
  *
- * Either transition clears any pending snooze: an alarm that is toggled by
- * hand is re-armed from its configured time, not from an old snooze.
+ * Either transition clears any pending snooze and any consumed occurrence:
+ * an alarm toggled by hand is re-armed from its configured time, not from an
+ * old snooze or a last-rung marker.
  */
 export function setAlarmEnabled(
 	core: AlarmCore,
@@ -147,7 +173,9 @@ export function setAlarmEnabled(
 	return {
 		...core,
 		alarms: core.alarms.map((alarm) =>
-			alarm.id === id ? { ...alarm, enabled, snoozedUntil: null } : alarm,
+			alarm.id === id
+				? { ...alarm, enabled, snoozedUntil: null, lastRungDay: null }
+				: alarm,
 		),
 	};
 }
@@ -157,6 +185,11 @@ function todayAt(hour: number, minute: number, now: Date): number {
 	const candidate = new Date(now);
 	candidate.setHours(hour, minute, 0, 0);
 	return candidate.getTime();
+}
+
+/** Local calendar day key for a point in time. */
+function dayKey(now: Date): string {
+	return now.toDateString();
 }
 
 /**
@@ -171,13 +204,18 @@ const RING_GRACE_MS = 60 * 1000;
 
 function isDue(alarm: Alarm, now: Date): boolean {
 	// A snoozed alarm rings by its snooze timestamp regardless of `enabled`:
-	// firing disabled it, and snoozing is the only thing that re-arms it.
+	// firing disabled it (one-shot) or its snooze re-arms it (repeat), and
+	// snoozing is the only thing that re-arms it mid-day.
 	if (alarm.snoozedUntil !== null) {
 		return now.getTime() >= alarm.snoozedUntil;
 	}
 	if (!alarm.enabled) return false;
 	const delta = now.getTime() - todayAt(alarm.hour, alarm.minute, now);
-	return delta >= 0 && delta < RING_GRACE_MS;
+	if (delta < 0 || delta >= RING_GRACE_MS) return false;
+	// A repeat alarm consumes today's occurrence when it rings, so a
+	// dismiss mid-grace-window (or a page reload) cannot ring it twice.
+	if (alarm.repeat && alarm.lastRungDay === dayKey(now)) return false;
+	return true;
 }
 
 export interface AlarmTickResult {
@@ -189,10 +227,12 @@ export interface AlarmTickResult {
 /**
  * Advance the alarm scheduler by one tick.
  *
- * The first due alarm starts ringing; it is disabled (one-shot) so the same
- * occurrence can never ring twice, including across a page reload. When
- * something is already ringing, due alarms stay armed and ring on a later
- * tick — the overlay handles one alarm at a time.
+ * The first due alarm starts ringing. One-shot alarms disable themselves so
+ * the same occurrence can never ring twice, including across a page reload;
+ * repeat alarms are never consumed — clearing a pending snooze re-arms them
+ * for the next day via `todayAt`. When something is already ringing, due
+ * alarms stay armed and ring on a later tick — the overlay handles one alarm
+ * at a time.
  */
 export function tickAlarms(core: AlarmCore, now: Date): AlarmTickResult {
 	if (core.ringingId !== null) {
@@ -203,7 +243,11 @@ export function tickAlarms(core: AlarmCore, now: Date): AlarmTickResult {
 		return {
 			core: {
 				alarms: core.alarms.map((a) =>
-					a.id === alarm.id ? { ...a, enabled: false, snoozedUntil: null } : a,
+					a.id === alarm.id
+						? a.repeat
+							? { ...a, snoozedUntil: null, lastRungDay: dayKey(now) }
+							: { ...a, enabled: false, snoozedUntil: null }
+						: a,
 				),
 				ringingId: alarm.id,
 			},

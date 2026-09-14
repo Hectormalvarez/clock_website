@@ -10,6 +10,8 @@ const alarm: Alarm = {
 	hour: 9,
 	minute: 30,
 	enabled: true,
+	repeat: false,
+	lastRungDay: null,
 	snoozedUntil: null,
 };
 

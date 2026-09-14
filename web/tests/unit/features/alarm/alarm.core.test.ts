@@ -23,6 +23,8 @@ function makeAlarm(overrides: Partial<Alarm> = {}): Alarm {
 		hour: 9,
 		minute: 30,
 		enabled: true,
+		repeat: false,
+		lastRungDay: null,
 		snoozedUntil: null,
 		...overrides,
 	};
@@ -279,5 +281,142 @@ describe('dismissAlarm', () => {
 		const next = dismissAlarm(core);
 		expect(next.ringingId).toBeNull();
 		expect(next.alarms[0]).toEqual(alarm);
+	});
+});
+
+// ---------- Daily repeat (US-002) ----------
+
+describe('addAlarm repeat option', () => {
+	it('creates a repeat alarm when requested', () => {
+		const core = addAlarm(
+			createAlarmCore(),
+			'Standup',
+			{ hour: 9, minute: 30 },
+			true,
+		);
+		expect(core.alarms[0].repeat).toBe(true);
+		expect(core.alarms[0].lastRungDay).toBeNull();
+	});
+
+	it('defaults to one-shot', () => {
+		const core = addAlarm(createAlarmCore(), 'Standup', {
+			hour: 9,
+			minute: 30,
+		});
+		expect(core.alarms[0].repeat).toBe(false);
+	});
+});
+
+describe('daily-repeat alarms', () => {
+	const now = new Date(2026, 8, 13, 9, 30, 30); // just past 09:30
+	const nextDay = new Date(2026, 8, 14, 9, 30, 30);
+
+	it('rings a repeat alarm without consuming it', () => {
+		const core = makeCore([makeAlarm({ repeat: true })]);
+		const result = tickAlarms(core, now);
+		expect(result.rangId).toBe('alarm-1');
+		expect(result.core.alarms[0].enabled).toBe(true);
+		expect(result.core.alarms[0].snoozedUntil).toBeNull();
+	});
+
+	it('marks the rung occurrence so it cannot ring twice today', () => {
+		const core = makeCore([makeAlarm({ repeat: true })]);
+		const first = tickAlarms(core, now);
+		expect(first.core.alarms[0].lastRungDay).toBe(now.toDateString());
+		// A dismiss mid-grace-window (or a reload) must not re-ring today.
+		const again = tickAlarms({ ...first.core, ringingId: null }, now);
+		expect(again.rangId).toBeNull();
+	});
+
+	it('rings a repeat alarm again the next day', () => {
+		const core = makeCore([makeAlarm({ repeat: true })]);
+		const first = tickAlarms(core, now);
+		const second = tickAlarms({ ...first.core, ringingId: null }, nextDay);
+		expect(second.rangId).toBe('alarm-1');
+		expect(second.core.alarms[0].enabled).toBe(true);
+	});
+
+	it('stays armed after being dismissed', () => {
+		const core = makeCore([makeAlarm({ repeat: true })], 'alarm-1');
+		const dismissed = dismissAlarm(core);
+		expect(dismissed.alarms[0].enabled).toBe(true);
+		expect(dismissed.ringingId).toBeNull();
+		const result = tickAlarms(dismissed, now);
+		expect(result.rangId).toBe('alarm-1');
+	});
+
+	it('rings after a snooze expires and stays armed for the next day', () => {
+		const snoozeAt = new Date(2026, 8, 13, 9, 30, 0);
+		let core = makeCore([makeAlarm({ repeat: true })], 'alarm-1');
+		core = snoozeAlarm(core, 'alarm-1', snoozeAt);
+		const snoozedUntil = core.alarms[0].snoozedUntil;
+		expect(snoozedUntil).not.toBeNull();
+		const rang = tickAlarms(
+			{ ...core },
+			new Date((snoozedUntil as number) + 1),
+		);
+		expect(rang.rangId).toBe('alarm-1');
+		expect(rang.core.alarms[0].enabled).toBe(true);
+		expect(rang.core.alarms[0].snoozedUntil).toBeNull();
+		const next = tickAlarms({ ...rang.core, ringingId: null }, nextDay);
+		expect(next.rangId).toBe('alarm-1');
+	});
+
+	it('never rings while disabled', () => {
+		const core = makeCore([makeAlarm({ repeat: true, enabled: false })]);
+		const result = tickAlarms(core, now);
+		expect(result.rangId).toBeNull();
+	});
+
+	it('re-arms from its configured time when toggled (consumed day cleared)', () => {
+		let core = makeCore([makeAlarm({ repeat: true })]);
+		core = tickAlarms(core, now).core; // rang today
+		core = dismissAlarm(core); // overlay closes; alarm still armed
+		core = setAlarmEnabled(core, 'alarm-1', false);
+		core = setAlarmEnabled(core, 'alarm-1', true);
+		expect(core.alarms[0].lastRungDay).toBeNull();
+		const result = tickAlarms(core, now);
+		expect(result.rangId).toBe('alarm-1');
+	});
+
+	it('queues a second due repeat alarm while one is already ringing', () => {
+		const core = makeCore(
+			[
+				makeAlarm({ hour: 9, minute: 29, repeat: true }),
+				makeAlarm({ id: 'alarm-2', repeat: true }),
+			],
+			'alarm-1',
+		);
+		const result = tickAlarms(core, now);
+		expect(result.rangId).toBeNull();
+		expect(result.core.alarms[1].enabled).toBe(true);
+	});
+
+	it('parses legacy records without a repeat flag as one-shot', () => {
+		const json = JSON.stringify([
+			{
+				id: 'alarm-1',
+				name: 'Old',
+				hour: 7,
+				minute: 0,
+				enabled: true,
+				snoozedUntil: null,
+			},
+		]);
+		const alarms = parseAlarms(json);
+		expect(alarms[0].repeat).toBe(false);
+		expect(alarms[0].lastRungDay).toBeNull();
+		// One-shot semantics intact: rings, then disables itself.
+		const late = new Date(2026, 8, 13, 7, 0, 30);
+		const result = tickAlarms(makeCore(alarms), late);
+		expect(result.rangId).toBe('alarm-1');
+		expect(result.core.alarms[0].enabled).toBe(false);
+	});
+
+	it('round-trips the repeat flag and rejects a non-boolean one', () => {
+		const json = JSON.stringify([makeAlarm({ repeat: true })]);
+		expect(parseAlarms(json)).toEqual([makeAlarm({ repeat: true })]);
+		const bad = JSON.stringify([{ ...makeAlarm(), repeat: 'yes' }]);
+		expect(parseAlarms(bad)).toEqual([]);
 	});
 });
