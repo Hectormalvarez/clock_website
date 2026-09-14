@@ -41,6 +41,10 @@ export function initAlarm(
 	const nameInput = queryOptional<HTMLInputElement>(rootElement, '.alarm-name');
 	const timeInput = queryOptional<HTMLInputElement>(rootElement, '.alarm-time');
 	const addBtn = queryOptional<HTMLButtonElement>(rootElement, '.alarm-add');
+	const repeatInput = queryOptional<HTMLInputElement>(
+		rootElement,
+		'.alarm-repeat',
+	);
 	const errorEl = queryOptional<HTMLElement>(rootElement, '.alarm-error');
 	const list = queryOptional<HTMLElement>(rootElement, '.alarm-list');
 
@@ -69,6 +73,7 @@ export function initAlarm(
 		!nameInput ||
 		!timeInput ||
 		!addBtn ||
+		!repeatInput ||
 		!errorEl ||
 		!list ||
 		!overlay ||
@@ -89,6 +94,7 @@ export function initAlarm(
 		nameInput,
 		timeInput,
 		addBtn,
+		repeatInput,
 		errorEl,
 		list,
 		overlay,
@@ -162,12 +168,26 @@ export function initAlarm(
 			toggle.checked = isArmed;
 			toggle.setAttribute('aria-label', `Enable ${alarmDisplayName(alarm)}`);
 
+			row.append(name, time);
+			if (alarm.repeat) {
+				// Daily-repeat indicator (US-002). role="img" + aria-label so
+				// screen readers announce it; the SVG itself is presentational.
+				const repeat = document.createElement('span');
+				repeat.className = 'alarm-row-repeat';
+				repeat.setAttribute('role', 'img');
+				repeat.setAttribute('aria-label', 'Repeats daily');
+				repeat.title = 'Repeats daily';
+				repeat.innerHTML =
+					'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36" /><polyline points="21 3 21 9 15 9" /></svg>';
+				row.append(repeat);
+			}
+
 			const removeBtn = document.createElement('button');
 			removeBtn.className = 'alarm-row-remove';
 			removeBtn.textContent = '✕';
 			removeBtn.setAttribute('aria-label', `Delete ${alarmDisplayName(alarm)}`);
 
-			row.append(name, time, toggle, removeBtn);
+			row.append(toggle, removeBtn);
 			dom.list.append(row);
 		}
 	}
@@ -249,10 +269,11 @@ export function initAlarm(
 			dom.errorEl.textContent = 'Set a valid time (HH:MM).';
 			return;
 		}
-		core = addAlarm(core, dom.nameInput.value, time);
+		core = addAlarm(core, dom.nameInput.value, time, dom.repeatInput.checked);
 		persist();
 		dom.nameInput.value = '';
 		dom.timeInput.value = '';
+		dom.repeatInput.checked = false;
 		renderAlarmList();
 		renderToggle();
 	}
