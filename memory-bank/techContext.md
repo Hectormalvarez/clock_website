@@ -6,7 +6,7 @@
   (`web/.nvmrc`: 22).
 - **Vitest 4 + jsdom** for tests; `@vitest/coverage-v8` for coverage.
 - ESLint (flat config, `web/eslint.config.js`), Prettier, husky + lint-staged.
-- Containers: `node:22-alpine`, `nginxinc/nginx-unprivileged:1.27-alpine`
+- Containers: `node:22-alpine`, `nginxinc/nginx-unprivileged:1.30-alpine`
   (EOL mainline branch — see backlog HK-5), `golang:1.24-alpine`, `alpine:3.21`
   — all digest-pinned (ADR 0005). Deployer: `github.com/adnanh/webhook`
   pseudo-version pin.

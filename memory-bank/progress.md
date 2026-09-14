@@ -37,7 +37,7 @@ Site is live at `clock.taylormadetech.net`.
 - Edge-cached homepage can lag up to 2 h behind a deploy (expected; judge
   freshness via `/healthz` or a query-string cache-bust, which works).
 - CI actions pinned to Node-20-runtime majors (HK-2 — fix in progress).
-- `nginxinc/nginx-unprivileged:1.27-alpine` is an EOL mainline branch
+- `nginxinc/nginx-unprivileged:1.30-alpine` is an EOL mainline branch
   (HK-5 candidate: re-pin to current stable + digest).
 - npm minor drift: eslint/prettier/lint-staged/TS patch bumps available;
   vite 7+/vitest 5 majors deliberately deferred (not housekeeping).
