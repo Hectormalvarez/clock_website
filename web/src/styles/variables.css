@@ -25,8 +25,8 @@
 	--color-text-secondary: rgba(0, 255, 0, 0.72);
 	--color-text-muted: rgba(0, 255, 0, 0.6);
 
-	/* Input placeholder (on --color-surface-alt) ≈ 5.0:1 */
-	--color-placeholder: rgba(0, 255, 0, 0.5);
+	/* Input placeholder (on --color-surface-alt) ≈ 4.7:1 */
+	--color-placeholder: rgba(0, 255, 0, 0.55);
 
 	/* Focus ring (outline) — #0f0 on --color-bg ≈ 11.6:1 */
 	--focus-outline-width: 2px;
