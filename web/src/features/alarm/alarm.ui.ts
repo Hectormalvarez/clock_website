@@ -1,4 +1,5 @@
 import { playBeep } from '@/shared/audio/beep';
+import { flipAnimate } from '@/shared/dom/flip';
 import { queryOptional } from '@/shared/dom/query';
 import {
 	addAlarm,
@@ -44,6 +45,10 @@ export function initAlarm(
 	const list = queryOptional<HTMLElement>(rootElement, '.alarm-list');
 
 	const overlay = queryOptional<HTMLElement>(document, '.alarm-overlay');
+	const overlayCard = queryOptional<HTMLElement>(
+		document,
+		'.alarm-overlay-card',
+	);
 	const overlayName = queryOptional<HTMLElement>(
 		document,
 		'.alarm-overlay-name',
@@ -67,6 +72,7 @@ export function initAlarm(
 		!errorEl ||
 		!list ||
 		!overlay ||
+		!overlayCard ||
 		!overlayName ||
 		!overlayTime ||
 		!snoozeBtn ||
@@ -86,6 +92,7 @@ export function initAlarm(
 		errorEl,
 		list,
 		overlay,
+		overlayCard,
 		overlayName,
 		overlayTime,
 		snoozeBtn,
@@ -162,6 +169,7 @@ export function initAlarm(
 
 	function renderToggle() {
 		dom.toggleBtn.classList.toggle('active', isPanelOpen);
+		dom.toggleBtn.setAttribute('aria-expanded', String(isPanelOpen));
 		const armed = core.alarms.some(
 			(alarm) => alarm.enabled || alarm.snoozedUntil !== null,
 		);
@@ -183,6 +191,8 @@ export function initAlarm(
 		dom.overlayName.textContent = alarmDisplayName(alarm);
 		dom.overlayTime.textContent = formatAlarmTime(alarm.hour, alarm.minute);
 		dom.overlay.hidden = false;
+		// Move focus into the modal so keyboard users land in the dialog.
+		dom.overlayCard.focus();
 		playBeep(getAudioCtx());
 		beepIntervalId = window.setInterval(() => {
 			playBeep(getAudioCtx());
@@ -192,6 +202,8 @@ export function initAlarm(
 	function stopRinging() {
 		stopBeeps();
 		dom.overlay.hidden = true;
+		// Return focus to a stable anchor after the dialog closes.
+		dom.toggleBtn.focus();
 		renderAlarmList();
 	}
 
@@ -269,64 +281,31 @@ export function initAlarm(
 
 	// ---------- Panel toggle ----------
 
-	// FLIP animation: smoothly animate #clock-container movement when the
-	// panel is added/removed (which re-centers the container in the body).
-	// Mirrors the timer feature's open/close behaviour so both panels feel
-	// the same.
-	function flipAnimateClockContainer(action: () => void) {
-		const container = rootElement.closest(
-			'#clock-container',
-		) as HTMLElement | null;
-		if (!container) {
-			action();
-			return;
-		}
-
-		// Lock body overflow so the page can't scroll while the height changes
-		const prevBodyOverflow = document.body.style.overflow;
-		document.body.style.overflow = 'hidden';
-
-		const firstRect = container.getBoundingClientRect();
-
-		action();
-
-		const lastRect = container.getBoundingClientRect();
-		const deltaY = firstRect.top - lastRect.top;
-		container.style.transition = 'none';
-		container.style.transform = `translateY(${deltaY}px)`;
-
-		requestAnimationFrame(() => {
-			container.style.transition =
-				'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-			container.style.transform = '';
-		});
-
-		const onEnd = () => {
-			container.removeEventListener('transitionend', onEnd);
-			container.style.transition = '';
-			container.style.transform = '';
-			document.body.style.overflow = prevBodyOverflow;
-		};
-		container.addEventListener('transitionend', onEnd);
-
-		// Fallback in case transitionend doesn't fire
-		setTimeout(onEnd, 400);
+	function clockContainer(): HTMLElement | null {
+		return rootElement.closest('#clock-container') as HTMLElement | null;
 	}
 
 	function openPanel() {
-		flipAnimateClockContainer(() => {
+		flipAnimate(clockContainer(), () => {
 			isPanelOpen = true;
 			dom.panel.removeAttribute('hidden');
 			renderToggle();
 		});
+		// Move focus into the panel so keyboard users continue from the
+		// first field instead of the toggle.
+		dom.nameInput.focus();
 	}
 
 	function closePanel() {
-		flipAnimateClockContainer(() => {
+		flipAnimate(clockContainer(), () => {
 			isPanelOpen = false;
 			dom.panel.setAttribute('hidden', '');
 			renderToggle();
 		});
+		// Restore focus to the toggle only if it was inside the panel.
+		if (dom.panel.contains(document.activeElement)) {
+			dom.toggleBtn.focus();
+		}
 	}
 
 	function togglePanel() {
@@ -337,6 +316,9 @@ export function initAlarm(
 	// ---------- Document-level events ----------
 
 	function onDocumentClick(e: MouseEvent) {
+		// Never close the panel while the ring overlay is up — the overlay
+		// owns the interaction until it is dismissed or snoozed.
+		if (core.ringingId !== null) return;
 		const target = e.target as Node;
 		if (isPanelOpen && !rootElement.contains(target)) {
 			closePanel();
@@ -344,10 +326,23 @@ export function initAlarm(
 	}
 
 	function onDocumentKeydown(e: KeyboardEvent) {
-		// While ringing, Escape and Enter dismiss — the overlay takes priority
-		// over the panel-close shortcut.
-		if (core.ringingId !== null && (e.key === 'Escape' || e.key === 'Enter')) {
-			onDismiss();
+		// While ringing, the overlay owns the keyboard: Escape/Enter dismiss,
+		// and Tab is trapped between Snooze and Dismiss.
+		if (core.ringingId !== null) {
+			if (e.key === 'Escape' || e.key === 'Enter') {
+				onDismiss();
+				return;
+			}
+			if (e.key === 'Tab') {
+				e.preventDefault();
+				const order = [dom.snoozeBtn, dom.dismissBtn];
+				const idx = order.indexOf(document.activeElement as HTMLButtonElement);
+				const nextIdx =
+					idx === -1
+						? 0
+						: (idx + (e.shiftKey ? -1 : 1) + order.length) % order.length;
+				order[nextIdx].focus();
+			}
 			return;
 		}
 		if (e.key === 'Escape' && isPanelOpen) closePanel();
