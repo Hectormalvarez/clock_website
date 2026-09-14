@@ -38,6 +38,20 @@
 	box-shadow: var(--glow-md);
 }
 
+/* Dynamic text (countdown / finish time) shown next to the icon — never
+   replace the button's content, the SVG icon must survive renders. */
+.timer-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2xs);
+}
+
+.timer-toggle-text {
+	font-size: 0.7em;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
 .timer-toggle.running {
 	animation: timer-pulse 1.5s ease-in-out infinite;
 }
@@ -92,7 +106,8 @@
 }
 
 .timer-finish-time.visible {
-	opacity: 0.75;
+	opacity: 1;
+	color: var(--color-text-secondary);
 }
 
 /* ---------- Controls (Inputs + Inc/Dec) ---------- */
@@ -132,26 +147,25 @@
 	font-size: var(--font-size-timer-input);
 	cursor: pointer;
 	border-radius: var(--border-radius-sm);
-	padding: var(--space-xs) var(--space-lg);
-	transition:
-		background-color var(--transition-normal),
-		opacity var(--transition-normal),
-		visibility var(--transition-normal);
+	padding: 0;
+	width: 2em;
+	height: 2em;
+	display: grid;
+	place-items: center;
+	box-sizing: border-box;
+	transition: background-color var(--transition-normal);
 	line-height: 1;
-	opacity: 0;
-	visibility: hidden;
 }
 
-.timer-controls:hover button,
-.timer-controls:focus-within button {
-	opacity: 0.5;
-	visibility: visible;
-}
-
+/* Always visible — hover-only controls are unusable on touch devices. */
 .timer-controls button:hover,
 .timer-controls button:focus-visible {
-	opacity: 1 !important;
 	background-color: var(--color-primary-medium);
+}
+
+.timer-controls button:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
 }
 
 .timer-colon {
@@ -202,25 +216,26 @@
 	font-size: var(--font-size-small);
 	line-height: 1;
 	user-select: none;
+	color: var(--color-text-secondary);
 }
 
 .preset-row-remove {
 	background: none;
 	border: none;
-	color: var(--color-primary);
-	opacity: 0.5;
-	font-size: 0.9em;
+	color: var(--color-text-muted);
+	font-size: 1em;
 	line-height: 1;
-	padding: 0 var(--space-2xs);
+	width: 24px;
+	height: 24px;
+	display: grid;
+	place-items: center;
+	padding: 0;
 	cursor: pointer;
-	transition:
-		opacity var(--transition-fast),
-		color var(--transition-fast);
+	transition: color var(--transition-fast);
 	flex-shrink: 0;
 }
 
 .preset-row-remove:hover {
-	opacity: 1;
 	color: var(--color-danger);
 }
 
@@ -237,28 +252,26 @@
 
 .timer-preset-add {
 	background: none;
-	border: var(--border-width) dashed var(--color-primary);
+	border: var(--border-width) solid var(--color-primary);
 	color: var(--color-primary);
-	font-size: var(--font-size-xs);
+	font-size: var(--font-size-small);
 	cursor: pointer;
 	border-radius: var(--border-radius-sm);
-	padding: var(--space-2xs) var(--space-lg);
+	padding: var(--space-xs) var(--space-lg);
 	transition:
 		background-color var(--transition-normal),
 		box-shadow var(--transition-normal);
 	line-height: 1;
-	opacity: 0.7;
 }
 
 .timer-preset-add:hover,
 .timer-preset-add:focus-visible {
 	background-color: var(--color-primary-soft);
-	opacity: 1;
 	box-shadow: var(--glow-sm);
 }
 
 .timer-preset-add.inactive {
-	opacity: 0.3;
+	color: var(--color-text-muted);
 	cursor: default;
 	box-shadow: none;
 }
@@ -266,7 +279,6 @@
 .timer-preset-add.inactive:hover,
 .timer-preset-add.inactive:focus-visible {
 	background-color: transparent;
-	opacity: 0.3;
 	box-shadow: none;
 }
 

@@ -74,6 +74,10 @@ export function initTimer(
 		rootElement,
 		'.timer-toggle',
 	);
+	const toggleText = queryOptional<HTMLElement>(
+		rootElement,
+		'.timer-toggle-text',
+	);
 	const panel = queryOptional<HTMLElement>(rootElement, '.timer-panel');
 	const presetsContainer = queryOptional<HTMLElement>(
 		rootElement,
@@ -98,6 +102,7 @@ export function initTimer(
 		!decMinBtn ||
 		!incMinBtn ||
 		!toggleBtn ||
+		!toggleText ||
 		!panel ||
 		!presetsContainer ||
 		!presetsBar ||
@@ -118,6 +123,7 @@ export function initTimer(
 		decMinBtn,
 		incMinBtn,
 		toggleBtn,
+		toggleText,
 		panel,
 		presetsContainer,
 		presetsBar,
@@ -194,7 +200,7 @@ export function initTimer(
 		// Buttons
 		startBtn.textContent =
 			core.state === 'running'
-				? '⏸ Pause'
+				? '❚❚ Pause'
 				: core.state === 'paused'
 					? '▶ Resume'
 					: '▶ Start';
@@ -231,19 +237,23 @@ export function initTimer(
 	}
 
 	function renderToggle() {
-		const { toggleBtn } = dom;
+		// Update only the text span — never the button's content, so the
+		// inline SVG icon survives every render.
+		const { toggleText } = dom;
 		if (isPanelOpen) {
-			toggleBtn.textContent = '⏱';
+			toggleText.hidden = true;
 		} else if (
 			core.state === 'running' &&
 			core.remaining > 0 &&
 			core.finishTimestamp !== null
 		) {
-			toggleBtn.textContent = formatFinishTime(core.remaining);
+			toggleText.hidden = false;
+			toggleText.textContent = formatFinishTime(core.remaining);
 		} else if (core.state !== 'idle') {
-			toggleBtn.textContent = formatDuration(core.remaining);
+			toggleText.hidden = false;
+			toggleText.textContent = formatDuration(core.remaining);
 		} else {
-			toggleBtn.textContent = '⏱';
+			toggleText.hidden = true;
 		}
 	}
 
