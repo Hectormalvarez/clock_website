@@ -37,6 +37,26 @@ input {
 	opacity: 1;
 }
 
+/* ---------- Shared panel primitives (used by timer + alarm panels) ---------- */
+
+.panel-title {
+	margin: 0;
+	font-size: var(--font-size-small);
+	font-weight: var(--font-weight-bold);
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	text-align: center;
+	color: var(--color-text-secondary);
+}
+
+.field-label {
+	font-size: var(--font-size-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--color-text-secondary);
+	user-select: none;
+}
+
 /* ---------- Environment Marker ---------- */
 
 .environment-marker {
