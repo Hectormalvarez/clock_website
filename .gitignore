@@ -10,5 +10,8 @@ coverage/
 
 docker-compose.override.yml
 
+# Previous-release assets extracted by scripts/deploy.sh (HK-6)
+/.prev-assets/
+
 .DS_Store
 *.log
