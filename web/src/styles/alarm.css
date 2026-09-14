@@ -349,3 +349,42 @@
 .alarm-list::-webkit-scrollbar-corner {
 	background: transparent;
 }
+
+/* ---- Repeat daily (US-002) ---- */
+
+.repeat-check {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-xs);
+	color: var(--color-text-secondary);
+	font-family: var(--font-family);
+	font-size: var(--font-size-small);
+	white-space: nowrap;
+	padding: 0 var(--space-xs);
+	cursor: pointer;
+	user-select: none;
+}
+
+.repeat-check:hover {
+	color: var(--color-primary);
+}
+
+.repeat-check input {
+	width: 15px;
+	height: 15px;
+	margin: 0;
+	accent-color: var(--color-primary);
+	cursor: pointer;
+}
+
+.repeat-check input:focus-visible {
+	outline: var(--focus-width, 2px) solid var(--color-primary);
+	outline-offset: 2px;
+}
+
+.alarm-row-repeat {
+	display: inline-flex;
+	align-items: center;
+	color: var(--color-text-secondary);
+	flex-shrink: 0;
+}
