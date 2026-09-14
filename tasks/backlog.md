@@ -10,21 +10,9 @@ sized/sequenced by the SDM.
 
 - Status: Candidate — needs a user story from the Product Owner before work.
 - Source: MVP cut recorded in US-001 ("Out of Scope": daily-repeat alarms).
-- Priority: High — most requested natural follow-up to US-001.
+- Priority: **Deprioritized behind US-005** (owner decision 2026-09-13) —
+  still the most requested natural follow-up to US-001.
 - Dependencies: none (builds directly on the US-001 alarm core).
-
-### US-003 — Alarm ergonomics follow-ups
-
-- Status: Candidate — small items culled from the US-001 code review (non-blocking).
-- Contents:
-  1. Extract the FLIP panel-open helper duplicated between timer.ui.ts and
-     alarm.ui.ts into `shared/dom/` (refactor; both features keep behavior).
-  2. Guard the document-level outside-click handler so the alarm panel does
-     not close while the ringing overlay is up.
-  3. Overlay focus management: move keyboard focus into the ring overlay
-     when ringing starts (a11y pass).
-- Priority: Medium — bundle with the next alarm-adjacent story or the
-  multi-clock epic to avoid a dedicated PR.
 
 ## Epic: Multi-clock
 
@@ -32,8 +20,9 @@ sized/sequenced by the SDM.
 
 - Status: Candidate — `clock-registry.ts` scaffold exists but is not wired.
 - Source: README ("Multi-clock scaffold — not wired up yet"); recommended as
-  the next major epic after the Alarms epic.
-- Dependencies: US-003 (shared FLIP helper) would reduce duplicated wiring.
+  a major epic after the Alarms epic.
+- Dependencies: the shared FLIP helper (formerly US-003 item 1) is DONE via
+  US-005 (`shared/dom/flip.ts`) — the sequencing blocker is cleared.
 - Note: likely requires an ADR if the page layout/composition root changes
   meaningfully, plus a Product Owner story defining what a "clock" is.
 

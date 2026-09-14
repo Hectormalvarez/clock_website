@@ -4,12 +4,21 @@
 
 US-001 (Multiple Alarms) is **deployed to production** (PR #13 merged
 2026-09-13 21:17Z; Release run #5 succeeded; `healthz` verified 200).
+US-005 (UX polish & a11y hardening) is **implemented on
+`feat/us-005-ux-polish`** — all ACs verified, awaiting owner QA/review.
 Site is live at `clock.taylormadetech.net`.
 
 ## What works
 
 - Clock (tick, title mirror, timezone), timer (presets, persistence, beep),
-  alarms (multi, snooze, persistence, ring overlay) — 135 unit tests green.
+  alarms (multi, snooze, persistence, ring overlay) — 140 unit tests green.
+- **Design system (US-005):** semantic text-tier tokens (secondary 7.0:1,
+  muted 5.2:1, placeholder 4.7:1 — never raw opacity for text), AA-safe
+  danger `#ff6b6b`, global `:focus-visible` ring, monochrome inline-SVG
+  icons, shared FLIP helper (`shared/dom/flip.ts`, reduced-motion aware),
+  focus management + `aria-modal` ring overlay with Tab trap,
+  `prefers-reduced-motion` global kill switch, `panelHadFocus` focus-restore
+  pattern in both UI features.
 - Full CI gate: prettier, eslint, typecheck, vitest+coverage, build,
   `nginx -t` × 2, compose config × 2, hadolint × 4.
 - Automated deploys: `main` → GHCR → webhook → swap with auto-rollback.
