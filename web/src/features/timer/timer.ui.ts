@@ -139,6 +139,9 @@ export function initTimer(
 	let intervalId: number | null = null;
 	let beepIntervalId: number | null = null;
 	let isPanelOpen = false;
+	// See alarm.ui.ts: focus may already be on body by the time an
+	// outside-click close runs, so we track "had focus" from open instead.
+	let panelHadFocus = false;
 	let activeInput: 'min' | 'sec' = 'min';
 
 	let sharedAudioCtx: AudioContext | null = null;
@@ -418,6 +421,7 @@ export function initTimer(
 		});
 		// Move focus into the panel so keyboard users continue from the
 		// first field instead of the toggle.
+		panelHadFocus = true;
 		dom.minInput.focus();
 	}
 
@@ -439,8 +443,10 @@ export function initTimer(
 				renderToggle();
 			}
 		});
-		// Restore focus to the toggle only if it was inside the panel.
-		if (dom.panel.contains(document.activeElement)) {
+		// Restore focus to the toggle — the dialog trigger — whenever the
+		// panel had focus during this open session.
+		if (panelHadFocus) {
+			panelHadFocus = false;
 			dom.toggleBtn.focus();
 		}
 	}

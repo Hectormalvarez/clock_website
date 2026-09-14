@@ -106,6 +106,11 @@ export function initAlarm(
 	let intervalId: number | null = null;
 	let beepIntervalId: number | null = null;
 	let isPanelOpen = false;
+	// True from the moment the panel is opened (we always move focus into
+	// it) until close restores focus to the toggle. Focus may already be on
+	// body by the time an outside-click close runs (mousedown blurs first),
+	// so containment checks on activeElement are unreliable.
+	let panelHadFocus = false;
 
 	let sharedAudioCtx: AudioContext | null = null;
 
@@ -293,6 +298,7 @@ export function initAlarm(
 		});
 		// Move focus into the panel so keyboard users continue from the
 		// first field instead of the toggle.
+		panelHadFocus = true;
 		dom.nameInput.focus();
 	}
 
@@ -302,8 +308,10 @@ export function initAlarm(
 			dom.panel.setAttribute('hidden', '');
 			renderToggle();
 		});
-		// Restore focus to the toggle only if it was inside the panel.
-		if (dom.panel.contains(document.activeElement)) {
+		// Restore focus to the toggle — the dialog trigger — whenever the
+		// panel had focus during this open session.
+		if (panelHadFocus) {
+			panelHadFocus = false;
 			dom.toggleBtn.focus();
 		}
 	}
