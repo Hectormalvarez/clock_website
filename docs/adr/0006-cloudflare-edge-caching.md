@@ -17,7 +17,7 @@ two files the HTML references are served from the edge. The most expensive hop
 
 The `no-cache` policy itself is correct for browsers: the HTML references
 `index-<hash>.js`, and a stale HTML file would point at hashes that no longer
-exist. The tension is that browsers and the Cloudflare edge need *different*
+exist. The tension is that browsers and the Cloudflare edge need _different_
 instructions, and `Cache-Control` alone gives both caches the same one.
 
 ## Decision
@@ -27,7 +27,7 @@ instructions, and `Cache-Control` alone gives both caches the same one.
   the edge with a 304, via the existing `ETag`/`Last-Modified`).
 - The **edge** caches the document via a zone **Cache Rule**: hostname
   `clock.taylormadetech.net`, URI path in `{/, /index.html}`, cache
-  eligibility *Eligible for cache*, **Edge TTL 2 hours** (the Free-plan
+  eligibility _Eligible for cache_, **Edge TTL 2 hours** (the Free-plan
   floor). The rule lives in the dashboard because origin headers cannot
   express it on this plan (see Alternatives); `/healthz` is deliberately not
   matched, so health checks can never be served from cache.

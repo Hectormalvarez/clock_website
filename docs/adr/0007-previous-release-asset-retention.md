@@ -7,8 +7,8 @@
 ## Context
 
 ADR-0006 accepted a bounded staleness window after each deploy on the
-assumption that *"old hashed assets remain edge-resident, so even a stale
-HTML document still resolves its assets"*. That assumption was **observed to
+assumption that _"old hashed assets remain edge-resident, so even a stale
+HTML document still resolves its assets"_. That assumption was **observed to
 fail in practice on 2026-09-14**: after a deploy, Cloudflare served the
 still-cached homepage (Edge TTL 2 h), but requests for the asset hashes the
 old HTML referenced returned **404 — and Cloudflare cached the 404 itself**
@@ -42,7 +42,7 @@ Keep the previous release's assets servable on origin:
    Hashes present in the new build always win; only hashes missing from it
    fall back.
 
-The first deploy after this ADR merges still runs the *old* in-memory
+The first deploy after this ADR merges still runs the _old_ in-memory
 deploy.sh (the webhook executes the script before it re-pulls), so the
 fallback becomes fully populated from the **second** deploy onward. From
 then on, a deploy no longer requires a Cloudflare purge to keep the site

@@ -1,38 +1,39 @@
 # Active Context
 
-Updated: 2026-09-13 (evening)
+Updated: 2026-09-14
 
 ## Current focus
 
-**US-005 — UX polish & a11y hardening: implemented on `feat/us-005-ux-polish`**
-(off `dev`), awaiting owner QA/review → PR into `dev`. Commits: story +
-baseline shots → token layer → alarm redesign → timer normalization → a11y
-wiring/FLIP → AA placeholder fix → focus-restore fix → verification record.
+**HK-6 — implemented on `fix/hk6-asset-retention`** (off `main`): the
+stale-HTML/dead-asset window after deploys is closed via previous-release
+asset retention (ADR-0007). deploy.sh step 3b streams the old web
+container's assets into `.prev-assets/` (tar contents-form — the `docker
+cp src/. dst/` form NESTS, do not use); compose bind-mounts it ro at
+`/usr/share/nginx/html-prev`; `web/nginx.conf` `try_files $uri
+@prev_assets` fallback serves old hashes with immutable headers.
 
-- Verify with the story's §6 record
-  (`docs/stories/US-005-ux-polish-accessibility.md`): contrast table (all
-  AA), 20/20 Playwright a11y assertions, 140 unit tests, before/after
-  screenshots.
-- Design decisions worth knowing: green/dark aesthetic kept; emoji glyphs
-  replaced by inline SVG (`currentColor`); text-tier tokens replace the
-  opacity soup (never use raw opacity for text); `panelHadFocus` pattern in
-  both UI files because mousedown blurs before outside-click close runs;
-  timer toggle renders icon + text span (never replace button content).
-- Screenshot tooling lives in `/tmp/ux-shots/` (Playwright 1.63 — NOT a repo
-  dependency): shoot.mjs (14-shot matrix), a11y.mjs (20 assertions),
-  contrast.mjs (WCAG math). Vite dev server on :5173.
+- Verified locally: `sh -n`, both `compose config -q`, `nginx -t` on both
+  configs, functional docker test (old hash 200 via fallback, unknown 404).
+- Sandbox gotcha: this environment's docker bind mounts can show STALE
+  container views of host dirs (caused a long nesting-wild-goose-chase —
+  the data was polluted by an earlier root-owned `docker cp`, and the
+  container saw content the host didn't have). Trust host-side `find` over
+  container `ls` here.
+- First deploy after merge runs the old in-memory deploy.sh; fallback is
+  fully populated from the second deploy onward (in ADR-0007).
 
 ## Environment state
 
-- Branch `feat/us-005-ux-polish` = dev + 8 commits; `dev`/`main` synced.
-- `make check` green (140 tests). Vite dev server may still be running on
-  :5173 (started for screenshots).
+- Branch `fix/hk6-asset-retention` = main + 3 commits (code, ADRs, tasks).
+  `dev` has sprint-tracking commit `54edefa` that main lacks — this branch's
+  sprint.md rewrite reconciles them on merge.
+- `make check` green (140 tests); pure cores untouched by HK-6.
 
 ## Next steps
 
-- Owner: review US-005 (screenshots + behavior), then PR into `dev` →
-  `main` (rebase-merge; the ruleset requires PRs for `main`).
-- Owner: audible alarm-tone check → US-001 fully Done.
-- Pick next epic: US-002 (deprioritized) vs US-004 (blocker cleared by
-  US-005's shared FLIP helper).
-- Schedule HK-5 (nginx re-pin) / HK-6 (cache purge or asset retention).
+- Owner: review + merge HK-6 PR → `main`; next deploy needs NO manual CF
+  purge from the second deploy on.
+- Owner: audible alarm-tone check (US-001) and visual pass on prod (US-005)
+  — both still open.
+- Pick next epic: US-004 (needs PO story + likely ADR) vs US-002 (needs PO
+  story). HK-5 (nginx re-pin) is the remaining housekeeping item.
