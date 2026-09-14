@@ -17,23 +17,34 @@ Sprint window: active (no fixed calendar sprint; pipeline-driven).
 
 ## In flight
 
-Nothing. Housekeeping (HK-1..HK-4 + US-001 close-out) merged via PR #14
-(rebase, 2026-09-13 21:47Z; Release run #6 deployed; healthz 200).
+### US-005 — UX Polish & Accessibility Hardening
+
+- Status: **Implementation complete on `feat/us-005-ux-polish`** — all 8 ACs
+  verified; awaiting owner QA + code review, then PR into `dev`.
+- Delivered: visible labeled fields (alarm create redesign), semantic
+  WCAG-AA design tokens (all pairs computed ≥4.7:1), monochrome SVG icons
+  (red ⏰ / blue 💤 emojis removed), shared control scale across alarm +
+  timer panels, always-visible timer steppers (were hover-only), focus
+  management (into panels on open, restored to toggles on close), ring
+  overlay `aria-modal` + focus trap + outside-click guard (US-003 items 2–3
+  absorbed), shared FLIP helper with unit tests (US-003 item 1 absorbed),
+  `prefers-reduced-motion` support. 140 tests passing; 20/20 Playwright
+  a11y assertions; 14 before/after screenshots in the story folder.
+- Note: alarm/timer/clock **pure cores untouched** — behavior tests pass
+  unchanged.
 
 ## Ready (not started)
 
-Next sprint content comes from the backlog once the owner picks the next
-epic: US-002 (recurring alarms) vs US-004 (multi-clock). HK-5/HK-6 are
+After US-005 closes: owner picks the next epic — US-002 (recurring alarms,
+deprioritized) vs US-004 (multi-clock, blocker cleared). HK-5/HK-6 are
 standalone housekeeping candidates.
 
 ## Dependencies & sequencing
 
 - US-002 can start any time — builds directly on the alarm core.
-- US-003 (review follow-ups) is independent; best bundled with US-002 or
-  US-004.
-- US-004 should wait for US-003 item 1 (shared FLIP helper) and needs a PO
-  story + possibly an ADR.
-- HK-5 (nginx 1.27 re-pin, see backlog) is independent of the epics.
+- US-004's sequencing blocker (shared FLIP helper) is resolved by US-005;
+  still needs a PO story + possibly an ADR.
+- HK-5/HK-6 are independent of the epics.
 
 ## Risks
 

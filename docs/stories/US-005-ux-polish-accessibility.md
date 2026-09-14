@@ -51,23 +51,23 @@ US-003 items 1–3.
 
 ## 3. Acceptance Criteria
 
-- [ ] **AC-1:** Every input has a persistent visible label; placeholder text
+- [x] **AC-1:** Every input has a persistent visible label; placeholder text
       uses a themed token.
-- [ ] **AC-2:** All text/background pairs pass WCAG AA (4.5:1 normal text,
+- [x] **AC-2:** All text/background pairs pass WCAG AA (4.5:1 normal text,
       3:1 large text), verified by computed ratios recorded in this story.
-- [ ] **AC-3:** Alarm and timer panels share one control scale; the alarm
+- [x] **AC-3:** Alarm and timer panels share one control scale; the alarm
       create section uses a labeled layout with comfortable spacing.
-- [ ] **AC-4:** Keyboard-only pass: opening a panel moves focus into it,
+- [x] **AC-4:** Keyboard-only pass: opening a panel moves focus into it,
       closing restores focus to the toggle, the ring overlay traps focus and
       is `aria-modal` (Esc/Enter dismiss), and no keyboard trap exists.
-- [ ] **AC-5:** Panel toggles expose `aria-expanded`/`aria-controls`; alarm
+- [x] **AC-5:** Panel toggles expose `aria-expanded`/`aria-controls`; alarm
       list changes are announced via a polite live region; all rendered row
       controls are labeled.
-- [ ] **AC-6:** `prefers-reduced-motion` disables pulses, panel open/close,
+- [x] **AC-6:** `prefers-reduced-motion` disables pulses, panel open/close,
       and FLIP animations.
-- [ ] **AC-7:** Interactive targets are ≥24×24 px (WCAG 2.5.8), ~44 px where
+- [x] **AC-7:** Interactive targets are ≥24×24 px (WCAG 2.5.8), ~44 px where
       space allows.
-- [ ] **AC-8:** Outside click does not close the alarm panel while ringing.
+- [x] **AC-8:** Outside click does not close the alarm panel while ringing.
 
 ---
 
@@ -93,7 +93,52 @@ US-003 items 1–3.
 
 ## 5. Definition of Done Checklist
 
-- [ ] All ACs verified (screenshots + computed contrast + jsdom tests).
-- [ ] `make check` green; prettier clean.
-- [ ] Backlog updated (US-003 absorbed; priorities adjusted).
+- [x] All ACs verified (screenshots + computed contrast + Playwright
+      assertions + jsdom FLIP unit tests).
+- [x] `make check` green; prettier clean.
+- [x] Backlog updated (US-003 absorbed; priorities adjusted).
 - [ ] QA assessment passed; code review approved.
+
+---
+
+## 6. Verification Record (2026-09-13)
+
+### Computed WCAG contrast (all AA-pass)
+
+| Pair                                                          | Ratio   |
+| ------------------------------------------------------------- | ------- |
+| primary `#0f0` on surface `#1a1a1a` (rows, inputs)            | 12.68:1 |
+| text-secondary (0.72 composite) on surface (labels, times)    | 7.01:1  |
+| text-muted (0.60 composite) on surface (notes, disabled rows) | 5.21:1  |
+| placeholder (0.55 composite) on surface-alt `#111` (inputs)   | 4.71:1  |
+| danger `#ff6b6b` on surface (error text)                      | 6.27:1  |
+| primary on page bg `#222` (clock, toggles)                    | 11.59:1 |
+
+Before-state failures that motivated the tokens: error `#f00` on surface
+≈4.35:1, placeholder (browser default) ≈3.5:1, note text at opacity 0.55
+≈4.5:1, disabled rows at opacity 0.4 ≈3:1.
+
+### Automated behavior assertions (Playwright, 20/20 PASS)
+
+`aria-expanded` on both toggles (initial + open); focus moves into the
+panel on open; both fields have exactly one visible `<label>`; Escape and
+outside-click close with focus restored to the toggle; ring overlay is
+`aria-modal`, receives focus on ring, Tab is trapped between Snooze/Dismiss;
+outside click does not close the panel while ringing; Enter dismisses and
+focus returns to the toggle; reduced-motion produces no FLIP transform.
+
+### Unit tests
+
+`tests/unit/shared/dom/flip.test.ts` — 5 tests (reduced-motion bypass, null
+container, invert-then-cleanup, no-delta cleanup, absent matchMedia).
+Full suite: 140 passing (135 pre-existing + 5 new).
+
+### Screenshots
+
+`docs/stories/US-005/screenshots/before|after/` — 14 shots each: desktop
+idle/panel/rows/error, ring overlay, keyboard focus walk, timer panel
+(incl. running toggle), mobile (375px) and narrow (360px) panel states,
+reduced-motion panel. Reviewed per phase; notable before→after fixes:
+red ⏰ / blue 💤 emoji replaced with monochrome line icons, buttons now
+inherit the page font, timer −/+ steppers always visible (were hover-only,
+unusable on touch), alarm create row de-cramped into labeled stacked fields.
