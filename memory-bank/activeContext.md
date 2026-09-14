@@ -4,36 +4,33 @@ Updated: 2026-09-14
 
 ## Current focus
 
-**HK-6 — implemented on `fix/hk6-asset-retention`** (off `main`): the
-stale-HTML/dead-asset window after deploys is closed via previous-release
-asset retention (ADR-0007). deploy.sh step 3b streams the old web
-container's assets into `.prev-assets/` (tar contents-form — the `docker
-cp src/. dst/` form NESTS, do not use); compose bind-mounts it ro at
-`/usr/share/nginx/html-prev`; `web/nginx.conf` `try_files $uri
-@prev_assets` fallback serves old hashes with immutable headers.
+**US-002 — implemented on `feat/us-002-recurring-alarms`** (off `main`):
+daily-repeat alarms. Persisted `repeat` + `lastRungDay` on `Alarm`
+(schema-additive — legacy JSON normalizes to one-shot, no migration). Ring
+consumes the local calendar day (`lastRungDay`), fixing a design hole found
+during planning: without it, a dismiss mid-grace-window or a reload would
+re-ring a repeat alarm. Toggling clears both markers (re-arms from the
+configured time). UI: "Daily" checkbox in the create form, monochrome ↻
+row indicator (`role="img"` + aria-label). Weekday scheduling is recorded
+as future work in the story (§6) — `repeat: true` reads as "all days" for
+that future widening.
 
-- Verified locally: `sh -n`, both `compose config -q`, `nginx -t` on both
-  configs, functional docker test (old hash 200 via fallback, unknown 404).
-- Sandbox gotcha: this environment's docker bind mounts can show STALE
-  container views of host dirs (caused a long nesting-wild-goose-chase —
-  the data was polluted by an earlier root-owned `docker cp`, and the
-  container saw content the host didn't have). Trust host-side `find` over
-  container `ls` here.
-- First deploy after merge runs the old in-memory deploy.sh; fallback is
-  fully populated from the second deploy onward (in ADR-0007).
+- Verified: 152/152 unit tests (12 new), `make check` green, 7/7 Playwright
+  assertions, 2 screenshots in the story folder.
+- Same session: HK-6 (PR #16) and HK-5 (PR #17, nginx → 1.30-alpine stable)
+  merged and deployed.
 
 ## Environment state
 
-- Branch `fix/hk6-asset-retention` = main + 3 commits (code, ADRs, tasks).
-  `dev` has sprint-tracking commit `54edefa` that main lacks — this branch's
-  sprint.md rewrite reconciles them on merge.
-- `make check` green (140 tests); pure cores untouched by HK-6.
+- Branch `feat/us-002-recurring-alarms` = main + 4 commits (story, core,
+  UI, close-out). All housekeeping HK-1…HK-6 done; US-003 absorbed.
+- Playwright tooling still in `/tmp/ux-shots/` (not a repo dependency).
 
 ## Next steps
 
-- Owner: review + merge HK-6 PR → `main`; next deploy needs NO manual CF
-  purge from the second deploy on.
+- Owner: review + merge the US-002 PR → `main` (rebase; ruleset requires
+  PRs), then verify the repeat alarm rings live.
 - Owner: audible alarm-tone check (US-001) and visual pass on prod (US-005)
   — both still open.
-- Pick next epic: US-004 (needs PO story + likely ADR) vs US-002 (needs PO
-  story). HK-5 (nginx re-pin) is the remaining housekeeping item.
+- Then: US-004 multi-clock epic, run individually per owner decision —
+  needs a PO story defining "a clock" + likely an ADR before starting.
