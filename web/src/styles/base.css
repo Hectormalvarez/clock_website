@@ -16,6 +16,27 @@ body {
 	overflow-x: hidden;
 }
 
+/* Form controls don't inherit the page font/color by default — without
+   this, buttons and inputs render in the UA font (visible in the panels). */
+button,
+input {
+	font-family: var(--font-family);
+	color: inherit;
+}
+
+/* One consistent keyboard-focus indicator everywhere. */
+:focus-visible {
+	outline: var(--focus-outline-width) solid var(--color-primary);
+	outline-offset: var(--focus-outline-offset);
+}
+
+/* Placeholder text is themed (the label carries the meaning, but the
+   placeholder must still be legible — browser default gray fails on dark). */
+::placeholder {
+	color: var(--color-placeholder);
+	opacity: 1;
+}
+
 /* ---------- Environment Marker ---------- */
 
 .environment-marker {

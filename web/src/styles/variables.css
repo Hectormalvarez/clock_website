@@ -17,7 +17,20 @@
 	--color-primary-medium: rgba(0, 255, 0, 0.15);
 	--color-primary-strong: rgba(0, 255, 0, 0.3);
 
-	--color-danger: #f00;
+	--color-danger: #ff6b6b;
+
+	/* Text tiers — composited contrast on --color-surface (#1a1a1a):
+	   secondary ≈ 7.0:1, muted ≈ 5.2:1 (both pass WCAG AA). Never use raw
+	   opacity for text tiers — use these tokens. */
+	--color-text-secondary: rgba(0, 255, 0, 0.72);
+	--color-text-muted: rgba(0, 255, 0, 0.6);
+
+	/* Input placeholder (on --color-surface-alt) ≈ 5.0:1 */
+	--color-placeholder: rgba(0, 255, 0, 0.5);
+
+	/* Focus ring (outline) — #0f0 on --color-bg ≈ 11.6:1 */
+	--focus-outline-width: 2px;
+	--focus-outline-offset: 2px;
 
 	/* === Typography === */
 	--font-family: 'Arial', sans-serif;

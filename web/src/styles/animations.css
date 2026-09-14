@@ -63,3 +63,16 @@ body.timer-finished #clock-container {
 		box-shadow: 0 0 24px var(--color-primary);
 	}
 }
+
+/* ---------- Reduced motion ---------- */
+/* Users who ask for reduced motion get no pulses, pops, or FLIP slides.
+   The JS-driven FLIP helper (shared/dom/flip.ts) checks the same query. */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

@@ -39,6 +39,10 @@
 	box-shadow: var(--glow-md);
 }
 
+.toggle-icon {
+	display: block;
+}
+
 /* Pulse while at least one alarm is armed */
 .alarm-toggle.armed {
 	animation: timer-pulse 1.5s ease-in-out infinite;
@@ -65,48 +69,84 @@
 	display: none;
 }
 
-/* ---------- Create controls ---------- */
+/* ---------- Panel title ---------- */
+
+.panel-title {
+	margin: 0;
+	font-size: var(--font-size-small);
+	font-weight: var(--font-weight-bold);
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	text-align: center;
+	color: var(--color-text-secondary);
+}
+
+/* ---------- Create controls (labeled, stacked) ---------- */
 
 .alarm-create {
 	display: flex;
-	align-items: center;
-	gap: var(--space-xs);
+	flex-direction: column;
+	gap: var(--space-lg);
 	width: 100%;
+}
+
+.alarm-field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2xs);
+}
+
+.field-label {
+	font-size: var(--font-size-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--color-text-secondary);
+	user-select: none;
 }
 
 .alarm-create input {
 	min-width: 0;
-	flex: 1;
+	width: 100%;
 	padding: var(--space-xs) var(--space-sm);
 	font-size: var(--font-size-timer-input);
-	text-align: center;
+	text-align: left;
 	background-color: var(--color-surface-alt);
 	border: var(--border-width) solid var(--color-primary);
 	border-radius: var(--border-radius-sm);
 	color: var(--color-primary);
 	font-family: var(--font-family);
+	box-sizing: border-box;
+}
+
+.alarm-time-row {
+	display: flex;
+	align-items: stretch;
+	gap: var(--space-xs);
+}
+
+.alarm-time {
+	flex: 1;
 }
 
 .alarm-add {
 	background: none;
-	border: var(--border-width) dashed var(--color-primary);
+	border: var(--border-width) solid var(--color-primary);
 	color: var(--color-primary);
-	font-size: var(--font-size-xs);
+	font-size: var(--font-size-small);
 	cursor: pointer;
 	border-radius: var(--border-radius-sm);
-	padding: var(--space-2xs) var(--space-lg);
+	padding: var(--space-xs) var(--space-lg);
 	transition:
 		background-color var(--transition-normal),
 		box-shadow var(--transition-normal);
 	line-height: 1;
-	opacity: 0.7;
 	flex-shrink: 0;
+	white-space: nowrap;
 }
 
 .alarm-add:hover,
 .alarm-add:focus-visible {
 	background-color: var(--color-primary-soft);
-	opacity: 1;
 	box-shadow: var(--glow-sm);
 }
 
@@ -124,16 +164,15 @@
 	flex-direction: column;
 	gap: var(--space-xs);
 	width: 100%;
-	max-height: 180px;
+	max-height: 200px;
 	overflow-y: auto;
 }
 
-.alarm-list:empty::after {
-	content: 'No alarms yet';
-	display: block;
+.alarm-empty {
+	margin: 0;
 	text-align: center;
 	font-size: var(--font-size-small);
-	opacity: 0.5;
+	color: var(--color-text-muted);
 	padding: var(--space-md) 0;
 }
 
@@ -154,38 +193,46 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	user-select: none;
+	color: var(--color-primary);
 }
 
 .alarm-row-time {
 	font-size: var(--font-size-small);
 	line-height: 1;
 	font-variant-numeric: tabular-nums;
+	color: var(--color-text-secondary);
 }
 
 .alarm-row-time.snoozed::after {
 	content: ' · snoozed';
-	opacity: 0.6;
+	color: var(--color-text-muted);
 }
 
 .alarm-row.disabled .alarm-row-name,
 .alarm-row.disabled .alarm-row-time {
-	opacity: 0.4;
+	color: var(--color-text-muted);
 }
 
 .alarm-row-toggle {
 	accent-color: var(--color-primary);
 	cursor: pointer;
 	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	margin: 3px;
 }
 
 .alarm-row-remove {
 	background: none;
 	border: none;
-	color: var(--color-primary);
-	opacity: 0.5;
-	font-size: 0.9em;
+	color: var(--color-text-muted);
+	font-size: 1em;
 	line-height: 1;
-	padding: 0 var(--space-2xs);
+	width: 24px;
+	height: 24px;
+	display: grid;
+	place-items: center;
+	padding: 0;
 	cursor: pointer;
 	transition:
 		opacity var(--transition-fast),
@@ -194,7 +241,6 @@
 }
 
 .alarm-row-remove:hover {
-	opacity: 1;
 	color: var(--color-danger);
 }
 
@@ -204,7 +250,7 @@
 	margin: 0;
 	text-align: center;
 	font-size: var(--font-size-xs);
-	opacity: 0.55;
+	color: var(--color-text-muted);
 }
 
 /* ---------- Ringing overlay ---------- */
@@ -259,6 +305,10 @@
 }
 
 .alarm-overlay-actions button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2xs);
 	background: none;
 	border: var(--border-width) solid var(--color-primary);
 	color: var(--color-primary);
@@ -269,6 +319,10 @@
 	transition:
 		background-color var(--transition-normal),
 		box-shadow var(--transition-normal);
+}
+
+.button-icon {
+	display: block;
 }
 
 .alarm-overlay-actions button:hover,
