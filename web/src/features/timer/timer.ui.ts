@@ -1,5 +1,6 @@
 import { formatDuration, formatFinishTime } from '@/shared/time/format';
 import { playBeep } from '@/shared/audio/beep';
+import { flipAnimate } from '@/shared/dom/flip';
 import { queryOptional } from '@/shared/dom/query';
 import {
 	createTimerCore,
@@ -240,6 +241,7 @@ export function initTimer(
 		// Update only the text span — never the button's content, so the
 		// inline SVG icon survives every render.
 		const { toggleText } = dom;
+		dom.toggleBtn.setAttribute('aria-expanded', String(isPanelOpen));
 		if (isPanelOpen) {
 			toggleText.hidden = true;
 		} else if (
@@ -403,76 +405,27 @@ export function initTimer(
 
 	// ---------- Panel toggle ----------
 
-	// FLIP animation: smoothly animate #clock-container movement when the
-	// panel is added/removed (which re-centers the container in the body).
-	// The clock sliding up/down IS the open/close animation for the
-	// surrounding layout, so open and close feel symmetric.
-	function flipAnimateClockContainer(action: () => void) {
-		const container = rootElement.closest(
-			'#clock-container',
-		) as HTMLElement | null;
-		if (!container) {
-			action();
-			return;
-		}
-
-		// Lock body overflow so the page can't scroll while the height changes
-		const prevBodyOverflow = document.body.style.overflow;
-		document.body.style.overflow = 'hidden';
-
-		// First: record the current position of #clock-container
-		const firstRect = container.getBoundingClientRect();
-
-		// Run the DOM mutation (open/close panel)
-		action();
-
-		// Last: measure the new position synchronously
-		const lastRect = container.getBoundingClientRect();
-
-		// Compute the delta and invert it with a transform
-		const dx = firstRect.left - lastRect.left;
-		const dy = firstRect.top - lastRect.top;
-		if (dx === 0 && dy === 0) {
-			document.body.style.overflow = prevBodyOverflow;
-			return;
-		}
-
-		container.style.transition = 'none';
-		container.style.transform = `translate(${dx}px, ${dy}px)`;
-
-		// Play: on the next frame, animate the transform back to identity
-		requestAnimationFrame(() => {
-			container.style.transition = 'transform 0.3s ease-out';
-			container.style.transform = '';
-		});
-
-		// Clean up inline styles after the transition completes
-		const onEnd = () => {
-			container.removeEventListener('transitionend', onEnd);
-			container.style.transition = '';
-			container.style.transform = '';
-			document.body.style.overflow = prevBodyOverflow;
-		};
-		container.addEventListener('transitionend', onEnd);
-
-		// Fallback in case transitionend doesn't fire
-		setTimeout(onEnd, 400);
+	function clockContainer(): HTMLElement | null {
+		return rootElement.closest('#clock-container') as HTMLElement | null;
 	}
 
 	function openPanel() {
-		flipAnimateClockContainer(() => {
+		flipAnimate(clockContainer(), () => {
 			isPanelOpen = true;
 			dom.panel.removeAttribute('hidden');
 			dom.toggleBtn.classList.add('active');
 			renderToggle();
 		});
+		// Move focus into the panel so keyboard users continue from the
+		// first field instead of the toggle.
+		dom.minInput.focus();
 	}
 
 	function closePanel() {
 		// Mirror open exactly: hide the panel immediately and let the FLIP
 		// clock slide-up be the close animation. This avoids the lag of
 		// waiting for a separate CSS close animation on the panel.
-		flipAnimateClockContainer(() => {
+		flipAnimate(clockContainer(), () => {
 			isPanelOpen = false;
 			dom.toggleBtn.classList.remove('active');
 			dom.panel.classList.remove('closing');
@@ -486,6 +439,10 @@ export function initTimer(
 				renderToggle();
 			}
 		});
+		// Restore focus to the toggle only if it was inside the panel.
+		if (dom.panel.contains(document.activeElement)) {
+			dom.toggleBtn.focus();
+		}
 	}
 
 	function togglePanel() {
