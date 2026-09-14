@@ -28,6 +28,12 @@ services:
     cap_drop:
       - ALL
     logging: *default-logging
+    volumes:
+      # Assets from the previous release, extracted by scripts/deploy.sh
+      # (step 3b) before the container swap. Served read-only as a
+      # fallback for content hashes the new build no longer has, so the
+      # edge-cached HTML (2 h TTL, ADR 0006) never hits dead 404s.
+      - ./.prev-assets:/usr/share/nginx/html-prev:ro
 
   nginx:
     image: ghcr.io/${REGISTRY_OWNER:-hectormalvarez}/clock_website-nginx:${IMAGE_TAG:-latest}

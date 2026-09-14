@@ -50,6 +50,28 @@ info "Pulling images for tag: $IMAGE_TAG"
 IMAGE_TAG="$IMAGE_TAG" $COMPOSE pull web nginx || err "Could not pull images for tag $IMAGE_TAG"
 ok "Images pulled"
 
+# ── Step 3b: Preserve the previous build's assets ─────────────────
+# Cloudflare edge-caches the HTML for up to 2 h (ADR 0006), so after a
+# deploy the cached page can reference asset hashes that no longer exist
+# in the NEW web image. Copy the running (old) container's /assets into
+# .prev-assets/ on the checkout; the web service bind-mounts that
+# directory read-only (see docker-compose.prod.yml) and web/nginx.conf
+# falls back to it for hashes missing from the new build. Accumulative:
+# hashes from earlier releases are kept, ~20 KB per deploy. Best-effort —
+# a failed copy (e.g. first deploy, no web container yet) must not abort.
+info "Preserving previous build assets..."
+mkdir -p .prev-assets/assets
+# Stream the running container's asset directory contents into the
+# fallback root. The `.` form (contents, not the directory) can never
+# nest a duplicate assets/ level, and re-running it accumulates hashes
+# from earlier releases (~20 KB per deploy). Best-effort: a failed copy
+# (e.g. first deploy, no web container yet) must not abort the deploy.
+if $COMPOSE exec -T web tar -C /usr/share/nginx/html/assets -cf - . | tar -C .prev-assets/assets -xf -; then
+	ok "Previous assets preserved ($(ls .prev-assets/assets | wc -l) files)"
+else
+	info "No previous web container found — starting with an empty fallback"
+fi
+
 # ── Step 4: Swap containers ───────────────────────────────────────
 # Reconcile ONLY the services whose images were just pulled. A bare
 # `up -d --remove-orphans` would also recreate the webhook container — which is
