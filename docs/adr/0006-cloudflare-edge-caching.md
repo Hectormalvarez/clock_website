@@ -59,10 +59,15 @@ instructions, and `Cache-Control` alone gives both caches the same one.
 ## Consequences
 
 - After a deploy, visitors can receive the previous HTML for at most **2
-  hours** (the Free-plan Edge TTL floor). Because nothing is purged, old
+  hours** (the Free-plan Edge TTL floor). ~~Because nothing is purged, old
   hashed assets remain edge-resident, so even a stale HTML document still
   resolves its assets; the residual risk is limited to an old asset being
-  evicted from a data center's cache.
+  evicted from a data center's cache.~~
+  **Amended 2026-09-14 (ADR-0007):** this assumption failed in practice —
+  old hashes were evicted on origin at every container swap and Cloudflare
+  cached the resulting 404s, breaking the homepage for up to 2 h per
+  deploy. ADR-0007 keeps the previous release's assets servable on origin,
+  closing the window.
 - Origin load drops to roughly one HTML fetch per TTL expiry per data center,
   with Cloudflare's cache lock collapsing concurrent misses.
 - **No Cloudflare credentials exist in this repository, on the server, or in
