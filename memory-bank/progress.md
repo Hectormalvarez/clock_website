@@ -34,9 +34,9 @@ origin); `dev` is retired — work now branches from `main` and PRs into
 
 ## Remaining / known issues
 
-- Production audio QA: alarm tone not yet verified by a human (jsdom can't
-  test audio) — last open US-001 DoD item.
-- US-005 visual sign-off on prod still pending (owner eyeball).
+- US-005 visual sign-off on prod still pending (owner eyeball) — the last
+  open DoD item anywhere. Audio tone and live repeat-ring verified by the
+  owner on prod 2026-09-15.
 - Edge-cached homepage can lag up to 2 h behind a deploy (expected; judge
   freshness via `/healthz` or a query-string cache-bust, which works).
 - npm minor drift: eslint/prettier/lint-staged/TS patch bumps available;

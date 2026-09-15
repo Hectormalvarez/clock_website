@@ -2,7 +2,8 @@
 
 **Story ID:** US-001  
 **Epic:** Alarms  
-**Status:** QA (QA assessment passed; code review approved — pending merge)
+**Status:** Done — deployed to production (PR #13, 2026-09-13); audible
+tone owner-verified on prod 2026-09-15
 
 ---
 
@@ -36,14 +37,14 @@
 
 _These criteria define "Done." Every criterion must be verified by QA._
 
-- [ ] **AC-1:** Given the alarms panel is empty, When the user creates an alarm named "Standup" for 09:30, Then it appears in the list, enabled, with its name and time shown.
-- [ ] **AC-2:** Given an enabled alarm set for 09:30, When the device clock reaches 09:30 with the page open, Then a visual and audible alert starts, and the alarm is automatically disabled afterward.
-- [ ] **AC-3:** Given an alarm is ringing, When the user chooses Snooze, Then the alert stops and the alarm re-arms for 9 minutes later; When the user chooses Dismiss, Then the alert stops and the alarm stays disabled.
-- [ ] **AC-4:** Given one or more alarms exist, When the page is reloaded, Then all alarms reappear with their names, times, and enabled/disabled states intact.
-- [ ] **AC-5:** Given an alarm is disabled, When its time arrives, Then no alert occurs.
-- [ ] **AC-6 (edge case):** Given the user enables an alarm whose time is earlier than the current time, Then it does not ring today and is scheduled for the next occurrence of that time (tomorrow).
-- [ ] **AC-7:** Given an alarm is deleted, Then it disappears from the list, no longer rings, and no longer reappears after a reload.
-- [ ] **AC-8 (validation):** Given the user creates an alarm, Then an invalid or empty time is rejected with a clear message; a blank name defaults to "Alarm".
+- [x] **AC-1:** Given the alarms panel is empty, When the user creates an alarm named "Standup" for 09:30, Then it appears in the list, enabled, with its name and time shown.
+- [x] **AC-2:** Given an enabled alarm set for 09:30, When the device clock reaches 09:30 with the page open, Then a visual and audible alert starts, and the alarm is automatically disabled afterward.
+- [x] **AC-3:** Given an alarm is ringing, When the user chooses Snooze, Then the alert stops and the alarm re-arms for 9 minutes later; When the user chooses Dismiss, Then the alert stops and the alarm stays disabled.
+- [x] **AC-4:** Given one or more alarms exist, When the page is reloaded, Then all alarms reappear with their names, times, and enabled/disabled states intact.
+- [x] **AC-5:** Given an alarm is disabled, When its time arrives, Then no alert occurs.
+- [x] **AC-6 (edge case):** Given the user enables an alarm whose time is earlier than the current time, Then it does not ring today and is scheduled for the next occurrence of that time (tomorrow).
+- [x] **AC-7:** Given an alarm is deleted, Then it disappears from the list, no longer rings, and no longer reappears after a reload.
+- [x] **AC-8 (validation):** Given the user creates an alarm, Then an invalid or empty time is rejected with a clear message; a blank name defaults to "Alarm".
 
 ---
 
