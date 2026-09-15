@@ -2,7 +2,8 @@
 
 **Story ID:** US-002  
 **Epic:** Alarms  
-**Status:** In Progress
+**Status:** Done — deployed to production (PR #18, rebase-merged
+2026-09-15); live ring owner-verified on prod 2026-09-15
 
 ---
 
@@ -44,14 +45,14 @@
 
 _These criteria define "Done." Every criterion must be verified by QA._
 
-- [ ] **AC-1:** Given the create form, When the user checks "Repeat daily" and adds a 09:30 alarm, Then the alarm appears in the list enabled, marked with the daily-repeat indicator.
-- [ ] **AC-2:** Given an enabled daily-repeat alarm for 09:30, When the clock reaches 09:30, Then the alarm rings, and afterwards it remains enabled — the next day at 09:30 it rings again.
-- [ ] **AC-3:** Given a daily-repeat alarm that just rang, When the user dismisses it, Then the alarm stays enabled and rings again the following day (including across a page reload).
-- [ ] **AC-4:** Given a daily-repeat alarm, When the user disables its toggle, Then it never rings again until re-enabled (toggling also clears any pending snooze).
-- [ ] **AC-5:** Given an alarm created before this story (persisted without a repeat flag), When the page loads, Then it behaves exactly as a one-shot alarm (rings once, auto-disables).
-- [ ] **AC-6:** Snooze works identically for daily-repeat alarms: the snoozed ring fires at the snooze time, and afterwards the alarm is still armed for the next day.
-- [ ] **AC-7:** One-shot alarms created after this story keep US-001 semantics exactly: ring once, auto-disable.
-- [ ] **AC-8:** While a daily-repeat alarm is ringing and a second one becomes due, the second stays armed and rings on a later tick (one overlay at a time, as in US-001).
+- [x] **AC-1:** Given the create form, When the user checks "Repeat daily" and adds a 09:30 alarm, Then the alarm appears in the list enabled, marked with the daily-repeat indicator.
+- [x] **AC-2:** Given an enabled daily-repeat alarm for 09:30, When the clock reaches 09:30, Then the alarm rings, and afterwards it remains enabled — the next day at 09:30 it rings again.
+- [x] **AC-3:** Given a daily-repeat alarm that just rang, When the user dismisses it, Then the alarm stays enabled and rings again the following day (including across a page reload).
+- [x] **AC-4:** Given a daily-repeat alarm, When the user disables its toggle, Then it never rings again until re-enabled (toggling also clears any pending snooze).
+- [x] **AC-5:** Given an alarm created before this story (persisted without a repeat flag), When the page loads, Then it behaves exactly as a one-shot alarm (rings once, auto-disables).
+- [x] **AC-6:** Snooze works identically for daily-repeat alarms: the snoozed ring fires at the snooze time, and afterwards the alarm is still armed for the next day.
+- [x] **AC-7:** One-shot alarms created after this story keep US-001 semantics exactly: ring once, auto-disable.
+- [x] **AC-8:** While a daily-repeat alarm is ringing and a second one becomes due, the second stays armed and rings on a later tick (one overlay at a time, as in US-001).
 
 ---
 
@@ -86,3 +87,13 @@ _These criteria define "Done." Every criterion must be verified by QA._
   is schema-additive and normalised at parse time, that change is backward
   compatible: `repeat: true` can be read as "all seven days" by the future
   implementation, and old one-shot records (flag absent) keep working.
+
+## 7. Verification Record (2026-09-15)
+
+- 12 new unit tests (ring-stays-armed, next-day re-ring, dismiss/reload
+  survival, disable-clears-snooze, legacy JSON, snooze interplay,
+  second-due queuing); full suite 152/152; `make check` green; 7/7
+  Playwright assertions; screenshots in the story folder.
+- Deployed via PR #18 (rebase-merged into `main`); Release workflow and
+  webhook deploy succeeded; `/healthz` 200.
+- Owner-verified on prod: repeat alarm rings live and behaves as specified.
