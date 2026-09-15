@@ -2,18 +2,18 @@
 
 ## Status
 
-US-001 (Multiple Alarms) is **deployed to production** (PR #13 merged
-2026-09-13 21:17Z). US-005 (UX polish & a11y hardening) is **merged and
-deployed** (PR #15). Housekeeping HK-1…HK-6 all done. US-002 (recurring
-alarms) is **implemented on `feat/us-002-recurring-alarms`** (PR #18, all
-CI checks green) — awaiting owner review/merge. Site is live at
+US-002 (recurring alarms) is **merged and deployed** (PR #18, rebase-merged
+into `main` on 2026-09-15; merging fires the automatic release deploy).
+Repo cleanup, same day: merged feature branches and `dev` deleted (local +
+origin); `dev` is retired — work now branches from `main` and PRs into
+`main` (rebase-merge, linear history). Site is live at
 `clock.taylormadetech.net`. 152 unit tests green.
 
 ## What works
 
 - Clock (tick, title mirror, timezone), timer (presets, persistence, beep),
   alarms (multi, snooze, persistence, ring overlay, **daily-repeat
-  [US-002, pending merge]**).
+  (US-002)**).
 - **Design system (US-005):** semantic text-tier tokens (secondary 7.0:1,
   muted 5.2:1, placeholder 4.7:1 — never raw opacity for text), AA-safe
   danger `#ff6b6b`, global `:focus-visible` ring, monochrome inline-SVG
