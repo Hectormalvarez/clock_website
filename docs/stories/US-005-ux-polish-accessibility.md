@@ -2,7 +2,8 @@
 
 **Story ID:** US-005
 **Epic:** Platform Quality (cross-feature)
-**Status:** In progress
+**Status:** Done — deployed (PR #15, rebase-merged 2026-09-14); owner
+visual sign-off on prod 2026-09-15
 
 ---
 
@@ -97,7 +98,7 @@ US-003 items 1–3.
       assertions + jsdom FLIP unit tests).
 - [x] `make check` green; prettier clean.
 - [x] Backlog updated (US-003 absorbed; priorities adjusted).
-- [ ] QA assessment passed; code review approved.
+- [x] QA assessment passed; code review approved.
 
 ---
 

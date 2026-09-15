@@ -18,7 +18,7 @@ widening.
 - Verified: 152/152 unit tests (12 new), `make check` green, 7/7 Playwright
   assertions, 2 screenshots in the story folder.
 - Owner-verified on prod (2026-09-15): repeat alarm rings live; alarm tone
-  audible — closes the last US-001/US-002 QA items; both stories Done.
+  audible; US-005 visual sign-off — **all stories Done, no open DoD items**.
 
 ## Repo cleanup & workflow change (2026-09-15)
 
@@ -36,8 +36,6 @@ widening.
 
 ## Next steps
 
-- Owner: US-005 visual sign-off on prod (last open DoD item) — then the
-  story's Status flips to Done.
-- Then: US-004 multi-clock epic, run individually per owner decision —
-  needs a PO story defining "a clock" + likely an ADR before starting.
+- US-004 multi-clock epic, run individually per owner decision — needs a
+  PO story defining "a clock" + likely an ADR before starting.
 

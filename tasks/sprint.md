@@ -6,23 +6,21 @@ Sprint window: active (no fixed calendar sprint; pipeline-driven).
 
 ### US-001 — Multiple Alarms (Epic: Alarms)
 
-- Status: **MERGED + DEPLOYED** (PR #13, 2026-09-13 21:17Z). Release run #5 →
-  webhook deploy → `/healthz` 200.
-- Remaining DoD: manual browser check that the alarm tone plays (audio cannot
-  be verified in jsdom) — owner task. Then this entry is deleted.
+- Status: **MERGED + DEPLOYED + OWNER-VERIFIED** (PR #13, 2026-09-13 21:17Z;
+  Release run #5 → webhook deploy → `/healthz` 200). Alarm tone audible —
+  owner check on prod 2026-09-15.
 
 ### US-005 — UX Polish & Accessibility Hardening
 
-- Status: **MERGED + DEPLOYED** (PR #15 rebase-merged into `main`,
-  2026-09-14; Release run succeeded → deploy verified on origin via fresh
-  asset hashes + US-005 markers in the served bundle/CSS; `/healthz` 200).
+- Status: **MERGED + DEPLOYED + OWNER-VERIFIED** (PR #15 rebase-merged into
+  `main`, 2026-09-14; deploy verified on origin via fresh asset hashes +
+  US-005 markers in the served bundle/CSS; `/healthz` 200).
 - All 8 ACs verified pre-merge (140 unit tests, 20/20 Playwright a11y
   assertions, computed contrast table, 14 before/after screenshots in
   `docs/stories/US-005/screenshots/`).
 - Absorbed US-003 items 1–3 (shared FLIP helper, ring-overlay outside-click
   guard, panel focus management) — **US-003 is closed**.
-- Remaining DoD: owner visual pass on the live site — a human eyeball on
-  prod is the last gate; rollback via revert PR if anything regressed.
+- Owner visual pass on prod done 2026-09-15 — story DoD fully closed.
 
 ### HK-6 — Eliminate the stale-HTML/dead-asset window after deploys
 
@@ -47,23 +45,16 @@ Sprint window: active (no fixed calendar sprint; pipeline-driven).
 - Verified: local pull of the digest reports `nginx/1.30.4`; `nginx -t`
   passes on both configs against the new image; all four CI checks green.
 
-## In flight
-
 ### US-002 — Recurring (daily-repeat) alarms
 
-- Status: **IMPLEMENTED on `feat/us-002-recurring-alarms`** (off `main`) —
-  story in `docs/stories/US-002-recurring-alarms.md` (MVP scope: daily
-  repeat only; weekday scheduling recorded as future work in §6).
-- Core: persisted `repeat` + `lastRungDay` flags; repeat alarms are never
-  consumed by ringing (a rung occurrence is consumed per local calendar
-  day, so a mid-grace-window dismiss or reload cannot re-ring); toggling
-  re-arms from the configured time; legacy JSON loads as one-shot, no
-  migration.
-- UI: "Daily" checkbox in the create form; monochrome ↻ indicator
-  (`role="img"`, aria-label "Repeats daily") on repeat rows only.
+- Status: **MERGED + DEPLOYED + OWNER-VERIFIED** (PR #18 rebase-merged into
+  `main`, 2026-09-15; Release + webhook succeeded, `/healthz` 200). Live
+  repeat-ring confirmed by the owner on prod 2026-09-15. Story: Done.
+- MVP scope: daily repeat only; weekday scheduling recorded as future work
+  in the story §6. Core: persisted `repeat` + `lastRungDay` (schema-additive,
+  no migration); toggling re-arms from the configured time.
 - Verified: **152/152 unit tests** (12 new), `make check` green, 7/7
-  Playwright assertions (indicator on repeat rows only, flags persist,
-  checkbox resets), 2 screenshots committed in the story folder.
+  Playwright assertions, 2 screenshots committed in the story folder.
 
 ## Ready (not started)
 
@@ -74,12 +65,10 @@ Sprint window: active (no fixed calendar sprint; pipeline-driven).
 
 ## Dependencies & sequencing
 
-- Nothing queued behind US-002; US-004 is owner-scheduled.
+- Nothing queued; US-004 is owner-scheduled.
 
 ## Risks
 
 | Risk                                                                       | Likelihood | Impact                                       | Mitigation                                   |
 | -------------------------------------------------------------------------- | ---------- | -------------------------------------------- | -------------------------------------------- |
-| Production alarm audio unverified                                          | Medium     | Medium (US-001 DoD gap)                      | Owner manual check; tracked above            |
-| US-005 sign-off without a human look at prod                               | Low        | Low (aesthetic regressions screenshots miss) | Owner visual pass; rollback via revert PR    |
 | HK-6 fallback unproven on the real host until the second post-merge deploy | Low        | Low (old behaviour = broken window recurs)   | Owner: verify next deploy via old-hash asset |
