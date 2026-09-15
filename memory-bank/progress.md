@@ -2,9 +2,10 @@
 
 ## Status
 
-US-002 (recurring alarms) is **merged and deployed** (PR #18, rebase-merged
-into `main` on 2026-09-15; merging fires the automatic release deploy).
-Repo cleanup, same day: merged feature branches and `dev` deleted (local +
+All alarm-epic stories are **merged, deployed, and owner-verified on prod**
+(US-001 PR #13, US-002 PR #18, US-005 PR #15 — live ring, audible tone, and
+visual sign-off confirmed 2026-09-15; every story DoD is closed). Repo
+cleanup, same day: merged feature branches and `dev` deleted (local +
 origin); `dev` is retired — work now branches from `main` and PRs into
 `main` (rebase-merge, linear history). Site is live at
 `clock.taylormadetech.net`. 152 unit tests green.
@@ -34,9 +35,6 @@ origin); `dev` is retired — work now branches from `main` and PRs into
 
 ## Remaining / known issues
 
-- US-005 visual sign-off on prod still pending (owner eyeball) — the last
-  open DoD item anywhere. Audio tone and live repeat-ring verified by the
-  owner on prod 2026-09-15.
 - Edge-cached homepage can lag up to 2 h behind a deploy (expected; judge
   freshness via `/healthz` or a query-string cache-bust, which works).
 - npm minor drift: eslint/prettier/lint-staged/TS patch bumps available;
